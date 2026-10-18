@@ -1,0 +1,212 @@
+---
+import ProjectCard from '../../components/ProjectCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { areasInUse, getProjects } from '../../lib/projects';
+import { STATUS_KEYS, STATUS_LABELS } from '../../lib/taxonomy';
+
+const projects = await getProjects();
+const areas = areasInUse(projects);
+const statuses = STATUS_KEYS.map((key) => ({
+  key,
+  label: STATUS_LABELS[key],
+  count: projects.filter((project) => project.data.status === key).length,
+})).filter((status) => status.count > 0);
+---
+
+<BaseLayout
+  title="Projects"
+  description="Embedded firmware, analog circuits, PCBs, and computer architecture projects by Nikhil Mahadevan."
+>
+  <section class="container page-head">
+    <h1>Projects</h1>
+    <p class="lede">Firmware, analog circuits, PCBs, and computer architecture.</p>
+  </section>
+
+  <section class="container listing" aria-label="All projects">
+    <div class="filters">
+      <div class="filter-group" role="group" aria-label="Filter by area">
+        <button class="chip" type="button" aria-pressed="true" data-filter="area" data-value="all">All areas</button>
+        {
+          areas.map((area) => (
+            <button class="chip" type="button" aria-pressed="false" data-filter="area" data-value={area.key}>
+              {area.label}
+              <span class="count">{area.count}</span>
+            </button>
+          ))
+        }
+      </div>
+      <div class="filter-group" role="group" aria-label="Filter by status">
+        <button class="chip" type="button" aria-pressed="true" data-filter="status" data-value="all">Any status</button>
+        {
+          statuses.map((status) => (
+            <button class="chip" type="button" aria-pressed="false" data-filter="status" data-value={status.key}>
+              {status.label}
+              <span class="count">{status.count}</span>
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <p class="result-count" aria-live="polite" data-result-count>Showing all {projects.length} projects</p>
+
+    <div class="grid" data-grid>
+      {projects.map((project, index) => <ProjectCard project={project} headingLevel="h2" eager={index < 2} />)}
+    </div>
+
+    <p class="empty" hidden data-empty>No projects match those filters yet.</p>
+  </section>
+</BaseLayout>
+
+<script>
+  type FilterKey = 'area' | 'status';
+
+  const filters: Record<FilterKey, string> = { area: 'all', status: 'all' };
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-grid] > [data-status]')];
+  const resultCount = document.querySelector('[data-result-count]');
+  const empty = document.querySelector<HTMLElement>('[data-empty]');
+
+  function apply() {
+    let shown = 0;
+    for (const card of cards) {
+      const areaMatch = filters.area === 'all' || (card.dataset.areas ?? '').split(' ').includes(filters.area);
+      const statusMatch = filters.status === 'all' || card.dataset.status === filters.status;
+      card.hidden = !(areaMatch && statusMatch);
+      if (!card.hidden) shown++;
+    }
+
+    for (const button of buttons) {
+      const key = button.dataset.filter as FilterKey;
+      button.setAttribute('aria-pressed', String(filters[key] === button.dataset.value));
+    }
+
+    if (resultCount) {
+      resultCount.textContent =
+        shown === cards.length ? `Showing all ${cards.length} projects` : `Showing ${shown} of ${cards.length} projects`;
+    }
+    if (empty) empty.hidden = shown > 0;
+
+    const params = new URLSearchParams();
+    if (filters.area !== 'all') params.set('area', filters.area);
+    if (filters.status !== 'all') params.set('status', filters.status);
+    const query = params.toString();
+    history.replaceState(null, '', query ? `?${query}` : location.pathname);
+  }
+
+  for (const button of buttons) {
+    button.addEventListener('click', () => {
+      filters[button.dataset.filter as FilterKey] = button.dataset.value ?? 'all';
+      apply();
+    });
+  }
+
+  const params = new URLSearchParams(location.search);
+  for (const key of ['area', 'status'] as const) {
+    const value = params.get(key);
+    if (value && buttons.some((button) => button.dataset.filter === key && button.dataset.value === value)) {
+      filters[key] = value;
+    }
+  }
+  apply();
+</script>
+
+<style>
+  .page-head {
+    padding-block: clamp(3.5rem, 8vw, 5rem) 2.5rem;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+    line-height: 1.2;
+  }
+
+  .lede {
+    margin-top: 0.9rem;
+  }
+
+  .listing {
+    padding-bottom: clamp(4rem, 9vw, 6.5rem);
+  }
+
+  .filters {
+    display: grid;
+    justify-items: center;
+    gap: 0.6rem;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.45rem;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 32px;
+    padding: 0 0.85rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--bg);
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    transition:
+      color 0.15s ease,
+      border-color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  .chip:hover {
+    border-color: var(--text-faint);
+    color: var(--text);
+  }
+
+  .chip[aria-pressed='true'] {
+    border-color: var(--text);
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .count {
+    color: var(--text-faint);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .chip[aria-pressed='true'] .count {
+    color: inherit;
+    opacity: 0.65;
+  }
+
+  .result-count {
+    margin: 1.75rem 0 1rem;
+    color: var(--text-faint);
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .empty {
+    padding: 3rem 1rem;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-lg);
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  @media (max-width: 760px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,572 @@
+---
+import { getImage, Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Icon from '../../components/Icon.astro';
+import ProjectCover from '../../components/ProjectCover.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { IconName } from '../../lib/icons';
+import { formatDateRange, getProjects, type Project } from '../../lib/projects';
+import { AREA_LABELS, STATUS_LABELS } from '../../lib/taxonomy';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project, index) => ({
+    params: { id: project.id },
+    props: { project, previous: projects[index - 1], next: projects[index + 1] },
+  }));
+}
+
+interface Props {
+  project: Project;
+  previous?: Project;
+  next?: Project;
+}
+
+const { project, previous, next } = Astro.props;
+const { data } = project;
+const { Content } = await render(project);
+
+const links: { href: string; label: string; icon: IconName }[] = [];
+if (data.repo) links.push({ href: data.repo, label: 'Source code', icon: 'github' });
+if (data.video) links.push({ href: data.video, label: 'Watch demo', icon: 'play' });
+if (data.demo) links.push({ href: data.demo, label: 'Live demo', icon: 'globe' });
+if (data.docs) links.push({ href: data.docs, label: 'Documentation', icon: 'book' });
+
+const specs: { label: string; value?: string | string[] }[] = [
+  { label: 'Timeline', value: formatDateRange(data) },
+  { label: 'Status', value: STATUS_LABELS[data.status] },
+  { label: 'Area', value: data.areas.map((area) => AREA_LABELS[area]).join(', ') },
+  { label: 'Platform', value: data.platform },
+  { label: 'Course', value: data.course },
+  { label: 'Role', value: data.role },
+  { label: 'Stack', value: data.tags },
+].filter((spec) => spec.value?.length);
+
+const gallery = await Promise.all(
+  data.gallery.map(async (item) => ({
+    ...item,
+    full: await getImage({ src: item.src, width: Math.min(item.src.width, 2000) }),
+  })),
+);
+---
+
+<BaseLayout title={data.title} description={data.summary}>
+  <article>
+    <header class="container head">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/projects/">Projects</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{data.title}</span>
+      </nav>
+
+      <h1>{data.title}</h1>
+      <p class="lede">{data.summary}</p>
+
+      <div class="badges">
+        {data.status === 'in-progress' && <span class="badge badge-live">In progress</span>}
+        {data.course && <span class="badge">{data.course}</span>}
+        <span class="badge">{formatDateRange(data)}</span>
+        {data.draft && <span class="badge badge-draft">Draft, hidden when published</span>}
+      </div>
+
+      {
+        links.length > 0 && (
+          <div class="btn-row links">
+            {links.map((link, index) => (
+              <a
+                class:list={['btn', index === 0 ? 'btn-primary' : 'btn-secondary']}
+                href={link.href}
+                target="_blank"
+                rel="noopener"
+              >
+                <Icon name={link.icon} size={17} />
+                {link.label}
+              </a>
+            ))}
+          </div>
+        )
+      }
+    </header>
+
+    <figure class="container cover">
+      <div class:list={['cover-well', { art: !data.cover }]}>
+        <ProjectCover
+          project={project}
+          width={1600}
+          sizes="(min-width: 1200px) 1120px, 100vw"
+          loading="eager"
+          art={{ width: 1120, height: 460 }}
+        />
+      </div>
+      {data.coverCaption && <figcaption>{data.coverCaption}</figcaption>}
+    </figure>
+
+    <div class="container body">
+      <aside class="aside" aria-labelledby="specs-title">
+        <h2 id="specs-title">Specs</h2>
+        <dl class="specs">
+          {
+            specs.map((spec) => (
+              <div>
+                <dt>{spec.label}</dt>
+                <dd>
+                  {Array.isArray(spec.value)
+                    ? spec.value.map((item, i) => (
+                        <>
+                          {i > 0 && ' · '}
+                          <span class="item">{item}</span>
+                        </>
+                      ))
+                    : spec.value}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+      </aside>
+
+      <div class="main">
+        {
+          data.highlights.length > 0 && (
+            <section class="highlights" aria-labelledby="highlights-title">
+              <h2 id="highlights-title">Highlights</h2>
+              <ul>
+                {data.highlights.map((highlight) => (
+                  <li>{highlight}</li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+
+        <div class="prose">
+          <Content />
+        </div>
+
+        {
+          gallery.length > 0 && (
+            <section class="gallery" aria-labelledby="gallery-title">
+              <h2 id="gallery-title">Gallery</h2>
+              <div class="gallery-grid">
+                {gallery.map((item) => (
+                  <figure>
+                    <button
+                      class="shot"
+                      type="button"
+                      aria-label={`Enlarge image: ${item.caption}`}
+                      data-full={item.full.src}
+                      data-caption={item.caption}
+                    >
+                      <Image src={item.src} alt={item.caption} width={720} />
+                      <span class="zoom" aria-hidden="true">
+                        <Icon name="expand" size={15} />
+                      </span>
+                    </button>
+                    <figcaption>{item.caption}</figcaption>
+                  </figure>
+                ))}
+              </div>
+            </section>
+          )
+        }
+      </div>
+    </div>
+
+    <nav class="container pager" aria-label="More projects">
+      {
+        previous ? (
+          <a class="pager-link" href={`/projects/${previous.id}/`}>
+            <span class="dir">
+              <Icon name="arrow-left" size={14} />
+              Previous
+            </span>
+            <span class="name">{previous.data.title}</span>
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        next && (
+          <a class="pager-link to-next" href={`/projects/${next.id}/`}>
+            <span class="dir">
+              Next
+              <Icon name="arrow-right" size={14} />
+            </span>
+            <span class="name">{next.data.title}</span>
+          </a>
+        )
+      }
+    </nav>
+  </article>
+
+  <dialog class="lightbox" aria-label="Image viewer" data-lightbox>
+    <form method="dialog">
+      <button class="icon-btn close" aria-label="Close image viewer">
+        <Icon name="close" />
+      </button>
+    </form>
+    <img alt="" data-lightbox-image />
+    <p class="lightbox-caption" data-lightbox-caption></p>
+  </dialog>
+</BaseLayout>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+  const image = dialog?.querySelector<HTMLImageElement>('[data-lightbox-image]');
+  const caption = dialog?.querySelector<HTMLElement>('[data-lightbox-caption]');
+
+  for (const shot of document.querySelectorAll<HTMLButtonElement>('[data-full]')) {
+    shot.addEventListener('click', () => {
+      if (!dialog || !image || !caption || !shot.dataset.full) return;
+      image.src = shot.dataset.full;
+      image.alt = shot.dataset.caption ?? '';
+      caption.textContent = shot.dataset.caption ?? '';
+      dialog.showModal();
+    });
+  }
+
+  dialog?.addEventListener('click', (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+</script>
+
+<style>
+  .head {
+    padding-block: clamp(2rem, 5vw, 3rem) clamp(2rem, 4vw, 2.75rem);
+    text-align: center;
+  }
+
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--text-faint);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .crumbs a {
+    color: var(--link);
+  }
+
+  .crumbs a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .crumbs [aria-current] {
+    color: var(--text-muted);
+  }
+
+  h1 {
+    max-width: 20ch;
+    margin: 1.75rem auto 0;
+    font-size: clamp(2.25rem, 5vw, 3.75rem);
+    line-height: 1.15;
+  }
+
+  .lede {
+    max-width: 44rem;
+    margin: 1rem auto 0;
+    font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+    line-height: 1.5;
+  }
+
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 1.4rem;
+  }
+
+  .badge-draft {
+    border-style: dashed;
+  }
+
+  .links {
+    margin-top: 1.75rem;
+  }
+
+  .cover {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .cover-well {
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--well);
+  }
+
+  .cover-well :global(img) {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: min(620px, 75vh);
+  }
+
+  .cover-well.art {
+    border-color: var(--border);
+    background: #fff;
+  }
+
+  .cover figcaption {
+    color: var(--text-faint);
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: start;
+    padding-block: clamp(3rem, 6vw, 4.5rem);
+  }
+
+  .aside {
+    position: sticky;
+    top: calc(var(--header-h) + 1.5rem);
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .aside h2,
+  .highlights h2,
+  .gallery h2 {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  .aside .specs > div {
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    padding-block: 0.7rem;
+  }
+
+  .aside .specs dd {
+    font-size: 14px;
+  }
+
+  .item {
+    white-space: nowrap;
+  }
+
+  .main {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    max-width: 46rem;
+  }
+
+  .highlights {
+    margin-bottom: 3rem;
+  }
+
+  .highlights ul {
+    display: grid;
+    gap: 0.6rem;
+    padding-left: 1.2rem;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  .highlights li::marker {
+    color: var(--accent);
+  }
+
+  .gallery {
+    margin-top: 3.5rem;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .gallery-grid figure {
+    display: grid;
+    gap: 0.6rem;
+    align-content: start;
+  }
+
+  .shot {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    width: 100%;
+    padding: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--well);
+    cursor: zoom-in;
+    transition: border-color 0.15s ease;
+  }
+
+  .shot:hover {
+    border-color: var(--border-strong);
+  }
+
+  .shot :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .zoom {
+    position: absolute;
+    right: 0.6rem;
+    bottom: 0.6rem;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    background: rgb(20 20 21 / 0.75);
+    color: #f4f4f5;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .shot:hover .zoom,
+  .shot:focus-visible .zoom {
+    opacity: 1;
+  }
+
+  .gallery-grid figcaption {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    padding-top: 2.5rem;
+    padding-bottom: clamp(4rem, 8vw, 6rem);
+    border-top: 1px solid var(--border);
+  }
+
+  .pager-link {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: border-color 0.15s ease;
+  }
+
+  .pager-link:hover {
+    border-color: var(--border-strong);
+  }
+
+  .pager-link:hover .name {
+    color: var(--link);
+  }
+
+  .to-next {
+    grid-column: 2;
+    text-align: right;
+  }
+
+  .dir {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--text-faint);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .to-next .dir {
+    justify-content: flex-end;
+  }
+
+  .name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    transition: color 0.15s ease;
+  }
+
+  .lightbox {
+    min-width: min(30rem, 94vw);
+    max-width: 94vw;
+    max-height: 94vh;
+    margin: auto;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  .lightbox::backdrop {
+    background: rgb(10 10 11 / 0.82);
+    backdrop-filter: blur(4px);
+  }
+
+  .lightbox img {
+    max-height: calc(94vh - 4.5rem);
+    margin-inline: auto;
+    background: var(--well);
+  }
+
+  /* Zero intrinsic width so long captions wrap instead of widening the dialog past the image. */
+  .lightbox-caption {
+    width: 0;
+    min-width: 100%;
+    padding: 0.9rem 1.2rem;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 1;
+    background: rgb(20 20 21 / 0.75);
+    color: #f4f4f5;
+  }
+
+  .close:hover {
+    background: rgb(20 20 21 / 0.9);
+  }
+
+  @media (max-width: 960px) {
+    .body {
+      grid-template-columns: 1fr;
+    }
+
+    .aside,
+    .main {
+      position: static;
+      grid-column: 1;
+      grid-row: auto;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .gallery-grid,
+    .pager {
+      grid-template-columns: 1fr;
+    }
+
+    .to-next {
+      grid-column: auto;
+    }
+  }
+</style>

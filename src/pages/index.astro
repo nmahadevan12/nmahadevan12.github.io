@@ -1,0 +1,359 @@
+---
+import Capture from '../components/Capture.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Resume from '../components/Resume.astro';
+import { site } from '../data/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { buildCaptureChannels } from '../lib/capture-data';
+import { featuredFirst, getProjects } from '../lib/projects';
+
+const projects = await getProjects();
+const channels = buildCaptureChannels(projects);
+const shown = featuredFirst(projects).slice(0, 4);
+---
+
+<BaseLayout>
+  {
+    /*
+      Four independent photos in the same two-stage layout as saleae.com.
+      Replace the files in public/hero/: 1-left.jpg, 1-right.jpg, 2-left.jpg, 2-right.jpg.
+    */
+  }
+  <section class="stage stage-1" aria-labelledby="hero-title">
+    <div class="stage-photos" aria-hidden="true">
+      <img class="photo photo-left" src="/hero/1-left.jpg" alt="" width="822" height="864" decoding="async" />
+      <img class="photo photo-right" src="/hero/1-right.jpg" alt="" width="1988" height="390" decoding="async" />
+    </div>
+    <div class="stage-copy">
+      <h1 id="hero-title">{site.name}</h1>
+      <p class="lede">{site.intro}</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="/projects/">View projects</a>
+        <a class="btn btn-secondary" href={site.resume} target="_blank" rel="noopener">Résumé</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="stage stage-2" aria-labelledby="stage-two-title">
+    <div class="stage-photos" aria-hidden="true">
+      <img class="photo photo-left" src="/hero/2-left.png" alt="" width="890" height="418" decoding="async" />
+      <img class="photo photo-right" src="/hero/2-right.png" alt="" width="1002" height="904" decoding="async" />
+    </div>
+    <div class="stage-copy">
+      <h2 class="stage-h" id="stage-two-title">From the bench</h2>
+      <p class="lede">Firmware, analog circuits, and PCBs — the same way they show up on a capture.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="#capture">Open the capture</a>
+        <a class="btn btn-secondary" href="/projects/">View projects</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section capture-section" aria-labelledby="capture-title">
+    <div class="capture-wrap">
+      <div class="capture-head">
+        <h2 class="section-title" id="capture-title">The work, as a capture</h2>
+        <p class="lede">
+          Each channel is a role or a project — the text, sent as 8N1 UART.
+          <span class="hint">Pinch, scroll, swipe — it’s interactive.</span>
+        </p>
+      </div>
+      <Capture channels={channels} />
+    </div>
+  </section>
+
+  <section class="section projects" id="projects" aria-labelledby="projects-title">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title" id="projects-title">Projects</h2>
+        <a class="btn btn-secondary" href="/projects/">See all projects</a>
+      </div>
+      <div class="cards">
+        {shown.map((project, index) => <ProjectCard project={project} eager={index < 2} />)}
+      </div>
+    </div>
+  </section>
+
+  <Resume channels={channels} />
+
+  <section class="section contact" id="contact" aria-labelledby="contact-title">
+    <div class="container contact-inner">
+      <h2 class="section-title" id="contact-title">Contact</h2>
+      <p class="lede">{site.availability} Email is the quickest way to reach me.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href={`mailto:${site.email}`}>Email me</a>
+        <a class="btn btn-secondary" href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+      <p class="email">{site.email}</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .stage {
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    color: #141415;
+    height: 400px;
+  }
+
+  /* Fill the first screen so stage 2 starts just below the fold. */
+  .stage-1 {
+    height: calc(100svh - var(--header-h));
+    min-height: 400px;
+  }
+
+  /* Saleae-style sweep: white at the headline, greying toward the floor, white at the sides. */
+  .stage-2 {
+    background:
+      linear-gradient(to right, #fff 0%, rgb(255 255 255 / 0) 16%, rgb(255 255 255 / 0) 84%, #fff 100%),
+      radial-gradient(ellipse 75% 55% at 20% 78%, #f4f6f8 0%, transparent 68%),
+      linear-gradient(180deg, #ffffff 0%, #f6f7f9 30%, #eef0f3 64%, #e2e5eb 100%);
+  }
+
+  .stage::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 10;
+    height: 1px;
+    background: #e5e7eb;
+  }
+
+  .stage-photos {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .stage-2 .stage-photos {
+    isolation: auto;
+  }
+
+  .photo {
+    position: absolute;
+    max-width: none;
+    user-select: none;
+  }
+
+  /* Laptop screen crops: tall, enter from the outer edge. Fade the hard top crop into white. */
+  .stage-1 .photo-left {
+    left: 0;
+    bottom: 0;
+    height: 50%;
+    width: auto;
+    max-width: 40%;
+    object-fit: contain;
+    object-position: right bottom;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 28%, #000 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 28%, #000 100%);
+  }
+
+  /* Ultra-wide analyzer + probe: same baseline as the laptop. */
+  .stage-1 .photo-right {
+    left: 36%;
+    right: auto;
+    bottom: 0;
+    width: 52%;
+    height: 28%;
+    object-fit: cover;
+    object-position: 8% 100%;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 35%, #000 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 35%, #000 100%);
+  }
+
+  /* Logic analyzer: cutout, sitting on the left. */
+  .stage-2 .photo-left {
+    left: 4%;
+    bottom: 7%;
+    width: 36%;
+    height: auto;
+    max-height: 30%;
+    object-fit: contain;
+    object-position: center bottom;
+  }
+
+  /* MacBook cutout: enter from the right. */
+  .stage-2 .photo-right {
+    right: 0;
+    bottom: 0;
+    height: 50%;
+    width: auto;
+    max-width: 44%;
+    object-fit: contain;
+    object-position: left bottom;
+  }
+
+  .stage-copy {
+    position: relative;
+    z-index: 20;
+    width: min(100% - 2 * var(--gutter), 90rem);
+    margin-inline: auto;
+    padding: 1.5rem var(--gutter) 0;
+    text-align: center;
+  }
+
+  .stage h1,
+  .stage-h {
+    font-size: clamp(1.85rem, 5.5vw, 4.5rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .stage .lede {
+    max-width: 38rem;
+    margin: 0.5rem auto 0;
+    color: #475467;
+    font-size: clamp(1rem, 2.4vw, 2rem);
+  }
+
+  .stage .btn-row {
+    margin-top: 1.25rem;
+  }
+
+  .stage .btn-secondary {
+    border-color: #d1d5db;
+    color: #141415;
+    background: #fff;
+  }
+
+  .stage .btn-secondary:hover {
+    background: #f9fafb;
+    border-color: #98a2b3;
+  }
+
+  @media (max-width: 639px) {
+    .stage-1 .photo-left,
+    .stage-2 .photo-right {
+      height: 46%;
+      max-width: 48%;
+    }
+
+    .stage-1 .photo-right {
+      left: 28%;
+      width: 62%;
+      height: 26%;
+      bottom: 0;
+    }
+
+    .stage-2 .photo-left {
+      width: 48%;
+      max-height: 26%;
+      bottom: 4%;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .stage {
+      height: 600px;
+    }
+
+    .stage-1 {
+      height: calc(100svh - var(--header-h));
+    }
+
+    .stage-copy {
+      padding-top: 4rem;
+    }
+
+    .stage .btn-row {
+      margin-top: 1.75rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .stage {
+      height: 900px;
+    }
+
+    .stage-1 {
+      height: calc(100svh - var(--header-h));
+      min-height: 640px;
+    }
+
+    .stage-copy {
+      padding-top: 6.5rem;
+    }
+
+    .stage h1,
+    .stage-h {
+      line-height: 90px;
+    }
+
+    .stage .lede {
+      margin-top: 0.5rem;
+    }
+
+    .stage .btn-row {
+      margin-top: 1.5rem;
+    }
+  }
+
+  .capture-section {
+    padding-top: clamp(2.75rem, 5vw, 4.25rem);
+    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .capture-wrap {
+    width: min(100% - 2 * var(--gutter), var(--wide-w));
+    margin-inline: auto;
+  }
+
+  .capture-head {
+    max-width: 40rem;
+    margin-bottom: 1.15rem;
+  }
+
+  .capture-head .lede {
+    margin-top: 0.45rem;
+    font-size: clamp(1rem, 1.6vw, 1.15rem);
+  }
+
+  .capture-head .hint {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--text-muted);
+    font-size: 0.95em;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .contact {
+    border-top: 1px solid var(--border);
+  }
+
+  .contact-inner {
+    display: grid;
+    justify-items: center;
+    gap: 1.25rem;
+    text-align: center;
+  }
+
+  .contact .lede {
+    max-width: 36rem;
+  }
+
+  .contact .btn-row {
+    margin-top: 0.75rem;
+  }
+
+  .email {
+    color: var(--text-faint);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 760px) {
+    .cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

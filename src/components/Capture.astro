@@ -1,0 +1,1075 @@
+---
+import Icon from './Icon.astro';
+import { toSignal, type CaptureChannel } from '../lib/capture-data';
+import { formatDuration, formatScale, parseMonth } from '../lib/dates';
+
+interface Props {
+  channels: CaptureChannel[];
+}
+
+const { channels } = Astro.props;
+const builtAt = Date.now();
+
+function widthOf(channel: CaptureChannel): string {
+  const start = parseMonth(channel.start).getTime();
+  const end = channel.end ? parseMonth(channel.end) : undefined;
+  const endMs = end ? Date.UTC(end.getUTCFullYear(), end.getUTCMonth() + 1, 1) : Infinity;
+  return formatDuration(start, Math.min(endMs, builtAt));
+}
+
+const presets = [365.25, 182.6, 91.3, 30.44, 14, 7, 3, 1, 0.5, 0.25];
+---
+
+<div
+  class="cap"
+  id="capture"
+  tabindex="0"
+  role="group"
+  aria-label="Timeline of Nikhil’s roles and projects, drawn as a logic analyzer capture"
+  aria-describedby="cap-instructions"
+  data-capture
+  data-panel="off"
+  data-channels={JSON.stringify(channels.map(toSignal))}
+  style={`--cap-rows: ${channels.length}`}
+>
+  <p class="visually-hidden" id="cap-instructions">
+    Arrow keys pan and zoom, 0 fits the whole capture, and the question mark key lists every shortcut. The channel
+    buttons open the details for each role and project.
+  </p>
+
+  <div class="cap-labels">
+    <div class="cap-corner"></div>
+    <ol class="cap-channels" role="list">
+      {
+        channels.map((channel) => (
+          <li>
+            <button
+              class="cap-label"
+              type="button"
+              data-channel={channel.id}
+              aria-pressed="false"
+              style={`--c: ${channel.color}`}
+            >
+              <span class="cap-idx">D{channel.index}</span>
+              <span class="cap-name">{channel.name}</span>
+              <span class="cap-sub">{channel.sub}</span>
+            </button>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+
+  <div class="cap-wave" data-wave>
+    <canvas data-canvas aria-hidden="true"></canvas>
+    <div class="cap-tip" data-tip hidden>
+      <strong data-tip-title></strong>
+      <dl data-tip-rows></dl>
+    </div>
+    <p class="cap-hint" data-hint hidden></p>
+    <div class="cap-help" data-help hidden>
+      <div class="cap-help-head">
+        <h3 class="cap-h">Shortcuts</h3>
+        <button class="cap-x" type="button" data-toggle-help aria-label="Close shortcuts">
+          <Icon name="close" size={15} />
+        </button>
+      </div>
+      <dl class="cap-keys">
+        <div>
+          <dt>Zoom</dt>
+          <dd>Pinch, <kbd>⌘</kbd> or <kbd>Ctrl</kbd> + scroll, <kbd>↑</kbd> <kbd>↓</kbd>, <kbd>=</kbd> <kbd>-</kbd></dd>
+        </div>
+        <div>
+          <dt>Scroll zoom</dt>
+          <dd>Click into the capture and plain scrolling zooms, like Logic 2. <kbd>Esc</kbd> releases it.</dd>
+        </div>
+        <div>
+          <dt>Pan</dt>
+          <dd>Two-finger swipe, drag, <kbd>←</kbd> <kbd>→</kbd> (hold <kbd>Shift</kbd> for bigger steps)</dd>
+        </div>
+        <div>
+          <dt>Next edge</dt>
+          <dd><kbd>⌘</kbd> or <kbd>Ctrl</kbd> + <kbd>←</kbd> <kbd>→</kbd></dd>
+        </div>
+        <div>
+          <dt>Zoom here</dt>
+          <dd>Double-click (<kbd>Shift</kbd> zooms out)</dd>
+        </div>
+        <div>
+          <dt>Fit all</dt>
+          <dd><kbd>0</kbd></dd>
+        </div>
+        <div>
+          <dt>Inspect</dt>
+          <dd>Click a channel or bubble to fit it</dd>
+        </div>
+        <div>
+          <dt>Touch</dt>
+          <dd>Pinch to zoom, drag sideways to pan, tap to inspect</dd>
+        </div>
+      </dl>
+    </div>
+    <noscript>
+      <p class="cap-noscript">
+        This capture needs JavaScript. Everything in it is also listed under Projects and Experience below.
+      </p>
+    </noscript>
+  </div>
+
+  <aside class="cap-panel" data-panel aria-label="Channel details">
+    <section class="cap-sec cap-intro" data-panel-default>
+      <h3 class="cap-h">Reading the capture</h3>
+      <p>
+        Each channel is a role or a project. It goes high when the work starts and runs until it ends, or until today.
+      </p>
+      <p>
+        Zoom in and the analyzer decodes it: first the whole packet, then each tool or skill, then single characters.
+        The waveform underneath is that text sent as 8N1 UART.
+      </p>
+      <dl class="cap-keys for-pointer">
+        <div>
+          <dt>Zoom</dt>
+          <dd>Pinch, <kbd>⌘</kbd> + scroll, <kbd>↑</kbd> <kbd>↓</kbd></dd>
+        </div>
+        <div>
+          <dt>Pan</dt>
+          <dd>Swipe sideways, drag, <kbd>←</kbd> <kbd>→</kbd></dd>
+        </div>
+        <div>
+          <dt>Fit all</dt>
+          <dd><kbd>0</kbd></dd>
+        </div>
+      </dl>
+      <dl class="cap-keys for-touch">
+        <div>
+          <dt>Zoom</dt>
+          <dd>Pinch</dd>
+        </div>
+        <div>
+          <dt>Pan</dt>
+          <dd>Drag sideways</dd>
+        </div>
+        <div>
+          <dt>Fit all</dt>
+          <dd>The <Icon name="fit" size={13} class="inline-icon" /> button below the capture</dd>
+        </div>
+      </dl>
+      <p class="cap-note">
+        <span class="for-pointer">Click a channel to fit its UART across the view.</span>
+        <span class="for-touch">Tap a channel to fit its UART across the view.</span>
+      </p>
+    </section>
+
+    {
+      channels.map((channel) => (
+        <section class="cap-sec" data-panel-for={channel.id} aria-labelledby={`cap-title-${channel.id}`} hidden>
+          <div class="cap-sec-head">
+            <span class="cap-swatch" style={`--c: ${channel.analyzer}`} aria-hidden="true" />
+            <h3 class="cap-h" id={`cap-title-${channel.id}`}>
+              {channel.title}
+            </h3>
+            <button class="cap-x" type="button" data-clear aria-label="Close details">
+              <Icon name="close" size={15} />
+            </button>
+          </div>
+          {channel.org && <p class="cap-org">{channel.org}</p>}
+          <dl class="cap-meas">
+            <div>
+              <dt>Start</dt>
+              <dd>{channel.startLabel}</dd>
+            </div>
+            <div>
+              <dt>End</dt>
+              <dd>{channel.endLabel}</dd>
+            </div>
+            <div>
+              <dt>Width</dt>
+              <dd data-width={channel.id}>{widthOf(channel)}</dd>
+            </div>
+          </dl>
+          {channel.summary && <p class="cap-text">{channel.summary}</p>}
+          {channel.points.length > 0 && (
+            <ul class="cap-points">
+              {channel.points.map((point) => (
+                <li>{point}</li>
+              ))}
+            </ul>
+          )}
+          {channel.frames.length > 0 && (
+            <div class="cap-data">
+              <h4>
+                Data <span>{channel.frames.length} frames</span>
+              </h4>
+              <ol role="list">
+                {channel.frames.map((frame, index) => (
+                  <li>
+                    <button type="button" data-frame={index}>
+                      <span class="cap-fi">{index}</span>
+                      <span>{frame}</span>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+          <div class="cap-actions">
+            <button class="cap-btn" type="button" data-zoom-channel>
+              Zoom to channel
+            </button>
+            {channel.href && (
+              <a class="cap-btn cap-btn-go" href={channel.href}>
+                {channel.hrefLabel}
+                <Icon name="chevron-right" size={14} />
+              </a>
+            )}
+          </div>
+        </section>
+      ))
+    }
+  </aside>
+
+  <div class="cap-rail">
+    <button class="cap-start" type="button" data-start aria-label="Replay the capture">
+      <Icon name="play-solid" size={17} class="i-play" />
+      <Icon name="stop-solid" size={15} class="i-stop" />
+    </button>
+    <button class="cap-rail-btn" type="button" data-toggle-panel aria-pressed="false" aria-label="Details panel">
+      <Icon name="panel" size={19} />
+    </button>
+    <button class="cap-rail-btn" type="button" data-toggle-help aria-pressed="false" aria-label="Shortcuts">
+      <Icon name="help" size={19} />
+    </button>
+  </div>
+
+  <div class="cap-bar">
+    <span class="cap-tab">timeline.sal</span>
+    <div class="cap-tools">
+      <button class="cap-tool" type="button" data-zoom="out" aria-label="Zoom out">
+        <Icon name="minus" size={15} />
+      </button>
+      <button class="cap-tool" type="button" data-zoom="in" aria-label="Zoom in">
+        <Icon name="plus" size={15} />
+      </button>
+      <button class="cap-tool" type="button" data-zoom="fit" aria-label="Fit the whole capture">
+        <Icon name="fit" size={15} />
+        <span class="cap-tool-text">Fit</span>
+      </button>
+      <div class="cap-scale" data-scale-wrap>
+        <button
+          class="cap-tool cap-scale-btn"
+          type="button"
+          data-scale
+          aria-expanded="false"
+          aria-controls="cap-scale-menu"
+          aria-label="Time per 100 pixels"
+        >
+          <span data-scale-value>{formatScale((100 * 350) / 736)}</span>
+          <span class="cap-tool-text">/ 100 px</span>
+          <Icon name="chevron-up" size={13} />
+        </button>
+        <ul class="cap-scale-menu" id="cap-scale-menu" data-scale-menu role="list" hidden>
+          {
+            presets.map((days) => (
+              <li>
+                <button type="button" data-preset={days}>
+                  {formatScale(days)} / 100 px
+                </button>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <button class="cap-tool cap-tool-help" type="button" data-toggle-help aria-pressed="false" aria-label="Shortcuts">
+        <Icon name="help" size={16} />
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { mountCapture } from '../scripts/capture';
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-capture]')) mountCapture(root);
+</script>
+
+<style>
+  .cap {
+    --cap-row: 68px;
+    --cap-ruler: 32px;
+    --cap-bar: 38px;
+    --cap-labels: 228px;
+    --cap-panel-w: 320px;
+    --cap-rail-w: 52px;
+    --cap-ink: #141415;
+    --cap-muted: #667085;
+    --cap-faint: #98a2b3;
+    --cap-line: #e5e7eb;
+    --cap-edge: #e5e7eb;
+
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--cap-labels) minmax(0, 1fr) var(--cap-panel-w) var(--cap-rail-w);
+    grid-template-areas:
+      'labels wave panel rail'
+      'bar bar bar bar';
+    overflow: hidden;
+    border: 0;
+    border-block: 1px solid var(--border);
+    background: transparent;
+    color: var(--cap-ink);
+    font-size: 13px;
+    line-height: 1.45;
+    text-align: left;
+  }
+
+  .cap:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
+  .cap[data-engaged='true'] {
+    box-shadow: inset 0 0 0 2px rgb(38 163 217 / 0.7);
+  }
+
+  .cap[data-panel='off'] {
+    grid-template-columns: var(--cap-labels) minmax(0, 1fr) var(--cap-rail-w);
+    grid-template-areas:
+      'labels wave rail'
+      'bar bar bar';
+  }
+
+  .cap[data-panel='off'] .cap-panel {
+    display: none;
+  }
+
+  .cap :global(kbd) {
+    display: inline-block;
+    min-width: 1.5em;
+    padding: 0 0.35em;
+    border: 1px solid #d1d5db;
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    background: #f9fafb;
+    color: #141415;
+    font-family: inherit;
+    font-size: 11px;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  /* Channel list */
+  .cap-labels {
+    grid-area: labels;
+    background: transparent;
+    border-right: 1px solid var(--cap-edge);
+  }
+
+  .cap-corner {
+    display: flex;
+    align-items: center;
+    height: var(--cap-ruler);
+    padding-inline: 10px;
+    border-bottom: 1px solid var(--cap-edge);
+    background: transparent;
+  }
+
+  .cap-channels {
+    margin: 0;
+    padding: 0;
+  }
+
+  .cap-label {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 9px;
+    align-content: center;
+    width: 100%;
+    height: var(--cap-row);
+    padding: 0 10px 0 14px;
+    border: 0;
+    border-bottom: 1px solid var(--cap-edge);
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .cap-label::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--c);
+  }
+
+  .cap-label:hover {
+    background: #f2f4f7;
+  }
+
+  .cap-label[aria-pressed='true'] {
+    background: #eef7fb;
+  }
+
+  .cap-label:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+    border-radius: 0;
+  }
+
+  .cap-idx {
+    grid-row: 1 / span 2;
+    align-self: center;
+    color: var(--cap-faint);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  .cap-name,
+  .cap-sub {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cap-name {
+    color: #141415;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .cap-label[aria-pressed='true'] .cap-name {
+    color: #141415;
+  }
+
+  .cap-sub {
+    color: var(--cap-muted);
+    font-size: 12px;
+  }
+
+  /* Waveform */
+  .cap-wave {
+    grid-area: wave;
+    position: relative;
+    min-width: 0;
+    background: transparent;
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .cap-wave canvas {
+    display: block;
+    width: 100%;
+    height: calc(var(--cap-ruler) + var(--cap-rows) * var(--cap-row));
+    cursor: grab;
+  }
+
+  .cap[data-dragging] canvas {
+    cursor: grabbing;
+  }
+
+  .cap-tip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    min-width: 170px;
+    max-width: 260px;
+    padding: 8px 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgb(16 24 40 / 0.12);
+    font-size: 12px;
+    pointer-events: none;
+  }
+
+  .cap-tip strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #141415;
+    font-weight: 600;
+  }
+
+  .cap-tip :global(dl) {
+    display: grid;
+    gap: 2px;
+  }
+
+  .cap-tip :global(dl div) {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .cap-tip :global(dt) {
+    color: var(--cap-muted);
+  }
+
+  .cap-tip :global(dd) {
+    overflow: hidden;
+    color: var(--cap-ink);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cap-hint {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    z-index: 3;
+    width: max-content;
+    max-width: calc(100% - 24px);
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgb(20 20 21 / 0.88);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    opacity: 0;
+    transform: translateX(-50%);
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+
+  .cap-hint[data-show] {
+    opacity: 1;
+  }
+
+  .cap-help {
+    position: absolute;
+    inset: calc(var(--cap-ruler) + 10px) 10px 10px;
+    z-index: 4;
+    overflow: auto;
+    padding: 14px 16px;
+    border: 1px solid var(--cap-line);
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 12px 32px rgb(16 24 40 / 0.14);
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  .cap-help-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .cap-help .cap-keys div {
+    grid-template-columns: 96px minmax(0, 1fr);
+  }
+
+  .cap-noscript {
+    position: absolute;
+    inset: var(--cap-ruler) 0 0;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+    color: var(--cap-muted);
+    text-align: center;
+  }
+
+  /* Details panel */
+  .cap-panel {
+    grid-area: panel;
+    contain: size;
+    overflow: auto;
+    overscroll-behavior: contain;
+    border-left: 1px solid var(--cap-edge);
+    background: #fff;
+  }
+
+  .cap-sec {
+    padding: 14px 16px 18px;
+  }
+
+  .cap-h {
+    color: #141415;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.35;
+  }
+
+  .cap-sec-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: start;
+  }
+
+  .cap-swatch {
+    width: 10px;
+    height: 10px;
+    margin-top: 4px;
+    border-radius: 2px;
+    background: var(--c);
+  }
+
+  .cap-x {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    margin: -3px -6px 0 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--cap-muted);
+    cursor: pointer;
+  }
+
+  .cap-x:hover {
+    background: #f2f4f7;
+    color: #141415;
+  }
+
+  .cap-org {
+    margin: 3px 0 0 18px;
+    color: var(--cap-muted);
+    font-size: 12px;
+  }
+
+  .cap-meas,
+  .cap-keys {
+    display: grid;
+    margin-top: 12px;
+    border-top: 1px solid var(--cap-line);
+    font-size: 12px;
+  }
+
+  .cap-meas div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--cap-line);
+  }
+
+  .cap-meas dt,
+  .cap-keys dt {
+    color: var(--cap-muted);
+  }
+
+  .cap-meas dd {
+    color: var(--cap-ink);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .cap-keys div {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--cap-line);
+  }
+
+  .cap-keys dd {
+    color: var(--cap-ink);
+  }
+
+  .cap-keys :global(.inline-icon) {
+    display: inline;
+    vertical-align: -2px;
+  }
+
+  .cap .for-touch {
+    display: none;
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    .cap .for-pointer {
+      display: none;
+    }
+
+    .cap .cap-keys.for-touch {
+      display: grid;
+    }
+
+    .cap span.for-touch {
+      display: inline;
+    }
+  }
+
+  .cap-text,
+  .cap-points,
+  .cap-intro p {
+    margin-top: 12px;
+    color: #475467;
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+
+  .cap-intro p + p {
+    margin-top: 8px;
+  }
+
+  .cap-intro .cap-note {
+    margin-top: 12px;
+    color: var(--cap-muted);
+  }
+
+  .cap-points {
+    padding-left: 16px;
+  }
+
+  .cap-points li + li {
+    margin-top: 6px;
+  }
+
+  .cap-points li::marker {
+    color: var(--cap-faint);
+  }
+
+  .cap-data {
+    margin-top: 16px;
+  }
+
+  .cap-data h4 {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    color: #141415;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  .cap-data h4 span {
+    color: var(--cap-faint);
+    font-weight: 500;
+  }
+
+  .cap-data ol {
+    overflow: hidden;
+    border: 1px solid var(--cap-line);
+    border-radius: 6px;
+  }
+
+  .cap-data li + li {
+    border-top: 1px solid var(--cap-line);
+  }
+
+  .cap-data button {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 6px;
+    width: 100%;
+    padding: 5px 8px;
+    border: 0;
+    background: #f9fafb;
+    color: #141415;
+    font-size: 12px;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .cap-data button:hover {
+    background: #eef0f3;
+  }
+
+  .cap-data button[aria-current] {
+    background: #258c48;
+    color: #fff;
+  }
+
+  .cap-data button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+    border-radius: 0;
+  }
+
+  .cap-fi {
+    color: var(--cap-faint);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  .cap-data button[aria-current] .cap-fi {
+    color: #d5f5df;
+  }
+
+  .cap-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .cap-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    height: 28px;
+    padding: 0 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    color: #141415;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .cap-btn:hover {
+    background: #f2f4f7;
+  }
+
+  .cap-btn-go {
+    border-color: transparent;
+    background: #26a3d9;
+    color: #0c0c0d;
+    font-weight: 600;
+  }
+
+  .cap-btn-go:hover {
+    background: #46b3e3;
+  }
+
+  /* Right rail */
+  .cap-rail {
+    grid-area: rail;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 0;
+    border-left: 1px solid var(--cap-edge);
+    background: transparent;
+  }
+
+  .cap-start {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    margin-bottom: 6px;
+    border: 0;
+    border-radius: 50%;
+    background: #258c48;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+
+  .cap-start:hover {
+    background: #2b9d52;
+  }
+
+  .cap-start[data-running] {
+    background: #c4453b;
+  }
+
+  .cap-start :global(.i-stop),
+  .cap-start[data-running] :global(.i-play) {
+    display: none;
+  }
+
+  .cap-start[data-running] :global(.i-stop) {
+    display: block;
+  }
+
+  .cap-rail-btn {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--cap-muted);
+    cursor: pointer;
+  }
+
+  .cap-rail-btn:hover,
+  .cap-rail-btn[aria-pressed='true'] {
+    color: #141415;
+  }
+
+  .cap-rail-btn:hover {
+    background: #eef0f3;
+  }
+
+  /* Bottom bar */
+  .cap-bar {
+    grid-area: bar;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    height: var(--cap-bar);
+    border-top: 1px solid var(--cap-edge);
+    background: transparent;
+    font-size: 12px;
+  }
+
+  .cap-tab {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 16px;
+    border-top: 2px solid #26a3d9;
+    background: transparent;
+    color: #141415;
+    font-weight: 500;
+  }
+
+  .cap-tools {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding-right: 6px;
+  }
+
+  .cap-tool {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 7px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: #667085;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+  }
+
+  .cap-tool:hover,
+  .cap-tool[aria-expanded='true'] {
+    background: #f2f4f7;
+    color: #141415;
+  }
+
+  .cap-tool-help {
+    display: none;
+  }
+
+  .cap-scale {
+    position: relative;
+  }
+
+  .cap-scale-menu {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 6px);
+    z-index: 5;
+    min-width: 132px;
+    padding: 4px;
+    border: 1px solid var(--cap-line);
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 10px 30px rgb(16 24 40 / 0.12);
+  }
+
+  .cap-scale-menu button {
+    display: block;
+    width: 100%;
+    padding: 5px 10px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: #141415;
+    font-size: 12px;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .cap-scale-menu button:hover,
+  .cap-scale-menu button:focus-visible {
+    background: #258c48;
+    color: #fff;
+    outline: none;
+  }
+
+  @media (max-width: 1079px) {
+    .cap,
+    .cap[data-panel='off'] {
+      --cap-labels: 188px;
+      --cap-row: 60px;
+
+      grid-template-columns: var(--cap-labels) minmax(0, 1fr) var(--cap-rail-w);
+      grid-template-areas:
+        'labels wave rail'
+        'bar bar bar'
+        'panel panel panel';
+    }
+
+    .cap-panel {
+      contain: none;
+      border-top: 1px solid var(--cap-edge);
+      border-left: 0;
+    }
+  }
+
+  @media (max-width: 719px) {
+    .cap,
+    .cap[data-panel='off'] {
+      --cap-row: 52px;
+      --cap-ruler: 28px;
+      --cap-bar: 36px;
+      --cap-labels: 118px;
+
+      grid-template-columns: var(--cap-labels) minmax(0, 1fr);
+      grid-template-areas:
+        'labels wave'
+        'bar bar'
+        'panel panel';
+    }
+
+    .cap[data-panel='off'] .cap-panel {
+      display: block;
+    }
+
+    .cap-rail,
+    .cap-idx,
+    .cap-sub,
+    .cap-tool-text {
+      display: none;
+    }
+
+    .cap-label {
+      grid-template-columns: minmax(0, 1fr);
+      padding: 0 8px 0 11px;
+    }
+
+    .cap-name {
+      display: -webkit-box;
+      font-size: 12px;
+      line-height: 1.3;
+      white-space: normal;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+    }
+
+    .cap-tab {
+      padding: 0 12px;
+    }
+
+    .cap-tool-help {
+      display: inline-flex;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .cap-tab {
+      display: none;
+    }
+
+    .cap-bar {
+      justify-content: flex-end;
+    }
+  }
+
+</style>

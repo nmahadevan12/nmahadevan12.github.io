@@ -1,0 +1,146 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+import { getProjects } from '../lib/projects';
+
+const projects = await getProjects();
+const year = new Date().getFullYear();
+
+const elsewhere = [
+  { label: 'GitHub', href: site.github, external: true },
+  { label: 'LinkedIn', href: site.linkedin, external: true },
+  { label: 'Email', href: `mailto:${site.email}`, external: false },
+  { label: 'Résumé (PDF)', href: site.resume, external: true },
+];
+---
+
+<footer class="site-footer">
+  <div class="container-wide top">
+    <div class="about">
+      <a class="brand" href="/">{site.name}</a>
+      <p>{site.intro}</p>
+      <p class="copy">© {year} {site.name}</p>
+    </div>
+
+    <nav class="cols" aria-label="Footer">
+      <div>
+        <h2>Projects</h2>
+        <ul role="list">
+          {
+            projects.map((project) => (
+              <li>
+                <a class="chevron-link" href={`/projects/${project.id}/`}>
+                  {project.data.title}
+                  <Icon name="chevron-right" size={14} />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul role="list">
+          {
+            elsewhere.map((link) => (
+              <li>
+                <a
+                  class="chevron-link"
+                  href={link.href}
+                  target={link.external ? '_blank' : undefined}
+                  rel={link.external ? 'noopener' : undefined}
+                >
+                  {link.label}
+                  <Icon name="chevron-right" size={14} />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <div class="container-wide fine">
+    <p>{site.location}</p>
+    <p>Built with Astro. The capture view is modeled on Saleae’s Logic 2.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: auto;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+
+  .top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 3rem;
+    padding-block: 3.5rem 2.5rem;
+  }
+
+  .brand {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .about p {
+    max-width: 26rem;
+    margin-top: 0.75rem;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .about .copy {
+    margin-top: 1.25rem;
+    color: var(--text-faint);
+    font-size: 13px;
+  }
+
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(10rem, auto));
+    gap: 4rem;
+  }
+
+  .cols h2 {
+    margin-bottom: 0.9rem;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .cols li + li {
+    margin-top: 0.55rem;
+  }
+
+  .cols a {
+    font-size: 14px;
+  }
+
+  .fine {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    padding-block: 1.25rem 2rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-faint);
+    font-size: 12px;
+  }
+
+  @media (max-width: 760px) {
+    .top {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    .cols {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2rem;
+    }
+  }
+</style>

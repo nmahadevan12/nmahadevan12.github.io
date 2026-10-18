@@ -1,0 +1,102 @@
+---
+import { Image } from 'astro:assets';
+import { captureArt } from '../lib/capture-art';
+import type { Project } from '../lib/projects';
+
+interface Props {
+  project: Project;
+  width: number;
+  /** Crops photos to this height. Ignored for `coverFit: contain`, which keeps the whole image. */
+  height?: number;
+  sizes: string;
+  loading?: 'eager' | 'lazy';
+  /** Drawing size for the generated capture used when there's no cover image. */
+  art?: { width: number; height: number };
+  /** Inside a link that already names the project, so the image needs no alt text. */
+  decorative?: boolean;
+}
+
+const { project, width, height, sizes, loading = 'lazy', art, decorative = false } = Astro.props;
+const { cover, coverAlt, coverFit, title, tags } = project.data;
+const cropHeight = coverFit === 'cover' ? height : undefined;
+const texts = tags.length > 0 ? tags : [title];
+---
+
+{
+  cover ? (
+    <Image
+      class:list={['cover-image', coverFit]}
+      src={cover}
+      alt={decorative ? '' : (coverAlt ?? title)}
+      width={width}
+      height={cropHeight}
+      widths={[Math.round(width / 2), width]}
+      sizes={sizes}
+      loading={loading}
+    />
+  ) : (
+    <div
+      class="cover-art"
+      data-mini-capture
+      data-texts={JSON.stringify(texts)}
+      tabindex="0"
+      role="img"
+      aria-label={`Interactive UART capture of ${title}. Pinch to zoom; two-finger scroll or drag to pan.`}
+    >
+      <canvas></canvas>
+      <noscript set:html={captureArt(texts, title, art)} />
+    </div>
+  )
+}
+
+<script>
+  import { mountMiniCapture } from '../scripts/mini-capture';
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-mini-capture]')) {
+    if (root.dataset.mounted) continue;
+    root.dataset.mounted = 'true';
+    mountMiniCapture(root);
+  }
+</script>
+
+<style>
+  .cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cover-image.contain {
+    object-fit: contain;
+  }
+
+  .cover-art {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #fff;
+    touch-action: none;
+    cursor: grab;
+    outline: none;
+  }
+
+  .cover-art:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--accent);
+  }
+
+  .cover-art:active {
+    cursor: grabbing;
+  }
+
+  .cover-art canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .cover-art :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+</style>

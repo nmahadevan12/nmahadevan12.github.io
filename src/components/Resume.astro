@@ -1,0 +1,266 @@
+---
+import { education, experience, skills } from '../data/resume';
+import type { CaptureChannel } from '../lib/capture-data';
+import { formatMonthRange, parseMonth } from '../lib/dates';
+
+interface Props {
+  channels: CaptureChannel[];
+}
+
+const { channels } = Astro.props;
+const channelFor = (id: string) => channels.find((channel) => channel.id === id);
+const school = channelFor('uga');
+const schoolEnd = parseMonth(education.end);
+const schoolDates = `${formatMonthRange(parseMonth(education.start), schoolEnd)}${schoolEnd > new Date() ? ' (expected)' : ''}`;
+---
+
+<section class="section" id="experience" aria-labelledby="experience-title">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title" id="experience-title">Experience</h2>
+      <p class="lede">Flight software, embedded research, and teaching at UGA.</p>
+    </div>
+
+    <ol class="jobs" role="list">
+      {
+        experience.map((job) => {
+          const channel = channelFor(job.id);
+          return (
+            <li class="job">
+              <div class="job-meta">
+                {channel && (
+                  <a
+                    class="chan"
+                    href="#capture"
+                    data-select-channel={job.id}
+                    style={`--c: ${channel.color}`}
+                    aria-label={`Show ${job.role} in the capture, channel D${channel.index}`}
+                  >
+                    D{channel.index}
+                  </a>
+                )}
+                <span>{formatMonthRange(parseMonth(job.start), job.end ? parseMonth(job.end) : undefined)}</span>
+              </div>
+              <div class="job-main">
+                <h3>{job.role}</h3>
+                <p class="job-org">{job.org}</p>
+                <ul class="job-points">
+                  {job.points.map((point) => (
+                    <li>{point}</li>
+                  ))}
+                </ul>
+                <p class="job-tags">{job.tags.join(' · ')}</p>
+              </div>
+            </li>
+          );
+        })
+      }
+    </ol>
+  </div>
+</section>
+
+<section class="section split-section" aria-label="Education and skills">
+  <div class="container split">
+    <div id="education">
+      <h2 class="col-title">
+        Education
+        {
+          school && (
+            <a
+              class="chan"
+              href="#capture"
+              data-select-channel={school.id}
+              style={`--c: ${school.color}`}
+              aria-label={`Show ${education.school} in the capture, channel D${school.index}`}
+            >
+              D{school.index}
+            </a>
+          )
+        }
+      </h2>
+      <dl class="specs">
+        <div>
+          <dt>School</dt>
+          <dd>{education.school}, {education.location}</dd>
+        </div>
+        <div>
+          <dt>Degrees</dt>
+          <dd>{education.degrees.join(' and ')}</dd>
+        </div>
+        <div>
+          <dt>Dates</dt>
+          <dd>{schoolDates}</dd>
+        </div>
+        <div>
+          <dt>GPA</dt>
+          <dd>{education.gpa}</dd>
+        </div>
+        <div>
+          <dt>Coursework</dt>
+          <dd>
+            {
+              education.coursework.map((item, i) => (
+                <>
+                  {i > 0 && ' · '}
+                  <span class="item">{item}</span>
+                </>
+              ))
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>Honors</dt>
+          <dd>
+            {
+              education.honors.map((item, i) => (
+                <>
+                  {i > 0 && ' · '}
+                  <span class="item">{item}</span>
+                </>
+              ))
+            }
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <div id="skills">
+      <h2 class="col-title">Skills</h2>
+      <dl class="specs">
+        {
+          skills.map((group) => (
+            <div>
+              <dt>{group.group}</dt>
+              <dd>
+                {group.items.map((item, i) => (
+                  <>
+                    {i > 0 && ' · '}
+                    <span class="item">{item}</span>
+                  </>
+                ))}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .jobs {
+    max-width: 58rem;
+    margin-inline: auto;
+    border-top: 1px solid var(--border);
+  }
+
+  .job {
+    display: grid;
+    grid-template-columns: 13rem minmax(0, 1fr);
+    gap: 2rem;
+    padding-block: 1.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    align-content: start;
+    gap: 0.6rem;
+    padding-top: 0.2rem;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .chan {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 7px 0 6px;
+    border-left: 3px solid var(--c);
+    border-radius: 4px;
+    background: #1d1d20;
+    color: #dcdde0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0;
+    transition: background-color 0.15s ease;
+  }
+
+  .chan:hover {
+    background: #2e2f34;
+    color: #fff;
+  }
+
+  .job h3 {
+    font-size: 1.2rem;
+    letter-spacing: -0.015em;
+  }
+
+  .job-org {
+    margin-top: 0.2rem;
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+
+  .job-points {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 0.9rem;
+    padding-left: 1.1rem;
+    list-style: disc;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .job-points li::marker {
+    color: var(--text-faint);
+  }
+
+  .job-tags {
+    margin-top: 0.9rem;
+    color: var(--text-faint);
+    font-size: 13px;
+  }
+
+  .item {
+    white-space: nowrap;
+  }
+
+  .split-section {
+    border-top: 1px solid var(--border);
+    background: var(--bg-subtle);
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(2.5rem, 6vw, 5rem);
+  }
+
+  .col-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  @media (max-width: 860px) {
+    .split {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .job {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+  }
+</style>

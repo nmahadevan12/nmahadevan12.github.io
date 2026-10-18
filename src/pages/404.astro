@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const ticks = Array.from({ length: 6 }, (_, i) => 64 + i * 72);
+---
+
+<BaseLayout title="Page not found">
+  <section class="container lost">
+    <h1>404</h1>
+    <p class="lede">Nothing was captured at this address.</p>
+
+    <svg class="trace" viewBox="0 0 520 120" role="img" aria-label="A logic analyzer channel with a flat, idle trace">
+      <rect width="520" height="120" rx="10" fill="#ffffff"></rect>
+      <rect width="520" height="120" rx="10" fill="none" stroke="#e5e7eb"></rect>
+      <path d="M0 10a10 10 0 0 1 10-10h500a10 10 0 0 1 10 10v16H0z" fill="#ffffff"></path>
+      <rect y="26" width="520" height="1" fill="#e5e7eb"></rect>
+      {
+        ticks.map((x, i) => (
+          <>
+            <rect x={x} y="27" width="1" height="93" fill="#eef0f3" />
+            <rect x={x} y="17" width="1" height="9" fill="#d1d5db" />
+            <text x={x + 5} y="18" fill="#667085" font-size="11">
+              +{i * 10} ms
+            </text>
+          </>
+        ))
+      }
+      <text x="16" y="84" fill="#98a2b3" font-size="12">D0</text>
+      <path d="M44 92.5H520" stroke="#3f3f46" stroke-width="1.5"></path>
+    </svg>
+
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/">Back home</a>
+      <a class="btn btn-secondary" href="/projects/">All projects</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .lost {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    padding-block: clamp(5rem, 14vw, 8.5rem);
+    text-align: center;
+  }
+
+  h1 {
+    font-size: clamp(3rem, 8vw, 5rem);
+    line-height: 1.1;
+  }
+
+  .trace {
+    width: min(520px, 100%);
+    margin-block: 1.5rem 1rem;
+    font-family: var(--font-sans);
+  }
+</style>
