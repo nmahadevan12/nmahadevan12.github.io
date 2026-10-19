@@ -22,15 +22,13 @@ coverCaption: Captures streamed from the board. “hey_stm” utterances are on 
 coverFit: contain
 gallery:
   - src: ./detect-flag.png
-    caption: Placeholder — live telemetry of PCM, energy, and the sound-detect flag around a trigger event.
+    caption: Live telemetry of PCM, energy, and the sound-detect flag around a trigger event.
   - src: ./energy-event.png
-    caption: Placeholder — DC-blocked sample and window energy during a loud acoustic event.
-  - src: ./energy-window.png
-    caption: Placeholder — another host-side plot of DC-blocked PCM against window energy.
+    caption: Sample and window energy during a loud acoustic event.
   - src: ./dfsdm-speech.png
-    caption: Placeholder — DFSDM microphone samples over a longer capture with several speech bursts.
+    caption: DFSDM microphone samples over a longer capture with several speech bursts.
   - src: ./dfsdm-offset.png
-    caption: Placeholder — raw DFSDM PCM vs firmware timer, showing DC offset drift before blocking.
+    caption: Unfiltered microphone signal with an initial negative DC offset and its drift (to 0) over time.
   - src: ./confusion-matrix.png
     caption: Hold-out confusion matrix. Every wake word was detected, and 46 of 50 test clips were classified correctly.
 ---
