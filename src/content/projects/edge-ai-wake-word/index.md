@@ -119,7 +119,7 @@ An end-to-end wake-word engine on the B-L475E-IOT01A discovery board (STM32L475V
 
 1. **PDM to PCM.** The MP34DT01 MEMS microphone's 1-bit PDM stream is decimated in hardware by DFSDM filter 0 (Sinc3, FOSR = 64), producing 24-bit PCM samples.
 2. **DC blocker.** A single-pole high-pass IIR removes drift and bias: `y[n] = x[n] − x[n−1] + R·y[n−1]` with `R = 0.995`.
-3. **Energy envelope.** An exponential moving average tracks signal power: `E[n] = α·|y[n]| + (1 − α)·E[n−1]` with `α = 0.2`.
+3. **Energy envelope.** An exponential moving average tracks signal power: `E[n] = α·|y[n]| + (1 − α)·E[n−1]` with `α = 0.2`. Scrub a real capture in the [energy / detect scrubber](#energy-scrubber) below.
 4. **Event state machine.** Energy above a threshold opens a 256-sample capture window. The capture is kept only if enough samples stay loud, and a quiet-abort path throws away mechanical bumps and clicks.
 
 ## Telemetry protocol
@@ -131,7 +131,7 @@ UART4 runs at 921,600 baud (8N2) so audio can stream without stalling the sampli
 | Live telemetry | 13 bytes | Filtered sample (int32), energy (uint32), event flag (uint8), SysTick timestamp in ms (uint32) |
 | Event dump | 1032 bytes | `0xFFFFFFFF` start marker, 256 × int32 samples, `0x00000000` end marker |
 
-On the host, `serial_monitor.py` decodes frames and saves each dump as a labeled CSV, while `serial_plot.py` plots the waveform and energy envelope live.
+On the host, `serial_monitor.py` decodes frames and saves each dump as a labeled CSV, while `serial_plot.py` plots the waveform and energy envelope live. The [UART frame inspector](#uart-inspector) shows the live 13-byte frame for whatever sample the [energy / detect scrubber](#energy-scrubber) is on.
 
 ## Wake-word model
 

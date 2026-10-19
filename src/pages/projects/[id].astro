@@ -4,6 +4,7 @@ import { render } from 'astro:content';
 import CoverMap from '../../components/CoverMap.astro';
 import Icon from '../../components/Icon.astro';
 import ProjectCover from '../../components/ProjectCover.astro';
+import WakeWordDemos from '../../components/WakeWordDemos.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { IconName } from '../../lib/icons';
 import { formatDateRange, getProjects, type Project } from '../../lib/projects';
@@ -159,6 +160,8 @@ const gallery = await Promise.all(
         <div class="prose">
           <Content />
         </div>
+
+        {project.id === 'edge-ai-wake-word' && <WakeWordDemos />}
 
         {
           gallery.length > 0 && (

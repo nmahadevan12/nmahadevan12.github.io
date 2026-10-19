@@ -1,0 +1,311 @@
+---
+import telemetry from '../content/projects/edge-ai-wake-word/demo-telemetry.json';
+---
+
+<section class="ww-demos" aria-labelledby="ww-demos-title" data-wake-word-demos>
+  <h2 id="ww-demos-title">Interactive telemetry</h2>
+  <p class="lede">
+    Scrub a real “hey_stm” capture from the board, then inspect the 13-byte live UART frame the
+    firmware streams at 921.6&nbsp;kbps. Threshold {telemetry.threshold}, EMA α&nbsp;=&nbsp;{telemetry.alpha},
+    debounce {telemetry.debounce}.
+  </p>
+
+  <div class="panel" data-energy-demo id="energy-scrubber">
+    <div class="panel-head">
+      <h3>Energy / detect scrubber</h3>
+      <p>
+        Scrub forward to draw the traces, back to erase them — the UART frame below follows. Flag turns
+        on only after debounce, not on the first loud sample.
+      </p>
+    </div>
+
+    <div class="plot-well">
+      <canvas aria-label="PCM, energy, and detect flag over time"></canvas>
+    </div>
+
+    <div class="controls">
+      <button type="button" class="btn-play" data-play>Play</button>
+      <input type="range" data-scrub min="0" max="100" value="0" aria-label="Scrub capture timeline" />
+    </div>
+
+    <dl class="readouts">
+      <div>
+        <dt>Sample</dt>
+        <dd data-r-sample>—</dd>
+      </div>
+      <div>
+        <dt>Energy</dt>
+        <dd data-r-energy>—</dd>
+      </div>
+      <div>
+        <dt>Flag</dt>
+        <dd data-r-flag data-on="0">—</dd>
+      </div>
+      <div>
+        <dt>Timer</dt>
+        <dd data-r-time>—</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="panel" data-uart-demo id="uart-inspector">
+    <div class="panel-head">
+      <h3>UART frame inspector</h3>
+      <p>
+        Same 13-byte live frame as the playhead above — big-endian
+        <code>int32</code> sample · <code>uint32</code> energy · <code>uint8</code> flag ·
+        <code>uint32</code> timer_ms. Click a byte or a field —
+        <span data-range>bytes [0…3]</span>.
+      </p>
+    </div>
+
+    <div class="bytes" data-bytes role="group" aria-label="Thirteen frame bytes"></div>
+
+    <div class="fields">
+      <button type="button" class="field" data-field="sample">
+        <span class="label">sample</span>
+        <span class="value" data-value></span>
+      </button>
+      <button type="button" class="field" data-field="energy">
+        <span class="label">energy</span>
+        <span class="value" data-value></span>
+      </button>
+      <button type="button" class="field" data-field="flag">
+        <span class="label">flag</span>
+        <span class="value" data-value></span>
+      </button>
+      <button type="button" class="field" data-field="timer">
+        <span class="label">timer_ms</span>
+        <span class="value" data-value></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { mountWakeWordDemos } from '../scripts/wake-word-demos';
+  import telemetry from '../content/projects/edge-ai-wake-word/demo-telemetry.json';
+
+  const root = document.querySelector<HTMLElement>('[data-wake-word-demos]');
+  if (root) mountWakeWordDemos(root, telemetry);
+</script>
+
+<style>
+  .ww-demos {
+    display: grid;
+    gap: 1.75rem;
+    margin-top: 3.5rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  .lede {
+    max-width: 42rem;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 1.02rem;
+    line-height: 1.55;
+  }
+
+  .panel {
+    display: grid;
+    gap: 1rem;
+    padding: 1.15rem 1.2rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: #fff;
+  }
+
+  .panel-head h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1.05rem;
+    font-weight: 650;
+    letter-spacing: -0.015em;
+  }
+
+  .panel-head p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .panel-head code {
+    font-size: 0.85em;
+  }
+
+  .plot-well {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius-lg) - 2px);
+    background: var(--well);
+  }
+
+  .plot-well canvas {
+    display: block;
+    width: 100%;
+    height: clamp(180px, 28vw, 240px);
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .btn-play {
+    min-width: 4.5rem;
+    padding: 0.45rem 0.85rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .btn-play:hover {
+    border-color: var(--text-muted);
+  }
+
+  .controls input[type='range'] {
+    width: 100%;
+    accent-color: #141415;
+  }
+
+  .readouts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.65rem;
+    margin: 0;
+  }
+
+  .readouts > div {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.55rem 0.65rem;
+    border-radius: 8px;
+    background: var(--well);
+  }
+
+  .readouts dt {
+    color: var(--text-faint);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .readouts dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .readouts dd[data-on='1'] {
+    color: #15803d;
+  }
+
+  .bytes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .bytes :global(.byte) {
+    display: grid;
+    place-items: center;
+    min-width: 2.35rem;
+    height: 2.35rem;
+    padding: 0 0.35rem;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--well);
+    color: var(--text);
+    font: inherit;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      border-color 0.12s ease,
+      background 0.12s ease;
+  }
+
+  .bytes :global(.byte:hover) {
+    border-color: var(--border-strong);
+  }
+
+  .bytes :global(.byte.is-on) {
+    border-color: #2563eb;
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+
+  .fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+  }
+
+  .field {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--well);
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      border-color 0.12s ease,
+      background 0.12s ease;
+  }
+
+  .field:hover {
+    border-color: var(--border-strong);
+  }
+
+  .field.is-on {
+    border-color: #2563eb;
+    background: #eff6ff;
+  }
+
+  .field .label {
+    color: var(--text-faint);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .field .value {
+    font-size: 0.9rem;
+    font-weight: 550;
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 640px) {
+    .readouts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .fields {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
