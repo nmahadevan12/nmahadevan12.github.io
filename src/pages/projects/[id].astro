@@ -51,6 +51,11 @@ const gallery = await Promise.all(
     full: await getImage({ src: item.src, width: Math.min(item.src.width, 2000) }),
   })),
 );
+
+/** Specs stops with the writeup; interactives (+ gallery) go full-width below. */
+const wideExtras = project.id === 'edge-ai-wake-word' || project.id === 'risc-v-emulator';
+const showWakeDemos = project.id === 'edge-ai-wake-word';
+const showRiscDemos = project.id === 'risc-v-emulator';
 ---
 
 <BaseLayout title={data.title} description={data.summary}>
@@ -120,7 +125,7 @@ const gallery = await Promise.all(
       )
     }
 
-    <div class="container body">
+    <div class:list={['container body', { 'has-extras': wideExtras }]}>
       <aside class="aside" aria-labelledby="specs-title">
         <h2 id="specs-title">Specs</h2>
         <dl class="specs">
@@ -162,11 +167,11 @@ const gallery = await Promise.all(
           <Content />
         </div>
 
-        {project.id === 'edge-ai-wake-word' && <WakeWordDemos />}
-        {project.id === 'risc-v-emulator' && <RiscVDemos />}
+        {!wideExtras && showWakeDemos && <WakeWordDemos />}
+        {!wideExtras && showRiscDemos && <RiscVDemos />}
 
         {
-          gallery.length > 0 && (
+          !wideExtras && gallery.length > 0 && (
             <section class="gallery" aria-labelledby="gallery-title">
               <h2 id="gallery-title">Gallery</h2>
               <div class="gallery-grid">
@@ -193,6 +198,39 @@ const gallery = await Promise.all(
         }
       </div>
     </div>
+
+    {
+      wideExtras && (
+        <div class="container extras">
+          {showWakeDemos && <WakeWordDemos />}
+          {showRiscDemos && <RiscVDemos />}
+          {gallery.length > 0 && (
+            <section class="gallery" aria-labelledby="gallery-title">
+              <h2 id="gallery-title">Gallery</h2>
+              <div class="gallery-grid">
+                {gallery.map((item) => (
+                  <figure>
+                    <button
+                      class="shot"
+                      type="button"
+                      aria-label={`Enlarge image: ${item.caption}`}
+                      data-full={item.full.src}
+                      data-caption={item.caption}
+                    >
+                      <Image src={item.src} alt={item.caption} width={720} />
+                      <span class="zoom" aria-hidden="true">
+                        <Icon name="expand" size={15} />
+                      </span>
+                    </button>
+                    <figcaption>{item.caption}</figcaption>
+                  </figure>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+      )
+    }
 
     <nav class="container pager" aria-label="More projects">
       {
@@ -350,6 +388,26 @@ const gallery = await Promise.all(
     gap: clamp(2.5rem, 6vw, 5rem);
     align-items: start;
     padding-block: clamp(3rem, 6vw, 4.5rem);
+  }
+
+  .body.has-extras {
+    /* Sticky Specs lives only in this block — once you scroll into .extras, it leaves. */
+    padding-bottom: clamp(1.5rem, 3vw, 2.25rem);
+  }
+
+  .extras {
+    display: grid;
+    gap: 0;
+    padding-bottom: clamp(3rem, 6vw, 4.5rem);
+  }
+
+  .extras :global(.ww-demos),
+  .extras :global(.rv-demos) {
+    margin-top: 0;
+  }
+
+  .extras .gallery {
+    margin-top: 3.5rem;
   }
 
   .aside {
