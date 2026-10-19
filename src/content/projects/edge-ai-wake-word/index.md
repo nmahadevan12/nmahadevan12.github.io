@@ -16,11 +16,13 @@ highlights:
   - 921.6 kbps UART driver with SysTick interrupt-driven timestamping that streams framed audio to a host PC
   - MFCC-based wake-word classifier trained in Python, with 92% hold-out accuracy and all 25 test wake words detected
 repo: https://github.com/nmahadevan12/Edge-AI-STM32
-cover: ./example-captures.png
-coverAlt: Six 256-sample audio captures plotted from the board, three of the wake word and three of other sounds
-coverCaption: Captures streamed from the board. “hey_stm” utterances are on the top row, background noise and other speech on the bottom.
+cover: ./board.png
+coverAlt: STMicroelectronics B-L475E-IOT01A Discovery kit for IoT node (STM32L475)
+coverCaption: B-L475E-IOT01A Discovery kit — STM32L475VG with onboard MEMS mics, sensors, and ST-LINK.
 coverFit: contain
 gallery:
+  - src: ./example-captures.png
+    caption: Captures streamed from the board. “hey_stm” utterances are on the top row, background noise and other speech on the bottom.
   - src: ./detect-flag.png
     caption: Live telemetry of PCM, energy, and the sound-detect flag around a trigger event.
   - src: ./energy-event.png
