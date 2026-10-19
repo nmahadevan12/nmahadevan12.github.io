@@ -21,56 +21,81 @@ coverAlt: STMicroelectronics B-L475E-IOT01A Discovery kit for IoT node (STM32L47
 coverCaption: B-L475E-IOT01A Discovery kit — STM32L475VG with onboard MEMS mics, sensors, and ST-LINK.
 coverFit: contain
 coverHotspots:
-  - id: mcu
-    label: STM32L475VG
-    detail: Arm Cortex-M4F MCU at 80 MHz — runs the bare-metal wake-word firmware with no HAL.
-    x: 48
-    y: 48
-  - id: mics
-    label: MEMS microphones
-    detail: Dual MP34DT01 PDM mics. DFSDM demodulates them to 24-bit PCM for the energy detector.
-    x: 72
-    y: 18
-  - id: stlink
-    label: ST-LINK / VCP
-    detail: On-board debugger and virtual COM port used to flash firmware and stream UART telemetry.
-    x: 58
-    y: 10
-  - id: usb-otg
-    label: USB OTG
-    detail: USB Full-Speed OTG connector on the Discovery kit.
-    x: 42
-    y: 10
+  - id: user
+    label: USER button
+    detail: Blue user button — useful for bring-up hooks and simple firmware tests.
+    x: 7
+    y: 24
+  - id: reset
+    label: RESET
+    detail: Hardware reset for the STM32 during flashing and debug.
+    x: 7
+    y: 44
   - id: wifi
     label: Inventek eS-WiFi
-    detail: 802.11 b/g/n Wi-Fi module (not used by the wake-word pipeline).
-    x: 22
-    y: 28
-  - id: user
-    label: USER / RESET
-    detail: Blue user button and black reset — handy for bring-up and reboot during testing.
-    x: 10
-    y: 22
+    detail: 802.11 b/g/n Wi-Fi module (ISM43362). Not used by the wake-word pipeline.
+    x: 21
+    y: 29
+  - id: usb-otg
+    label: USB OTG
+    detail: USB Full-Speed OTG Micro-AB connector.
+    x: 40
+    y: 5
+  - id: stlink
+    label: USB ST-LINK
+    detail: On-board ST-LINK/V2-1 — flash, debug, and virtual COM for UART telemetry.
+    x: 80
+    y: 5
+  - id: mics
+    label: MEMS microphones
+    detail: Dual MP34DT01 PDM mics. DFSDM turns them into 24-bit PCM for energy detection.
+    x: 62
+    y: 14
+  - id: dig-headers
+    label: Arduino digital headers
+    detail: D0–D15 headers for shields and external I/O.
+    x: 58
+    y: 18
   - id: ble
     label: Bluetooth Low Energy
-    detail: SPBTLE-RF module for BLE connectivity on the IoT node.
-    x: 88
-    y: 32
+    detail: SPBTLE-RF module for BLE on the IoT node.
+    x: 92
+    y: 28
+  - id: mcu
+    label: STM32L475VG
+    detail: Arm Cortex-M4F at 80 MHz — runs the bare-metal wake-word firmware with no HAL.
+    x: 52
+    y: 48
+  - id: imu
+    label: Motion sensors
+    detail: LSM6DSL accel/gyro and nearby magnetometer for the Discovery kit’s sensing suite.
+    x: 65
+    y: 43
   - id: subghz
     label: Sub-GHz radio
     detail: SPSGRF-915 Sub-GHz transceiver module.
-    x: 88
-    y: 55
+    x: 92
+    y: 58
   - id: nfc
     label: NFC antenna
-    detail: Printed NFC antenna with M24SR dynamic tag.
-    x: 18
-    y: 78
-  - id: headers
-    label: Arduino / PMOD headers
-    detail: Expansion connectors for shields and add-on boards.
-    x: 55
-    y: 88
+    detail: Printed NFC coil with M24SR dynamic tag.
+    x: 10
+    y: 72
+  - id: tof
+    label: Time-of-flight
+    detail: VL53L0X laser ranging / gesture sensor.
+    x: 78
+    y: 72
+  - id: pmod
+    label: PMOD
+    detail: 12-pin PMOD expansion connector.
+    x: 30
+    y: 87
+  - id: power-hdr
+    label: Power / analog headers
+    detail: Arduino power rails (3V3, 5V, GND, VIN) and A0–A5 analog pins.
+    x: 68
+    y: 94
 gallery:
   - src: ./example-captures.png
     caption: Captures streamed from the board. “hey_stm” utterances are on the top row, background noise and other speech on the bottom.

@@ -33,19 +33,26 @@ const {
 
 <figure class="cover-map" data-cover-map>
   <div class="frame">
-    <Image
-      class="photo"
-      src={src}
-      alt={alt}
-      width={width}
-      widths={[Math.round(width / 2), width]}
-      sizes={sizes}
-      loading={loading}
-    />
+    <div class="photo-clip">
+      <Image
+        class="photo"
+        src={src}
+        alt={alt}
+        width={width}
+        widths={[Math.round(width / 2), width]}
+        sizes={sizes}
+        loading={loading}
+      />
+    </div>
     <ul class="pins" role="list">
       {
         hotspots.map((spot) => (
-          <li class="pin" style={`--x: ${spot.x}%; --y: ${spot.y}%;`}>
+          <li
+            class="pin"
+            style={`--x: ${spot.x}%; --y: ${spot.y}%;`}
+            data-x={spot.x}
+            data-y={spot.y}
+          >
             <button
               class="dot"
               type="button"
@@ -73,24 +80,39 @@ const {
     root.dataset.bound = 'true';
 
     const pins = [...root.querySelectorAll<HTMLElement>('.pin')];
+
+    const placeTip = (pin: HTMLElement) => {
+      const x = Number(pin.dataset.x ?? 50);
+      const y = Number(pin.dataset.y ?? 50);
+      pin.classList.remove('tip-below', 'tip-left', 'tip-right');
+      if (y < 32) pin.classList.add('tip-below');
+      if (x < 24) pin.classList.add('tip-right');
+      else if (x > 76) pin.classList.add('tip-left');
+    };
+
     const clear = () => {
       for (const pin of pins) pin.classList.remove('is-open');
     };
 
     for (const pin of pins) {
+      placeTip(pin);
       const button = pin.querySelector<HTMLButtonElement>('[data-hotspot]');
       if (!button) continue;
 
+      button.addEventListener('mouseenter', () => placeTip(pin));
+      button.addEventListener('focus', () => {
+        clear();
+        placeTip(pin);
+        pin.classList.add('is-open');
+      });
       button.addEventListener('click', (event) => {
         event.stopPropagation();
         const open = pin.classList.contains('is-open');
         clear();
-        if (!open) pin.classList.add('is-open');
-      });
-
-      button.addEventListener('focus', () => {
-        clear();
-        pin.classList.add('is-open');
+        if (!open) {
+          placeTip(pin);
+          pin.classList.add('is-open');
+        }
       });
     }
 
@@ -111,10 +133,15 @@ const {
     position: relative;
     display: inline-block;
     max-width: 100%;
+    /* Keep tips outside the photo without clipping. */
+    overflow: visible;
+  }
+
+  .photo-clip {
+    overflow: hidden;
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     background: var(--well);
-    overflow: hidden;
   }
 
   .photo {
@@ -143,10 +170,16 @@ const {
     z-index: 1;
   }
 
+  .pin.is-open,
+  .pin:hover,
+  .pin:focus-within {
+    z-index: 5;
+  }
+
   .dot {
     position: relative;
-    width: 1.05rem;
-    height: 1.05rem;
+    width: 0.95rem;
+    height: 0.95rem;
     border: 2px solid #fff;
     border-radius: 999px;
     background: var(--accent);
@@ -160,7 +193,7 @@ const {
   .dot::after {
     content: '';
     position: absolute;
-    inset: -0.55rem;
+    inset: -0.5rem;
     border-radius: 999px;
     border: 1px solid rgb(38 163 217 / 0.55);
     animation: pulse 2.2s ease-out infinite;
@@ -192,14 +225,14 @@ const {
   .tip {
     position: absolute;
     left: 50%;
-    bottom: calc(100% + 0.7rem);
-    z-index: 2;
-    width: max(12rem, min(18rem, 70vw));
+    bottom: calc(100% + 0.75rem);
+    z-index: 6;
+    width: min(16.5rem, 72vw);
     padding: 0.7rem 0.8rem;
     border: 1px solid var(--border);
     border-radius: 10px;
     background: #fff;
-    box-shadow: var(--shadow-window, 0 12px 40px rgb(20 20 21 / 0.12));
+    box-shadow: 0 12px 40px rgb(20 20 21 / 0.14);
     color: var(--text);
     text-align: left;
     opacity: 0;
@@ -231,10 +264,75 @@ const {
     transform: translate(-50%, 0);
   }
 
-  /* Flip tip below the marker when near the top of the frame. */
-  .pin:nth-child(-n + 4) .tip {
+  .pin.tip-below .tip {
     bottom: auto;
-    top: calc(100% + 0.7rem);
+    top: calc(100% + 0.75rem);
+    transform: translate(-50%, -0.35rem);
+  }
+
+  .pin.tip-below:hover .tip,
+  .pin.tip-below.is-open .tip,
+  .pin.tip-below:focus-within .tip {
+    transform: translate(-50%, 0);
+  }
+
+  .pin.tip-right .tip {
+    left: calc(100% + 0.75rem);
+    right: auto;
+    top: 50%;
+    bottom: auto;
+    transform: translate(-0.35rem, -50%);
+  }
+
+  .pin.tip-right:hover .tip,
+  .pin.tip-right.is-open .tip,
+  .pin.tip-right:focus-within .tip {
+    transform: translate(0, -50%);
+  }
+
+  .pin.tip-left .tip {
+    left: auto;
+    right: calc(100% + 0.75rem);
+    top: 50%;
+    bottom: auto;
+    transform: translate(0.35rem, -50%);
+  }
+
+  .pin.tip-left:hover .tip,
+  .pin.tip-left.is-open .tip,
+  .pin.tip-left:focus-within .tip {
+    transform: translate(0, -50%);
+  }
+
+  /* Corner: below + side wins for vertical, then side for horizontal. */
+  .pin.tip-below.tip-right .tip,
+  .pin.tip-below.tip-left .tip {
+    top: calc(100% + 0.75rem);
+    bottom: auto;
+  }
+
+  .pin.tip-below.tip-right .tip {
+    left: 0;
+    right: auto;
+    transform: translate(0, -0.35rem);
+  }
+
+  .pin.tip-below.tip-right:hover .tip,
+  .pin.tip-below.tip-right.is-open .tip,
+  .pin.tip-below.tip-right:focus-within .tip {
+    transform: translate(0, 0);
+  }
+
+  .pin.tip-below.tip-left .tip {
+    left: auto;
+    right: 0;
+    transform: translate(0, -0.35rem);
+  }
+
+  .pin.tip-below.tip-left:hover .tip,
+  .pin.tip-below.tip-left.is-open .tip,
+  .pin.tip-below.tip-left:focus-within .tip {
+    transform: translate(0, 0);
   }
 
   figcaption {
