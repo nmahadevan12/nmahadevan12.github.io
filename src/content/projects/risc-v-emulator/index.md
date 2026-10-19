@@ -22,6 +22,8 @@ repo: https://github.com/nmahadevan12/RISC-V
 
 Before writing any RTL, I'm building a C model of the CPU that defines exactly what each instruction should do. The emulator decodes raw 32-bit instructions, generates immediates, updates the register file and program counter, and performs memory operations across a 4 KB unified address space. Once the SystemVerilog datapath exists, it will be checked against this model.
 
+Try the [bitfield inspector](#bitfield-inspector) and [step debugger](#step-debugger) below — they use the same hand-assembled encodings as the C harness.
+
 ## Implemented so far
 
 - **R-type:** `ADD`, `SUB`, `XOR`, `OR`, `AND`, `SLL`, `SRL`, `SRA`, `SLT`, `SLTU`
@@ -29,7 +31,7 @@ Before writing any RTL, I'm building a C model of the CPU that defines exactly w
 - **Loads and stores:** `LB`, `LH`, `LW`, `LBU`, `LHU`, `SB`, `SH`, `SW`
 - **Control flow:** `BEQ`, `BNE`, `BLT`, `BGE`, `BLTU`, `BGEU`, `JAL`, `JALR`
 
-A test harness writes hand-assembled instruction words into memory, steps the CPU, and checks the resulting registers, program counter, and memory bytes, printing PASS or FAIL for each case.
+A test harness writes hand-assembled instruction words into memory, steps the CPU, and checks the resulting registers, program counter, and memory bytes, printing PASS or FAIL for each case. The interactive step debugger walks a few of those same sequences in the browser.
 
 ## Roadmap
 

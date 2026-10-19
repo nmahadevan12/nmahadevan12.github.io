@@ -4,6 +4,7 @@ import { render } from 'astro:content';
 import CoverMap from '../../components/CoverMap.astro';
 import Icon from '../../components/Icon.astro';
 import ProjectCover from '../../components/ProjectCover.astro';
+import RiscVDemos from '../../components/RiscVDemos.astro';
 import WakeWordDemos from '../../components/WakeWordDemos.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { IconName } from '../../lib/icons';
@@ -162,6 +163,7 @@ const gallery = await Promise.all(
         </div>
 
         {project.id === 'edge-ai-wake-word' && <WakeWordDemos />}
+        {project.id === 'risc-v-emulator' && <RiscVDemos />}
 
         {
           gallery.length > 0 && (
