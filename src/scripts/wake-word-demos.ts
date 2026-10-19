@@ -67,14 +67,16 @@ function mountEnergyScrubber(
   const padR = 8;
 
   function resize() {
-    const rect = canvas.getBoundingClientRect();
+    // Measure the well, not the canvas — setting canvas.style.width in px was locking a
+    // too-small size when getBoundingClientRect ran before layout settled.
+    const rect = plotWell.getBoundingClientRect();
     W = Math.max(1, Math.floor(rect.width));
     H = Math.max(1, Math.floor(rect.height));
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
-    canvas.style.width = `${W}px`;
-    canvas.style.height = `${H}px`;
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
     draw();
   }
 
@@ -313,8 +315,12 @@ function mountEnergyScrubber(
 
   plotWell.addEventListener('pointerup', endPointer);
   plotWell.addEventListener('pointercancel', endPointer);
-  const ro = new ResizeObserver(resize);
-  ro.observe(root);
+  const ro = new ResizeObserver(() => {
+    // Defer one frame so percentage-based heights resolve against the laid-out well.
+    requestAnimationFrame(resize);
+  });
+  ro.observe(plotWell);
+  window.addEventListener('resize', resize);
   resize();
   setIndex(0);
 }
