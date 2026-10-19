@@ -52,6 +52,8 @@ export function mountMiniCapture(root: HTMLElement): void {
   let W = 0;
   let H = 0;
   let dpr = 1;
+  let labelW = 40;
+  let waveW = 1;
   let a = 0;
   let b = spanMax;
   let raf = 0;
@@ -60,7 +62,11 @@ export function mountMiniCapture(root: HTMLElement): void {
   let blockedClick = false;
   const pointers = new Map<number, { x: number; y: number }>();
 
-  const x = (t: number) => ((t - a) * W) / (b - a);
+  /** Map bit-time → x inside the wave pane (right of the channel label bar). */
+  const x = (t: number) => labelW + ((t - a) * waveW) / (b - a);
+
+  /** Pixel x relative to the wave pane (0…waveW). Clamped for zoom anchors. */
+  const wavePx = (px: number) => clamp(px - labelW, 0, Math.max(waveW, 1));
 
   function fitWindow(): [number, number] {
     return [-1.5, spanMax + 1.5];
@@ -87,16 +93,20 @@ export function mountMiniCapture(root: HTMLElement): void {
     requestDraw();
   }
 
-  /** Zoom keeping the time under `px` fixed. `factor` > 1 zooms in. */
+  /** Zoom keeping the time under wave-pane pixel `px` fixed. `factor` > 1 zooms in. */
   function zoomAt(factor: number, px: number) {
     const span = b - a;
-    const anchor = a + (px / Math.max(W, 1)) * span;
+    const mid = wavePx(px);
+    const anchor = a + (mid / Math.max(waveW, 1)) * span;
     const next = clamp(span / factor, spanMin, spanCap);
-    applyWindow(anchor - (px / Math.max(W, 1)) * next, anchor - (px / Math.max(W, 1)) * next + next);
+    applyWindow(
+      anchor - (mid / Math.max(waveW, 1)) * next,
+      anchor - (mid / Math.max(waveW, 1)) * next + next,
+    );
   }
 
   function panBy(px: number) {
-    const shift = (px * (b - a)) / Math.max(W, 1);
+    const shift = (px * (b - a)) / Math.max(waveW, 1);
     a += shift;
     b += shift;
     requestDraw();
@@ -148,17 +158,17 @@ export function mountMiniCapture(root: HTMLElement): void {
     raf = 0;
     const rulerH = Math.max(22, Math.round(H * 0.09));
     const rowH = (H - rulerH) / rows.length;
-    const pxPerBit = W / (b - a);
+    const pxPerBit = waveW / (b - a);
 
     ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx!.fillStyle = COLOR.background;
     ctx!.fillRect(0, 0, W, H);
 
-    // Ruler
+    // Ruler (wave pane only)
     ctx!.fillStyle = COLOR.ruler;
-    ctx!.fillRect(0, 0, W, rulerH);
+    ctx!.fillRect(labelW, 0, waveW, rulerH);
     ctx!.fillStyle = COLOR.separator;
-    ctx!.fillRect(0, rulerH - 1, W, 1);
+    ctx!.fillRect(labelW, rulerH - 1, waveW, 1);
 
     const bitUs = 1e6 / 115_200;
     const stepBits = [5, 10, 20, 50, 100, 200, 500, 1000].find((n) => n * pxPerBit >= 70) ?? 2000;
@@ -167,14 +177,17 @@ export function mountMiniCapture(root: HTMLElement): void {
     ctx!.textAlign = 'left';
     for (let t = Math.floor(a / stepBits) * stepBits; t < b + stepBits; t += stepBits) {
       const at = Math.round(x(t));
+      if (at < labelW - 1 || at > W) continue;
       ctx!.fillStyle = COLOR.tick;
       ctx!.fillRect(at, rulerH - 9, 1, 8);
       ctx!.fillStyle = COLOR.grid;
       ctx!.fillRect(at, rulerH, 1, H - rulerH);
       const us = t * bitUs;
       const label = us >= 1000 ? `+${(us / 1000).toFixed(us >= 10000 ? 0 : 1)} ms` : `+${Math.round(us)} µs`;
-      ctx!.fillStyle = COLOR.rulerText;
-      ctx!.fillText(label, at + 5, rulerH / 2 - 1);
+      if (at + 5 < W - 8) {
+        ctx!.fillStyle = COLOR.rulerText;
+        ctx!.fillText(label, at + 5, rulerH / 2 - 1);
+      }
     }
 
     rows.forEach((row, i) => {
@@ -188,13 +201,6 @@ export function mountMiniCapture(root: HTMLElement): void {
       const low = Math.round(top + rowH * 0.84) + 0.5;
       const bubbleY = top + rowH * 0.14;
       const bubbleH = Math.max(12, Math.min(18, rowH * 0.28));
-
-      ctx!.fillStyle = COLOR.label;
-      ctx!.font = `500 12px ${FONT}`;
-      ctx!.textAlign = 'left';
-      ctx!.textBaseline = 'middle';
-      ctx!.fillText(`D${i}`, 10, (high + low) / 2);
-
       const bitwise = pxPerBit >= BIT_PX;
       const y = (level: 0 | 1) => (level ? high : low);
       const levelAt = (t: number): 0 | 1 => {
@@ -204,9 +210,15 @@ export function mountMiniCapture(root: HTMLElement): void {
         return bitLevel(row.bytes[index], bit);
       };
 
+      // Clip strokes/fills to the wave pane so nothing bleeds into the label bar.
+      ctx!.save();
+      ctx!.beginPath();
+      ctx!.rect(labelW, top, waveW, rowH);
+      ctx!.clip();
+
       let level = levelAt(a);
       const path = new Path2D();
-      path.moveTo(0, y(level));
+      path.moveTo(labelW, y(level));
 
       if (bitwise) {
         for (let bi = 0; bi < row.bytes.length; bi++) {
@@ -231,7 +243,7 @@ export function mountMiniCapture(root: HTMLElement): void {
           path.lineTo(edge, y(level));
         }
       } else if (row.t1 >= a && row.t0 <= b) {
-        const x0 = Math.max(0, x(row.t0));
+        const x0 = Math.max(labelW, x(row.t0));
         const x1 = Math.min(W, x(row.t1));
         path.lineTo(x0, high);
         path.lineTo(x0, low);
@@ -250,6 +262,7 @@ export function mountMiniCapture(root: HTMLElement): void {
         ctx!.fillRect(Math.floor(x(row.t0)), high, Math.max(1, Math.ceil(x(row.t1) - x(row.t0))), low - high);
         ctx!.globalAlpha = 1;
         drawBubble(x(row.t0), x(row.t1), bubbleY, bubbleH, ANALYZER_COLORS.project, row.text);
+        ctx!.restore();
         return;
       }
 
@@ -261,6 +274,31 @@ export function mountMiniCapture(root: HTMLElement): void {
       } else {
         drawBubble(x(row.t0), x(row.t1), bubbleY, bubbleH, ANALYZER_COLORS.project, row.text);
       }
+      ctx!.restore();
+    });
+
+    // Label bar on top of everything so D0/D1/D2 are never covered by traces.
+    ctx!.fillStyle = '#fafafa';
+    ctx!.fillRect(0, 0, labelW, H);
+    ctx!.fillStyle = COLOR.separator;
+    ctx!.fillRect(labelW - 1, 0, 1, H);
+    ctx!.fillRect(0, rulerH - 1, labelW, 1);
+
+    rows.forEach((row, i) => {
+      const top = rulerH + i * rowH;
+      const high = Math.round(top + rowH * 0.5) + 0.5;
+      const low = Math.round(top + rowH * 0.84) + 0.5;
+      if (i > 0) {
+        ctx!.fillStyle = COLOR.separator;
+        ctx!.fillRect(0, top, labelW, 1);
+      }
+      ctx!.fillStyle = row.color;
+      ctx!.fillRect(0, top + (i > 0 ? 1 : 0), 3, rowH - (i > 0 ? 1 : 0));
+      ctx!.fillStyle = '#667085';
+      ctx!.font = `600 12px ${FONT}`;
+      ctx!.textAlign = 'center';
+      ctx!.textBaseline = 'middle';
+      ctx!.fillText(`D${i}`, labelW / 2 + 1.5, (high + low) / 2);
     });
   }
 
@@ -277,6 +315,8 @@ export function mountMiniCapture(root: HTMLElement): void {
     if (nextW === W && nextH === H && booted) return;
     W = nextW;
     H = nextH;
+    labelW = Math.max(44, Math.min(56, Math.round(W * 0.06)));
+    waveW = Math.max(1, W - labelW);
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
@@ -346,8 +386,9 @@ export function mountMiniCapture(root: HTMLElement): void {
       blockedClick = true;
       const startSpan = pinch.startB - pinch.startA;
       const next = clamp(startSpan * (pinch.startDist / dist), spanMin, spanCap);
-      const anchor = pinch.startA + (pinch.mid / Math.max(W, 1)) * startSpan;
-      applyWindow(anchor - (pinch.mid / Math.max(W, 1)) * next, anchor - (pinch.mid / Math.max(W, 1)) * next + next);
+      const mid = wavePx(pinch.mid);
+      const anchor = pinch.startA + (mid / Math.max(waveW, 1)) * startSpan;
+      applyWindow(anchor - (mid / Math.max(waveW, 1)) * next, anchor - (mid / Math.max(waveW, 1)) * next + next);
       return;
     }
 
@@ -357,7 +398,7 @@ export function mountMiniCapture(root: HTMLElement): void {
     if (!drag.moved && Math.hypot(dx, dy) < 4) return;
     drag.moved = true;
     blockedClick = true;
-    const shift = (-dx * (drag.b0 - drag.a0)) / Math.max(W, 1);
+    const shift = (-dx * (drag.b0 - drag.a0)) / Math.max(waveW, 1);
     a = drag.a0 + shift;
     b = drag.b0 + shift;
     requestDraw();
@@ -411,10 +452,10 @@ export function mountMiniCapture(root: HTMLElement): void {
       applyWindow(...fitWindow());
     } else if (event.key === 'ArrowLeft') {
       event.preventDefault();
-      panBy(-W * 0.2);
+      panBy(-waveW * 0.2);
     } else if (event.key === 'ArrowRight') {
       event.preventDefault();
-      panBy(W * 0.2);
+      panBy(waveW * 0.2);
     }
   });
 
