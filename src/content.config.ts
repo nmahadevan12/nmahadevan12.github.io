@@ -34,6 +34,18 @@ const projects = defineCollection({
       coverCaption: z.string().optional(),
       // `contain` shows the whole image (plots, screenshots); `cover` crops photos to fill the card.
       coverFit: z.enum(['cover', 'contain']).default('cover'),
+      // Percent positions (0–100) on the cover image for hover callouts.
+      coverHotspots: z
+        .array(
+          z.object({
+            id: z.string(),
+            label: z.string(),
+            detail: z.string(),
+            x: z.number().min(0).max(100),
+            y: z.number().min(0).max(100),
+          }),
+        )
+        .default([]),
       gallery: z.array(z.object({ src: image(), caption: z.string() })).default([]),
       repo: z.url().optional(),
       video: z.url().optional(),

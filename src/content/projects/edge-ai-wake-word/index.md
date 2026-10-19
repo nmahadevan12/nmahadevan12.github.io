@@ -20,6 +20,57 @@ cover: ./board.png
 coverAlt: STMicroelectronics B-L475E-IOT01A Discovery kit for IoT node (STM32L475)
 coverCaption: B-L475E-IOT01A Discovery kit — STM32L475VG with onboard MEMS mics, sensors, and ST-LINK.
 coverFit: contain
+coverHotspots:
+  - id: mcu
+    label: STM32L475VG
+    detail: Arm Cortex-M4F MCU at 80 MHz — runs the bare-metal wake-word firmware with no HAL.
+    x: 48
+    y: 48
+  - id: mics
+    label: MEMS microphones
+    detail: Dual MP34DT01 PDM mics. DFSDM demodulates them to 24-bit PCM for the energy detector.
+    x: 72
+    y: 18
+  - id: stlink
+    label: ST-LINK / VCP
+    detail: On-board debugger and virtual COM port used to flash firmware and stream UART telemetry.
+    x: 58
+    y: 10
+  - id: usb-otg
+    label: USB OTG
+    detail: USB Full-Speed OTG connector on the Discovery kit.
+    x: 42
+    y: 10
+  - id: wifi
+    label: Inventek eS-WiFi
+    detail: 802.11 b/g/n Wi-Fi module (not used by the wake-word pipeline).
+    x: 22
+    y: 28
+  - id: user
+    label: USER / RESET
+    detail: Blue user button and black reset — handy for bring-up and reboot during testing.
+    x: 10
+    y: 22
+  - id: ble
+    label: Bluetooth Low Energy
+    detail: SPBTLE-RF module for BLE connectivity on the IoT node.
+    x: 88
+    y: 32
+  - id: subghz
+    label: Sub-GHz radio
+    detail: SPSGRF-915 Sub-GHz transceiver module.
+    x: 88
+    y: 55
+  - id: nfc
+    label: NFC antenna
+    detail: Printed NFC antenna with M24SR dynamic tag.
+    x: 18
+    y: 78
+  - id: headers
+    label: Arduino / PMOD headers
+    detail: Expansion connectors for shields and add-on boards.
+    x: 55
+    y: 88
 gallery:
   - src: ./example-captures.png
     caption: Captures streamed from the board. “hey_stm” utterances are on the top row, background noise and other speech on the bottom.

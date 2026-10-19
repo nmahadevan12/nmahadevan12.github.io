@@ -1,6 +1,7 @@
 ---
 import { getImage, Image } from 'astro:assets';
 import { render } from 'astro:content';
+import CoverMap from '../../components/CoverMap.astro';
 import Icon from '../../components/Icon.astro';
 import ProjectCover from '../../components/ProjectCover.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -88,18 +89,34 @@ const gallery = await Promise.all(
       }
     </header>
 
-    <figure class="container cover">
-      <div class:list={['cover-well', { art: !data.cover }]}>
-        <ProjectCover
-          project={project}
-          width={1600}
-          sizes="(min-width: 1200px) 1120px, 100vw"
-          loading="eager"
-          art={{ width: 1120, height: 460 }}
-        />
-      </div>
-      {data.coverCaption && <figcaption>{data.coverCaption}</figcaption>}
-    </figure>
+    {
+      data.cover && data.coverHotspots.length > 0 ? (
+        <div class="container cover">
+          <CoverMap
+            src={data.cover}
+            alt={data.coverAlt ?? data.title}
+            caption={data.coverCaption}
+            hotspots={data.coverHotspots}
+            width={1600}
+            sizes="(min-width: 1200px) 1120px, 100vw"
+            loading="eager"
+          />
+        </div>
+      ) : (
+        <figure class="container cover">
+          <div class:list={['cover-well', { art: !data.cover }]}>
+            <ProjectCover
+              project={project}
+              width={1600}
+              sizes="(min-width: 1200px) 1120px, 100vw"
+              loading="eager"
+              art={{ width: 1120, height: 460 }}
+            />
+          </div>
+          {data.coverCaption && <figcaption>{data.coverCaption}</figcaption>}
+        </figure>
+      )
+    }
 
     <div class="container body">
       <aside class="aside" aria-labelledby="specs-title">
