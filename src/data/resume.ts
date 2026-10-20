@@ -13,7 +13,7 @@ export const education = {
     'Embedded Systems',
     'Informatics',
   ],
-  honors: ['Zell Miller Scholar', 'UGA Dean’s List', 'UGA IEEE MicroMouse', 'Eagle Scout (2022)', 'UGA Outdoor Club'],
+  honors: ['Zell Miller Scholar', 'UGA Dean’s List', 'Eagle Scout (2022)'],
 };
 
 export interface Job {
@@ -40,9 +40,9 @@ export const experience: Job[] = [
     orgShort: 'UGA SSRL',
     start: '2026-09',
     points: [
-      'Developing flight software in C under Zephyr RTOS on an STM32 MCU for CubeSat communications and command handling',
-      'Implementing serial drivers and communication protocols (UART, RS-485) between onboard satellite subsystems',
-      'Validating multi-subsystem firmware and bus protocols with Renode hardware emulation before bench testing',
+      'Building Zephyr RTOS flight software in C on STM32 for CubeSat command handling and subsystem communications',
+      'Implementing UART and RS-485 drivers so onboard computers can exchange framed commands and telemetry',
+      'Validating multi-subsystem bus behavior in Renode before hardware is on the bench, catching protocol bugs in software-first bring-up',
     ],
     tags: ['C', 'Zephyr RTOS', 'STM32', 'UART', 'RS-485', 'Renode'],
   },
@@ -54,8 +54,8 @@ export const experience: Job[] = [
     orgShort: 'UGA VIPR',
     start: '2026-08',
     points: [
-      'Writing C++ drivers (I²C, SPI) for IMU, temperature, and humidity sensors on an ATmega328P-based wearable heat-stress tracker for canines',
-      'Implementing Bluetooth communication to stream sensor data to a host application in real time',
+      'Shipped C++ I²C and SPI drivers for IMU, temperature, and humidity sensors on an ATmega328P canine heat-stress wearable',
+      'Streaming those sensors live over Bluetooth to a host app so researchers can monitor animals in real time',
     ],
     tags: ['C++', 'ATmega328P', 'I²C', 'SPI', 'Bluetooth'],
   },
@@ -67,8 +67,8 @@ export const experience: Job[] = [
     orgShort: 'UGA ECE',
     start: '2026-08',
     points: [
-      'Instructing 100+ students across two labs on analog filters, oscillators, transformers, and BJT amplifiers with SPICE verification',
-      'Guiding TTL circuit builds and benchtop debugging with oscilloscopes, logic analyzers, and multimeters',
+      'Teaching 100+ students across two labs through analog filters, oscillators, transformers, and BJT amplifiers with SPICE checks',
+      'Coaching TTL builds and benchtop debug with oscilloscopes, logic analyzers, and multimeters until circuits meet lab specs',
     ],
     tags: ['SPICE', 'Analog circuits', 'Lab instruments'],
   },
@@ -80,7 +80,9 @@ export const experience: Job[] = [
     orgShort: 'UGA',
     start: '2025-09',
     end: '2026-05',
-    points: ['Tutored 35+ students, mainly in Logic Design (CSEE 2220) and Circuit Analysis (ECSE 2170)'],
+    points: [
+      'Tutored 35+ students in Logic Design (CSEE 2220) and Circuit Analysis (ECSE 2170), focusing on exam-ready problem sets',
+    ],
     tags: ['Logic design', 'Circuit analysis'],
   },
 ];
@@ -88,11 +90,11 @@ export const experience: Job[] = [
 export const skills = [
   {
     group: 'Languages',
-    items: ['C', 'C++', 'ARM Assembly', 'Python', 'Java', 'MATLAB'],
+    items: ['C', 'C++', 'Python'],
   },
   {
     group: 'Architectures & interfaces',
-    items: ['ARM Cortex-M (STM32)', 'AVR (ATmega)', 'ESP32', 'Raspberry Pi', 'SPI', 'I²C', 'UART', 'PWM'],
+    items: ['ARM Cortex-M (STM32)', 'AVR (ATmega)', 'Raspberry Pi', 'SPI', 'I²C', 'UART', 'PWM'],
   },
   {
     group: 'Firmware & toolchains',
@@ -102,7 +104,6 @@ export const skills = [
     group: 'Hardware & equipment',
     items: [
       'KiCad',
-      'Altium Designer',
       'Autodesk Fusion',
       'SPICE',
       'Oscilloscopes',

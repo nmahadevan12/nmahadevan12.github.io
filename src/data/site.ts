@@ -2,23 +2,26 @@ export const site = {
   name: 'Nikhil Mahadevan',
   title: 'Nikhil Mahadevan · Electrical & Computer Engineering',
   description:
-    'Nikhil Mahadevan — EE + CompE at UGA. Embedded firmware, analog hardware, and flight software. Open to internships; graduating May 2028.',
+    'Nikhil Mahadevan — EE + CompE at UGA. Embedded firmware, analog hardware, and flight software. Open to Summer 2027 internships; graduating May 2028.',
   /** Primary hero line (first row). */
   intro: 'EE + CompE at UGA · embedded firmware and hardware',
   /** Primary hero line (second row — keep GPA with its number). */
   introMeta: 'GPA\u00A03.93 · graduating May 2028',
   /** Secondary hero line — role + ask. */
   introDetail:
-    'Flight software at UGA’s Small Satellite Research Lab. Open to internships in embedded systems, hardware, and computer architecture.',
+    'Flight software at UGA’s Small Satellite Research Lab. Open to Summer 2027 internships in embedded systems, hardware, and computer architecture.',
   /** Shorter blurb for the footer. */
   blurb: 'EE + CompE at UGA — embedded firmware, analog hardware, and flight software.',
   currently: 'Flight Software Engineer at UGA’s Small Satellite Research Lab',
-  availability: 'I’m open to internships in embedded systems, hardware design, and computer architecture.',
+  availability:
+    'I’m open to Summer 2027 internships in embedded systems, hardware design, and computer architecture.',
   location: 'Athens, GA',
   email: 'Nikhil.Mahadevan@uga.edu',
   resume: '/resume.pdf',
   github: 'https://github.com/nmahadevan12',
   linkedin: 'https://www.linkedin.com/in/nmahadevan12',
+  /** Absolute path under `public/` for link previews. */
+  ogImage: '/hero/hero-1.jpg',
 };
 
 export const nav = [

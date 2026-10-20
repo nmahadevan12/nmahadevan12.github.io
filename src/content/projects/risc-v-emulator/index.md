@@ -1,11 +1,12 @@
 ---
 title: RISC-V RV32I Emulator
 channel: RISC-V emulator
-summary: A C emulator of the RV32I instruction set — the golden model for a planned SystemVerilog CPU.
+summary: Work-in-progress C model of part of RV32I — not yet able to run compiled code or riscv-tests.
 status: in-progress
 areas: [architecture]
 start: 2026-07
 platform: RV32I · C, then SystemVerilog
+featured: false
 tags:
   - Computer architecture
   - C Programming
@@ -23,9 +24,9 @@ gallery:
 
 ## Overview
 
-Before writing any RTL, I'm building a C model of the CPU that defines exactly what each instruction should do. The emulator decodes raw 32-bit instructions, generates immediates, updates the register file and program counter, and performs memory operations across a 4 KB unified address space. Once the SystemVerilog datapath exists, it will be checked against this model.
+A C golden model for a planned SystemVerilog CPU. It decodes raw 32-bit instructions, generates immediates, updates the register file and PC, and does memory ops in a 4 KB address space.
 
-**So far:** the R / I / load-store / branch / jump subset below runs through a stepped test harness (each case prints PASS or FAIL). `LUI` / `AUIPC`, CSRs, and the official `riscv-tests` suite are next — then a single-cycle SystemVerilog datapath co-simulated against this golden model.
+**Honest scope:** this is early. There is no `LUI` / `AUIPC` yet, so it cannot run normal compiled binaries. Tests are hand-assembled words in a stepped harness — not the official `riscv-tests` suite — and there is no RTL or co-sim yet. The useful signal for this project will be passing `riscv-tests` and checking RTL against this model; until then it stays a roadmap piece, not a finished architecture demo.
 
 Try the [instruction bitfield inspector](#bitfield-inspector) below — click bits, pick a preset, or type your own 32-bit word to see how an instruction is decoded.
 

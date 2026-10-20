@@ -54,22 +54,22 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
 
   <Resume channels={channels} show="experience" />
 
+  <Resume channels={channels} show="education" />
+
   <section class="section capture-section" id="capture" aria-labelledby="capture-title">
     <div class="capture-wrap">
       <div class="capture-head">
         <h2 class="section-title" id="capture-title">Timeline</h2>
         <p class="lede">
-          Same roles and projects as a logic-analyzer-style capture — click a channel for details.
+          Optional view of the same roles and projects as a logic-analyzer-style capture — click a channel for details.
           Prefer plain text? Jump to <a href="#experience">Experience</a> or
           <a href="#projects">Projects</a> above.
-          <span class="hint">Optional: pinch, scroll, or swipe to explore the UART decode.</span>
+          <span class="hint">Pinch, scroll, or swipe to explore the UART decode.</span>
         </p>
       </div>
       <Capture channels={channels} />
     </div>
   </section>
-
-  <Resume channels={channels} show="education" />
 
   <section class="section contact" id="contact" aria-labelledby="contact-title">
     <div class="container contact-inner">
