@@ -9,12 +9,14 @@ import { site } from '../data/site';
 interface Props {
   title?: string;
   description?: string;
+  /** Absolute or site-relative path for link previews (LinkedIn, Slack, email). */
+  image?: string;
 }
 
-const { title, description = site.description } = Astro.props;
+const { title, description = site.description, image = site.ogImage } = Astro.props;
 const pageTitle = title ? `${title} · ${site.name}` : site.title;
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImage = new URL(site.ogImage, Astro.site);
+const ogImage = new URL(image, Astro.site);
 ---
 
 <!doctype html>
@@ -34,7 +36,10 @@ const ogImage = new URL(site.ogImage, Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={pageTitle} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
     <meta name="generator" content={Astro.generator} />
     <script is:inline>

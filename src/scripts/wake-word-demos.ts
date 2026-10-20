@@ -150,8 +150,35 @@ function mountEnergyScrubber(
     ctx!.textAlign = 'left';
     ctx!.fillText(`threshold ${data.threshold}`, padL + 4, thrY - 4);
 
-    // Only draw through the scrub position — forward extends the traces, back erases them.
+    // Ghost the full capture so load isn't a blank plot; brighten through the scrub head.
     const end = Math.max(0, Math.min(n - 1, index));
+
+    const strokeSeries = (
+      values: number[],
+      yOf: (v: number) => number,
+      color: string,
+      width: number,
+      alpha: number,
+      last: number,
+    ) => {
+      if (last < 0) return;
+      ctx!.globalAlpha = alpha;
+      ctx!.strokeStyle = color;
+      ctx!.lineWidth = width;
+      ctx!.beginPath();
+      for (let i = 0; i <= last; i++) {
+        const x = xAt(i);
+        const y = yOf(values[i]);
+        if (i === 0) ctx!.moveTo(x, y);
+        else ctx!.lineTo(x, y);
+      }
+      ctx!.stroke();
+      ctx!.globalAlpha = 1;
+    };
+
+    // Full traces (faint) — always visible on first paint.
+    strokeSeries(data.samples, ySample, '#2563eb', 1.1, 0.18, n - 1);
+    strokeSeries(data.energies, yEnergy, '#ea580c', 1.25, 0.2, n - 1);
 
     ctx!.fillStyle = 'rgb(34 197 94 / 0.14)';
     let runStart = -1;
@@ -166,29 +193,17 @@ function mountEnergyScrubber(
       }
     }
 
-    if (end >= 0) {
-      ctx!.strokeStyle = '#2563eb';
-      ctx!.lineWidth = 1.25;
-      ctx!.beginPath();
-      for (let i = 0; i <= end; i++) {
-        const x = xAt(i);
-        const y = ySample(data.samples[i]);
-        if (i === 0) ctx!.moveTo(x, y);
-        else ctx!.lineTo(x, y);
-      }
-      ctx!.stroke();
+    strokeSeries(data.samples, ySample, '#2563eb', 1.25, 1, end);
+    strokeSeries(data.energies, yEnergy, '#ea580c', 1.5, 1, end);
 
-      ctx!.strokeStyle = '#ea580c';
-      ctx!.lineWidth = 1.5;
-      ctx!.beginPath();
-      for (let i = 0; i <= end; i++) {
-        const x = xAt(i);
-        const y = yEnergy(data.energies[i]);
-        if (i === 0) ctx!.moveTo(x, y);
-        else ctx!.lineTo(x, y);
-      }
-      ctx!.stroke();
-    }
+    // Playhead
+    const headX = xAt(end);
+    ctx!.strokeStyle = '#98a2b3';
+    ctx!.lineWidth = 1;
+    ctx!.beginPath();
+    ctx!.moveTo(headX, padT);
+    ctx!.lineTo(headX, padT + plotH);
+    ctx!.stroke();
 
     ctx!.font = `500 11px ${FONT}`;
     ctx!.textAlign = 'right';

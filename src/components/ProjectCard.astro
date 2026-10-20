@@ -30,11 +30,18 @@ const Heading = headingLevel;
       <span class="btn btn-primary btn-sm">View</span>
     </div>
     <div class="badges">
-      {data.status === 'in-progress' && <span class="badge badge-live">In progress</span>}
+      {
+        data.statusLabel ? (
+          <span class="badge badge-status">{data.statusLabel}</span>
+        ) : (
+          data.status === 'in-progress' && <span class="badge badge-live">In progress</span>
+        )
+      }
       {data.course && <span class="badge">{data.course}</span>}
       <span class="badge">{formatDateRange(data)}</span>
       {data.draft && <span class="badge badge-draft">Draft</span>}
     </div>
+    {data.metric && <p class="metric">{data.metric}</p>}
     <p class="summary">{data.summary}</p>
   </div>
 </a>
@@ -126,6 +133,20 @@ const Heading = headingLevel;
 
   .badge-draft {
     border-style: dashed;
+  }
+
+  .badge-status {
+    border-color: rgb(38 163 217 / 0.45);
+    color: var(--btn);
+  }
+
+  .metric {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
   }
 
   .summary {

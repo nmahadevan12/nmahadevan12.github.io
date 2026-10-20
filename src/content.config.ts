@@ -18,6 +18,8 @@ const projects = defineCollection({
       channel: z.string().optional(),
       summary: z.string(),
       status: z.enum(STATUS_KEYS),
+      /** Override the default status badge (e.g. host-complete / on-device pending). */
+      statusLabel: z.string().optional(),
       areas: z.array(z.enum(AREA_KEYS)).min(1),
       // Accepts `2026-06` or `2026-06-15`.
       start: z.coerce.date().optional(),
@@ -27,6 +29,8 @@ const projects = defineCollection({
       platform: z.string().optional(),
       tags: z.array(z.string()).default([]),
       highlights: z.array(z.string()).default([]),
+      /** One hard number for homepage / listing cards. */
+      metric: z.string().optional(),
       featured: z.boolean().default(false),
       draft: z.boolean().default(false),
       cover: image().optional(),

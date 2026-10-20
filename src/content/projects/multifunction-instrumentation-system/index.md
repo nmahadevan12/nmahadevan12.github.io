@@ -1,7 +1,7 @@
 ---
 title: Multifunction Instrumentation System
 channel: M.I.S. test bench
-summary: ECSE 2920 team of 5 — I owned the full Raspberry Pi DAQ / DMM and function-generator build from analog front-ends through software.
+summary: ECSE 2920 — I built the Raspberry Pi DAQ / DMM and function-generator path from analog front-ends through software; teammates handled enclosure, wiring docs, and demo slides.
 status: completed
 areas: [hardware, embedded]
 start: 2026-01
@@ -9,9 +9,10 @@ end: 2026-04
 course: ECSE 2920
 platform: Raspberry Pi 4
 featured: true
+metric: ±0.2 V · ±2% frequency
 tags: [Python, Raspberry Pi, Analog design, Op-amps, ADC, DAC, SPI, I²C, KiCad]
 highlights:
-  - Team of 5 on paper; I owned the full system — Pi software, analog front-ends, digipot SAR path, and calibration
+  - Built the full measurement path — Pi software, analog front-ends, digipot SAR ADC, and digipot calibration LUTs; teammates owned enclosure, wiring docs, and demo slides
   - Discrete SAR ADC from an SPI digipot and comparator for the voltmeter, ohmmeter, and DC reference
   - Digipot characterization and lookup tables improved DC resolution 6× and voltmeter precision 2× vs uncalibrated wiper steps
   - 4-layer mixed-signal Pi HAT PCB with dedicated power and ground planes
@@ -36,7 +37,7 @@ gallery:
 
 ## Overview
 
-ECSE 2920 course project listed as a team of five; I owned the design and implementation end to end. The M.I.S. folds a bench of lab instruments into one platform. The Raspberry Pi 4 is the only processor: Python firmware runs the measurement algorithms, waveform output, and a menu-driven interface on a 20×4 I²C LCD with a rotary encoder. Custom analog circuits handle signal conditioning, comparison, and generation.
+ECSE 2920 course project with a five-person team. I designed and built the measurement and generation path end to end — Pi software, analog front-ends, digipot SAR ADC, and calibration — while teammates handled the enclosure, wiring documentation, and demo slides. The M.I.S. folds a bench of lab instruments into one platform. The Raspberry Pi 4 is the only processor: Python firmware runs the measurement algorithms, waveform output, and a menu-driven interface on a 20×4 I²C LCD with a rotary encoder. Custom analog circuits handle signal conditioning, comparison, and generation.
 
 ## Results
 

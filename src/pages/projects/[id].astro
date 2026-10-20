@@ -54,9 +54,11 @@ if (data.video) links.push({ href: data.video, label: 'Watch demo', icon: 'play'
 if (data.demo) links.push({ href: data.demo, label: 'Live demo', icon: 'globe' });
 if (data.docs) links.push({ href: data.docs, label: 'Documentation', icon: 'book' });
 
+const statusDisplay = data.statusLabel ?? STATUS_LABELS[data.status];
+
 const specs: { label: string; value?: string | string[] }[] = [
   { label: 'Timeline', value: formatDateRange(data) },
-  { label: 'Status', value: STATUS_LABELS[data.status] },
+  { label: 'Status', value: statusDisplay },
   { label: 'Area', value: data.areas.map((area) => AREA_LABELS[area]).join(', ') },
   { label: 'Platform', value: data.platform },
   { label: 'Course', value: data.course },
@@ -71,6 +73,10 @@ const gallery = await Promise.all(
   })),
 );
 
+const ogCover = data.cover
+  ? (await getImage({ src: data.cover, width: 1200 })).src
+  : undefined;
+
 /** Specs stops with the writeup; interactives (+ gallery) go full-width below. */
 const wideExtras =
   project.id === 'edge-ai-wake-word' ||
@@ -83,7 +89,7 @@ const showPiDemos = project.id === 'raspberry-pi-bare-metal';
 const showMisDemos = project.id === 'multifunction-instrumentation-system';
 ---
 
-<BaseLayout title={data.title} description={data.summary}>
+<BaseLayout title={data.title} description={data.summary} image={ogCover}>
   <article>
     <header class="head">
       <div class="container head-inner" data-reveal>
@@ -93,12 +99,17 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
           <span aria-current="page">{data.title}</span>
         </nav>
 
-        <p class="eyebrow">Case study</p>
         <h1>{data.title}</h1>
         <p class="section-lede">{data.summary}</p>
 
         <div class="badges">
-          {data.status === 'in-progress' && <span class="badge badge-live">In progress</span>}
+          {
+            data.statusLabel ? (
+              <span class="badge badge-status">{data.statusLabel}</span>
+            ) : (
+              data.status === 'in-progress' && <span class="badge badge-live">In progress</span>
+            )
+          }
           {data.course && <span class="badge">{data.course}</span>}
           <span class="badge">{formatDateRange(data)}</span>
           {data.draft && <span class="badge badge-draft">Draft, hidden when published</span>}
@@ -412,6 +423,11 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
     border-style: dashed;
   }
 
+  .badge-status {
+    border-color: rgb(38 163 217 / 0.45);
+    color: var(--btn);
+  }
+
   .links {
     justify-content: flex-start;
     margin-top: 1.5rem;
@@ -633,6 +649,7 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
     width: 100%;
     height: 100%;
     object-fit: contain;
+    object-position: center;
     transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   }
 

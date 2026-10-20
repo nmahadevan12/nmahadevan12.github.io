@@ -533,11 +533,14 @@ export function mountCapture(root: HTMLElement): void {
       const at = Math.round(x(tick.t));
       ctx!.fillStyle = COLOR.tick;
       ctx!.fillRect(at, rulerH - 10, 1, 9);
-      const labelX = at + 5;
-      if (labelX < lastRight + 8 || labelX > W) continue;
+      const labelW = ctx!.measureText(tick.label).width;
+      let labelX = at + 5;
+      // Keep scale labels fully inside the ruler instead of clipping at the right edge.
+      if (labelX + labelW > W - 4) labelX = Math.max(4, W - 4 - labelW);
+      if (labelX < lastRight + 8 || labelX + labelW < 0) continue;
       ctx!.fillStyle = tick.strong ? COLOR.rulerStrong : COLOR.rulerText;
       ctx!.fillText(tick.label, labelX, rulerH / 2 - 1);
-      lastRight = labelX + ctx!.measureText(tick.label).width;
+      lastRight = labelX + labelW;
     }
 
     const nowX = x(captureEnd);
@@ -723,15 +726,6 @@ export function mountCapture(root: HTMLElement): void {
   const fitWindow = (): [number, number] => {
     const pad = (captureEnd - captureStart) * 0.025;
     return [captureStart - pad, captureEnd + pad];
-  };
-
-  /** Opening view: recent work, sized so UART bytes on D0 read as letters. */
-  const homeWindow = (): [number, number] => {
-    const featured = channels.find((ch) => ch.layout.length) ?? channels[0];
-    const byteDays = featured ? featured.bit * BITS_PER_BYTE : 7;
-    const days = clamp((byteDays * Math.max(W, 320)) / 36, 32, 72);
-    const right = captureEnd + days * 0.04;
-    return [Math.max(right - days, fitWindow()[0]), right];
   };
 
   /** Fit this channel's UART payload across the wave view. */
@@ -1225,7 +1219,8 @@ export function mountCapture(root: HTMLElement): void {
     canvas!.width = Math.round(W * dpr);
     canvas!.height = Math.round(H * dpr);
     setBubbleFont(rowH < 52 ? 10 : 11);
-    if (first) [a, b] = homeWindow();
+    // Default to Fit so channels and UART text aren't mid-word / flat on first paint.
+    if (first) [a, b] = fitWindow();
     if (raf) cancelAnimationFrame(raf);
     draw();
   }
