@@ -89,7 +89,12 @@ export function buildCaptureChannels(projects: Project[], now = new Date()): Cap
       ...education.degrees,
       `GPA ${education.gpa.split(' ')[0]}`,
       ...education.honors
-        .filter((honor) => !honor.startsWith('Zell Miller') && !honor.startsWith('Eagle Scout'))
+        .filter(
+          (honor) =>
+            !honor.startsWith('Zell Miller') &&
+            !honor.startsWith('Eagle Scout') &&
+            !honor.includes('Dean'),
+        )
         .slice(0, 2),
     ],
     points: [],
