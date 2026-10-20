@@ -1,7 +1,7 @@
 ---
 title: Multifunction Instrumentation System
 channel: M.I.S. test bench
-summary: ECSE 2920 — I built the Raspberry Pi DAQ / DMM and function-generator path from analog front-ends through software; teammates handled enclosure, wiring docs, and demo slides.
+summary: ECSE 2920 — I worked on the voltmeter, ohmmeter, DC reference, sine-wave generator, and frequency measurer on a five-person team.
 status: completed
 areas: [hardware, embedded]
 start: 2026-01
