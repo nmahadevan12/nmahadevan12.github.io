@@ -17,7 +17,8 @@ export const site = {
     'I’m open to Summer 2027 internships in embedded systems, hardware design, and computer architecture.',
   location: 'Athens, GA',
   email: 'Nikhil.Mahadevan@uga.edu',
-  resume: '/resume.pdf',
+  /** Query bumps when the PDF changes so browsers don’t keep an old cached copy. */
+  resume: '/resume.pdf?v=20261020',
   github: 'https://github.com/nmahadevan12',
   linkedin: 'https://www.linkedin.com/in/nmahadevan12',
   /** Absolute path under `public/` for link previews. */
