@@ -88,7 +88,9 @@ export function buildCaptureChannels(projects: Project[], now = new Date()): Cap
     frames: [
       ...education.degrees,
       `GPA ${education.gpa.split(' ')[0]}`,
-      ...education.honors.filter((honor) => !honor.startsWith('Zell Miller')).slice(0, 2),
+      ...education.honors
+        .filter((honor) => !honor.startsWith('Zell Miller') && !honor.startsWith('Eagle Scout'))
+        .slice(0, 2),
     ],
     points: [],
     href: '#education',
