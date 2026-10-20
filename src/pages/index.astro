@@ -23,14 +23,14 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
     <div class="stage-glow" aria-hidden="true"></div>
     <div class="stage-floor" aria-hidden="true"></div>
     <div class="stage-photos" aria-hidden="true">
-      <div class="photo-slot photo-slot-left" data-py="0.55">
+      <div class="photo-slot photo-slot-left" data-py="0.72">
         <img class="photo photo-left" src="/hero/1-left.png" alt="" width="1323" height="1168" decoding="async" />
       </div>
-      <div class="photo-slot photo-slot-right" data-py="0.82">
+      <div class="photo-slot photo-slot-right" data-py="1.05">
         <img class="photo photo-right" src="/hero/1-right.png" alt="" width="1600" height="299" decoding="async" />
       </div>
     </div>
-    <div class="stage-copy" data-py="0.22" data-fade="1">
+    <div class="stage-copy" data-py="0.32" data-fade="1">
       <h1 id="hero-title" class="hero-line" style="--i: 0">{site.name}</h1>
       <p class="lede hero-line" style="--i: 1">
         {site.intro}
@@ -48,7 +48,7 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
 
   <section class="section band projects" id="projects" aria-labelledby="projects-title">
     <div class="container">
-      <div class="section-head section-head-row" data-parallax="0.12">
+      <div class="section-head section-head-row" data-parallax="0.22">
         <div class="section-copy">
           <h2 class="section-title" id="projects-title">Projects</h2>
           <p class="section-lede">Firmware, hardware, and systems work — strongest pieces first.</p>
@@ -67,7 +67,7 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
 
   <section class="section capture-section" id="capture" aria-labelledby="capture-title">
     <div class="capture-wrap">
-      <div class="capture-head" data-parallax="0.1">
+      <div class="capture-head" data-parallax="0.18">
         <p class="eyebrow">Logic analyzer view</p>
         <h2 class="section-title" id="capture-title">Timeline</h2>
         <p class="section-lede">
@@ -76,14 +76,14 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
         </p>
         <p class="hint">Pinch, scroll, or swipe to explore the UART decode.</p>
       </div>
-      <div class="capture-frame" data-parallax="0.18">
+      <div class="capture-frame" data-parallax="0.28">
         <Capture channels={channels} />
       </div>
     </div>
   </section>
 
   <section class="section contact" id="contact" aria-labelledby="contact-title">
-    <div class="container contact-inner" data-parallax="0.14">
+    <div class="container contact-inner" data-parallax="0.24">
       <p class="eyebrow">Summer 2027</p>
       <h2 class="section-title" id="contact-title">Let’s talk</h2>
       <p class="section-lede">{site.availability}</p>
@@ -529,7 +529,7 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
         if (el.dataset.fade != null) el.style.setProperty('--fade', String(t * 0.9));
       }
 
-      if (glow instanceof HTMLElement) glow.style.setProperty('--gy', String(y * 0.48));
+      if (glow instanceof HTMLElement) glow.style.setProperty('--gy', String(y * 0.7));
     };
 
     update();

@@ -92,7 +92,7 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
 <BaseLayout title={data.title} description={data.summary} image={ogCover}>
   <article>
     <header class="head">
-      <div class="container head-inner" data-reveal data-parallax="0.1">
+      <div class="container head-inner" data-reveal data-parallax="0.18">
         <nav class="crumbs" aria-label="Breadcrumb">
           <a href="/projects/">Projects</a>
           <span aria-hidden="true">/</span>
@@ -138,7 +138,7 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
     <div class="cover-band page-band">
       {
         data.model3d ? (
-          <div class="container cover" data-reveal data-parallax="0.16">
+          <div class="container cover" data-reveal data-parallax="0.26">
             <PcbViewer
               src={data.model3d}
               alt={data.model3dAlt ?? data.coverAlt ?? data.title}
@@ -149,7 +149,7 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
           </div>
         ) : data.cover && data.coverHotspots.length > 0 ? (
           <div class="container cover" data-reveal>
-            <div class="parallax-media" data-parallax="0.22">
+            <div class="parallax-media" data-parallax="0.34">
               <CoverMap
                 src={data.cover}
                 alt={data.coverAlt ?? data.title}
@@ -176,7 +176,7 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
                 { art: !data.cover, contain: data.coverFit === 'contain', photo: !!data.cover },
               ]}
             >
-              <div class="parallax-media" data-parallax="0.22">
+              <div class="parallax-media" data-parallax="0.34">
                 <ProjectCover
                   project={project}
                   width={1600}
@@ -245,7 +245,7 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
               <h2 id="gallery-title">Gallery</h2>
               <div class="gallery-grid">
                 {gallery.map((item, i) => (
-                  <figure data-parallax={i % 2 === 0 ? '0.14' : '0.22'}>
+                  <figure data-parallax={i % 2 === 0 ? '0.22' : '0.34'}>
                     <button
                       class="shot"
                       type="button"
@@ -271,7 +271,7 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
     {
       wideExtras && (
         <div class="extras-band page-band">
-          <div class="container extras" data-reveal data-parallax="0.1">
+          <div class="container extras" data-reveal data-parallax="0.18">
             {showWakeDemos && <WakeWordDemos />}
             {showRiscDemos && <RiscVDemos />}
             {showPiDemos && <PiBareMetalDemos />}
@@ -281,7 +281,7 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
                 <h2 id="gallery-title">Gallery</h2>
                 <div class="gallery-grid">
                   {gallery.map((item, i) => (
-                    <figure data-parallax={i % 2 === 0 ? '0.14' : '0.22'}>
+                    <figure data-parallax={i % 2 === 0 ? '0.22' : '0.34'}>
                       <button
                         class="shot"
                         type="button"

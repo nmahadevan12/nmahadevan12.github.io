@@ -21,17 +21,17 @@ const schoolDates = `${formatMonthRange(parseMonth(education.start), schoolEnd)}
 {showExperience && (
 <section class="section experience" id="experience" aria-labelledby="experience-title">
   <div class="container">
-    <div class="section-head section-head-start" data-parallax="0.12">
+    <div class="section-head section-head-start" data-parallax="0.22">
       <h2 class="section-title" id="experience-title">Experience</h2>
       <p class="section-lede">Flight software, embedded research, and teaching at UGA — alongside coursework.</p>
     </div>
 
     <ol class="jobs" role="list">
       {
-        experience.map((job) => {
+        experience.map((job, jobIndex) => {
           const channel = channelFor(job.id);
           return (
-            <li class="job">
+            <li class="job" data-parallax={String(0.14 + (jobIndex % 3) * 0.06)}>
               <div class="job-meta">
                 {channel && (
                   <a
@@ -68,7 +68,7 @@ const schoolDates = `${formatMonthRange(parseMonth(education.start), schoolEnd)}
 {showEducation && (
 <section class="section split-section" aria-label="Education and skills">
   <div class="container split">
-    <div id="education" data-parallax="0.1">
+    <div id="education" data-parallax="0.18">
       <h2 class="col-title">
         Education
         {
@@ -144,7 +144,7 @@ const schoolDates = `${formatMonthRange(parseMonth(education.start), schoolEnd)}
       </dl>
     </div>
 
-    <div id="skills" data-parallax="0.16">
+    <div id="skills" data-parallax="0.26">
       <h2 class="col-title">Skills</h2>
       <dl class="specs">
         {
