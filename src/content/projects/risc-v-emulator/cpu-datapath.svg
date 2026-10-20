@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 640" role="img" aria-labelledby="title desc">
+  <title id="title">RV32I emulator datapath from step_cpu</title>
+  <desc id="desc">Block diagram of the C model: PC and memory feed fetch, then decode and immediate generation, then execute against the register file and memory, with x0 hardwired to zero.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 Z" fill="#667085"/>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 Z" fill="#1b7db3"/>
+    </marker>
+  </defs>
+
+  <rect width="1120" height="640" fill="#ffffff"/>
+
+  <text x="56" y="48" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="22" font-weight="600">RV32I emulator / one step</text>
+  <text x="56" y="72" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="14">Mapped from struct CPU and step_cpu in the C golden model</text>
+
+  <rect x="40" y="100" width="1040" height="140" rx="10" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1.5"/>
+  <text x="56" y="126" fill="#475467" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13">struct CPU</text>
+
+  <rect x="64" y="144" width="160" height="72" rx="8" fill="#ffffff" stroke="#1b7db3" stroke-width="1.75"/>
+  <text x="144" y="172" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="15" font-weight="600">pc</text>
+  <text x="144" y="194" text-anchor="middle" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12">uint16_t</text>
+
+  <rect x="260" y="144" width="320" height="72" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="420" y="172" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="15" font-weight="600">regs[32]</text>
+  <text x="420" y="194" text-anchor="middle" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">x0 hardwired to 0 after execute</text>
+
+  <rect x="616" y="144" width="440" height="72" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="836" y="172" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="15" font-weight="600">memory[4096]</text>
+  <text x="836" y="194" text-anchor="middle" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">byte-addressable, little-endian words</text>
+
+  <text x="56" y="280" fill="#475467" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13" font-weight="600">step_cpu</text>
+
+  <rect x="56" y="300" width="200" height="108" rx="8" fill="#ffffff" stroke="#26a3d9" stroke-width="1.75"/>
+  <text x="156" y="332" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="16" font-weight="600">1. Fetch</text>
+  <text x="156" y="356" text-anchor="middle" fill="#475467" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13">instr = memory[pc..pc+3]</text>
+  <text x="156" y="378" text-anchor="middle" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">little-endian assemble</text>
+
+  <rect x="300" y="300" width="220" height="108" rx="8" fill="#ffffff" stroke="#26a3d9" stroke-width="1.75"/>
+  <text x="410" y="332" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="16" font-weight="600">2. Decode</text>
+  <text x="410" y="356" text-anchor="middle" fill="#475467" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13">opcode, funct3, funct7</text>
+  <text x="410" y="378" text-anchor="middle" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">rd, rs1, rs2</text>
+
+  <rect x="564" y="300" width="220" height="108" rx="8" fill="#ffffff" stroke="#26a3d9" stroke-width="1.75"/>
+  <text x="674" y="332" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="16" font-weight="600">3. Imm gen</text>
+  <text x="674" y="356" text-anchor="middle" fill="#475467" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13">I / S / B / U / J packs</text>
+  <text x="674" y="378" text-anchor="middle" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">sign-extend from instr</text>
+
+  <rect x="828" y="300" width="236" height="108" rx="8" fill="#ffffff" stroke="#1b7db3" stroke-width="1.75"/>
+  <text x="946" y="332" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="16" font-weight="600">4. Execute</text>
+  <text x="946" y="356" text-anchor="middle" fill="#475467" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13">ALU, load/store</text>
+  <text x="946" y="378" text-anchor="middle" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">branch, JAL / JALR</text>
+
+  <line x1="256" y1="354" x2="300" y2="354" stroke="#667085" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="520" y1="354" x2="564" y2="354" stroke="#667085" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="784" y1="354" x2="828" y2="354" stroke="#667085" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <path d="M 144 216 V 260 H 156 V 300" fill="none" stroke="#1b7db3" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+  <text x="164" y="256" fill="#1b7db3" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">pc</text>
+
+  <path d="M 780 216 V 250 H 120 V 300" fill="none" stroke="#667085" stroke-width="1.25" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+  <text x="420" y="244" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="11">instruction bytes</text>
+
+  <rect x="56" y="460" width="1008" height="140" rx="10" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1.5"/>
+  <text x="72" y="488" fill="#475467" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13" font-weight="600">execute_instruction</text>
+
+  <rect x="72" y="508" width="200" height="68" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="172" y="536" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13" font-weight="600">Read rs1 / rs2</text>
+  <text x="172" y="556" text-anchor="middle" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">from regs[]</text>
+
+  <rect x="308" y="508" width="220" height="68" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="418" y="536" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13" font-weight="600">ALU / compare / addr</text>
+  <text x="418" y="556" text-anchor="middle" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">regs, imm, mem index</text>
+
+  <rect x="564" y="508" width="220" height="68" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="674" y="536" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13" font-weight="600">Write rd or memory</text>
+  <text x="674" y="556" text-anchor="middle" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">loads, stores, results</text>
+
+  <rect x="820" y="508" width="220" height="68" rx="6" fill="#ffffff" stroke="#1b7db3" stroke-width="1.5"/>
+  <text x="930" y="536" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13" font-weight="600">Update pc</text>
+  <text x="930" y="556" text-anchor="middle" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">+4, +imm, or rs1+imm</text>
+
+  <line x1="946" y1="408" x2="946" y2="460" stroke="#1b7db3" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+  <line x1="272" y1="542" x2="308" y2="542" stroke="#667085" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="528" y1="542" x2="564" y2="542" stroke="#667085" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="784" y1="542" x2="820" y2="542" stroke="#667085" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <text x="56" y="628" fill="#98a2b3" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">Non-control ops advance pc by 4 in step_cpu. B / JAL / JALR rewrite pc in execute. regs[0] forced to 0 every step.</text>
+</svg>

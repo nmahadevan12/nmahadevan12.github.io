@@ -2,21 +2,14 @@
 ---
 
 <section class="rv-demos" aria-labelledby="rv-demos-title" data-riscv-demos>
-  <h2 id="rv-demos-title">Interactive ISA</h2>
+  <h2 id="rv-demos-title">Instruction bitfield inspector</h2>
   <p class="lede">
-    Decode real encodings from the C harness, then step a short program the same way
-    <code>step_cpu</code> walks fetch → decode → execute.
+    Every RISC-V instruction is a 32-bit word. Click a bit or a field — or type your own word in the
+    box — to see how the CPU splits it into opcode, registers, and immediates. The presets are real
+    encodings from <code>tests.c</code>.
   </p>
 
   <div class="panel" data-bitfield id="bitfield-inspector">
-    <div class="panel-head">
-      <h3>Instruction bitfield inspector</h3>
-      <p>
-        Click a bit or a field. Encodings match <code>tests.c</code> —
-        <code>0x01410093</code> is <code>ADDI x1, x2, 20</code>.
-      </p>
-    </div>
-
     <div class="toolbar">
       <label class="hex-label">
         Word
@@ -30,40 +23,6 @@
     <div class="bits" data-bits role="group" aria-label="Thirty-two instruction bits"></div>
     <div class="fields" data-fields></div>
   </div>
-
-  <div class="panel" data-stepper id="step-debugger">
-    <div class="panel-head">
-      <h3>Step debugger</h3>
-      <p>
-        Programs use the same hand-assembled words as the harness. Step updates PC, the register
-        file (x0 stays 0), and a window of the 4&nbsp;KB memory.
-      </p>
-    </div>
-
-    <div class="presets" data-programs role="group" aria-label="Demo programs"></div>
-
-    <div class="step-bar">
-      <button type="button" class="btn" data-step>Step</button>
-      <button type="button" class="btn ghost" data-reset>Reset</button>
-      <span class="pc">PC <strong data-pc>0x00000000</strong></span>
-    </div>
-    <p class="status" data-status></p>
-
-    <div class="step-grid">
-      <div>
-        <h4>Disassembly</h4>
-        <div class="disasm" data-disasm></div>
-      </div>
-      <div>
-        <h4>Registers</h4>
-        <div class="regs" data-regs></div>
-      </div>
-      <div class="mem-col">
-        <h4>Memory</h4>
-        <div class="mem" data-mem></div>
-      </div>
-    </div>
-  </div>
 </section>
 
 <script>
@@ -76,7 +35,7 @@
 <style>
   .rv-demos {
     display: grid;
-    gap: 1.75rem;
+    gap: 1.25rem;
     margin-top: 3.5rem;
     padding-top: 3rem;
     border-top: 1px solid var(--border);
@@ -90,7 +49,7 @@
   }
 
   .lede {
-    max-width: 42rem;
+    max-width: 44rem;
     margin: 0;
     color: var(--text-muted);
     font-size: 1.02rem;
@@ -104,20 +63,6 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     background: #fff;
-  }
-
-  .panel-head h3 {
-    margin: 0 0 0.35rem;
-    font-size: 1.05rem;
-    font-weight: 650;
-    letter-spacing: -0.015em;
-  }
-
-  .panel-head p {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 0.92rem;
-    line-height: 1.5;
   }
 
   .toolbar {
@@ -171,8 +116,7 @@
     gap: 0.4rem;
   }
 
-  .presets :global(.chip),
-  .btn {
+  .presets :global(.chip) {
     padding: 0.4rem 0.7rem;
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -184,8 +128,7 @@
     cursor: pointer;
   }
 
-  .presets :global(.chip:hover),
-  .btn:hover {
+  .presets :global(.chip:hover) {
     border-color: var(--border-strong);
   }
 
@@ -193,10 +136,6 @@
     border-color: #2563eb;
     background: #eff6ff;
     color: #1d4ed8;
-  }
-
-  .btn.ghost {
-    background: #fff;
   }
 
   .bits {
@@ -278,166 +217,9 @@
     font-weight: 600;
   }
 
-  .step-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.55rem;
-    align-items: center;
-  }
-
-  .pc {
-    margin-left: auto;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-  }
-
-  .pc strong {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    color: var(--text);
-  }
-
-  .status {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    line-height: 1.45;
-  }
-
-  .step-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr) minmax(7rem, 0.7fr);
-    gap: 0.85rem;
-  }
-
-  .step-grid h4 {
-    margin: 0 0 0.45rem;
-    color: var(--text-faint);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-
-  .disasm,
-  .regs,
-  .mem {
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--well);
-  }
-
-  .disasm :global(.line) {
-    display: grid;
-    grid-template-columns: 5.5rem 5.5rem minmax(0, 1fr);
-    gap: 0.4rem;
-    padding: 0.4rem 0.55rem;
-    border-bottom: 1px solid var(--border);
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 0.78rem;
-  }
-
-  .disasm :global(.line:last-child) {
-    border-bottom: 0;
-  }
-
-  .disasm :global(.line.is-pc) {
-    background: #eff6ff;
-    box-shadow: inset 3px 0 0 #2563eb;
-  }
-
-  .disasm :global(.addr),
-  .disasm :global(.hex) {
-    color: var(--text-faint);
-  }
-
-  .disasm :global(.asm) {
-    font-weight: 600;
-  }
-
-  .regs {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1px;
-    background: var(--border);
-    overflow: hidden;
-  }
-
-  .regs :global(.reg) {
-    display: grid;
-    gap: 0.1rem;
-    padding: 0.35rem 0.4rem;
-    background: #fff;
-  }
-
-  .regs :global(.reg.is-hot) {
-    background: #ecfdf5;
-  }
-
-  .regs :global(.reg.is-zero) {
-    opacity: 0.72;
-  }
-
-  .regs :global(.rn) {
-    color: var(--text-faint);
-    font-size: 10px;
-    font-weight: 650;
-  }
-
-  .regs :global(.rv) {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 0.72rem;
-    font-weight: 600;
-  }
-
-  .mem {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .mem :global(.byte) {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.28rem 0.5rem;
-    border-bottom: 1px solid var(--border);
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 0.75rem;
-  }
-
-  .mem :global(.byte:last-child) {
-    border-bottom: 0;
-  }
-
-  .mem :global(.byte.is-hot) {
-    background: #fff7ed;
-  }
-
-  .mem :global(.ma) {
-    color: var(--text-faint);
-  }
-
-  .mem :global(.mv) {
-    font-weight: 650;
-  }
-
   @media (max-width: 900px) {
-    .step-grid {
-      grid-template-columns: 1fr;
-    }
-
     .bits {
       grid-template-columns: repeat(16, minmax(0, 1fr));
-    }
-  }
-
-  @media (max-width: 560px) {
-    .regs {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .disasm :global(.line) {
-      grid-template-columns: 1fr;
-      gap: 0.15rem;
     }
   }
 </style>

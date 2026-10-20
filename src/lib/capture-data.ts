@@ -40,11 +40,12 @@ const RESUME_PROJECTS = [
   'edge-ai-wake-word',
   'light-tracker',
   'multifunction-instrumentation-system',
+  'risc-v-emulator',
 ];
 
 function projectEntry(project: Project): Entry | null {
   const { data } = project;
-  if (!data.start || data.status === 'planned') return null;
+  if (data.draft || !data.start || data.status === 'planned') return null;
   const end = data.end ?? (data.status === 'completed' ? data.start : undefined);
   return {
     id: project.id,

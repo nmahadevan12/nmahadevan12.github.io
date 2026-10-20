@@ -1,17 +1,4 @@
-import {
-  PRESETS,
-  PROGRAMS,
-  createCpu,
-  decode,
-  hex32,
-  loadProgram,
-  loadWord,
-  regAbi,
-  regName,
-  step,
-  type Cpu,
-  type Program,
-} from './rv32i';
+import { PRESETS, decode, hex32, regAbi, regName } from './rv32i';
 
 const FIELD_COLORS: Record<string, string> = {
   opcode: '#2563eb',
@@ -43,8 +30,8 @@ function fieldForBit(fields: { name: string; lo: number; hi: number }[], bit: nu
 }
 
 export function mountRiscVDemos(root: HTMLElement): void {
-  mountBitfield(root.querySelector<HTMLElement>('[data-bitfield]')!);
-  mountStepper(root.querySelector<HTMLElement>('[data-stepper]')!);
+  const panel = root.querySelector<HTMLElement>('[data-bitfield]');
+  if (panel) mountBitfield(panel);
 }
 
 function mountBitfield(root: HTMLElement): void {
@@ -69,6 +56,10 @@ function mountBitfield(root: HTMLElement): void {
     hexInput.value = hex32(word);
     mnemonicEl.textContent = d.mnemonic;
     formatEl.textContent = `${d.format}-type`;
+
+    for (const btn of presetsEl.querySelectorAll<HTMLElement>('.chip')) {
+      btn.classList.toggle('is-on', Number(btn.dataset.word) === word);
+    }
 
     bitsEl.innerHTML = Array.from({ length: 32 }, (_, i) => {
       const bit = 31 - i;
@@ -132,99 +123,4 @@ function mountBitfield(root: HTMLElement): void {
   });
 
   setWord(word);
-}
-
-function mountStepper(root: HTMLElement): void {
-  const programEl = root.querySelector<HTMLElement>('[data-programs]');
-  const disasmEl = root.querySelector<HTMLElement>('[data-disasm]');
-  const regsEl = root.querySelector<HTMLElement>('[data-regs]');
-  const memEl = root.querySelector<HTMLElement>('[data-mem]');
-  const pcEl = root.querySelector<HTMLElement>('[data-pc]');
-  const statusEl = root.querySelector<HTMLElement>('[data-status]');
-  const stepBtn = root.querySelector<HTMLButtonElement>('[data-step]');
-  const resetBtn = root.querySelector<HTMLButtonElement>('[data-reset]');
-  if (!programEl || !disasmEl || !regsEl || !memEl || !pcEl || !statusEl || !stepBtn || !resetBtn) {
-    return;
-  }
-
-  const cpu: Cpu = createCpu();
-  let program: Program = PROGRAMS[0];
-  let lastWrote = new Set<number>();
-  let lastMem = new Set<number>();
-
-  const memWindowStart = (hint: number) => (hint >= 90 && hint <= 120 ? 96 : 0);
-
-  programEl.innerHTML = PROGRAMS.map(
-    (p) =>
-      `<button type="button" class="chip" data-prog="${p.id}">${p.title}</button>`,
-  ).join('');
-
-  const paint = (note?: string) => {
-    pcEl.textContent = hex32(cpu.pc);
-    statusEl.textContent = note ?? `Loaded “${program.title}”. Step through your harness encodings.`;
-
-    disasmEl.innerHTML = program.words
-      .map((word, i) => {
-        const addr = i * 4;
-        const d = decode(word);
-        const on = cpu.pc === addr;
-        return `<div class="line${on ? ' is-pc' : ''}"><span class="addr">${hex32(addr)}</span><span class="hex">${hex32(word)}</span><span class="asm">${d.mnemonic}</span></div>`;
-      })
-      .join('');
-
-    regsEl.innerHTML = Array.from({ length: 32 }, (_, i) => {
-      const hot = lastWrote.has(i);
-      return `<div class="reg${hot ? ' is-hot' : ''}${i === 0 ? ' is-zero' : ''}" title="${regAbi(i)}">
-        <span class="rn">${regName(i)}</span>
-        <span class="rv">${hex32(cpu.regs[i])}</span>
-      </div>`;
-    }).join('');
-
-    const base = program.regs?.[2] ?? 0;
-    const windowStart = Math.max(0, Math.min(memWindowStart(base), 4096 - 16));
-    memEl.innerHTML = Array.from({ length: 16 }, (_, i) => {
-      const addr = windowStart + i;
-      const hot = lastMem.has(addr);
-      return `<div class="byte${hot ? ' is-hot' : ''}"><span class="ma">${hex32(addr).slice(6)}</span><span class="mv">${cpu.memory[addr].toString(16).padStart(2, '0').toUpperCase()}</span></div>`;
-    }).join('');
-  };
-  const reset = (next = program) => {
-    program = next;
-    lastWrote = new Set();
-    lastMem = new Set();
-    loadProgram(cpu, program);
-    for (const btn of programEl.querySelectorAll<HTMLElement>('.chip')) {
-      btn.classList.toggle('is-on', btn.dataset.prog === program.id);
-    }
-    paint(program.blurb);
-  };
-
-  programEl.addEventListener('click', (event) => {
-    const btn = (event.target as Element).closest<HTMLButtonElement>('[data-prog]');
-    if (!btn?.dataset.prog) return;
-    const next = PROGRAMS.find((p) => p.id === btn.dataset.prog);
-    if (next) reset(next);
-  });
-
-  stepBtn.addEventListener('click', () => {
-    // Halt if PC is past the loaded program and word is 0 (nop-ish unused).
-    if (cpu.pc >= program.words.length * 4 && loadWord(cpu, cpu.pc) === 0) {
-      paint('PC is past the program — hit Reset to reload.');
-      return;
-    }
-    const beforePc = cpu.pc;
-    const result = step(cpu);
-    lastWrote = new Set(result.wroteRegs);
-    lastMem = new Set(result.memWrites.map((m) => m.addr));
-    const writes =
-      result.wroteRegs.length > 0
-        ? ` · wrote ${result.wroteRegs.map((r) => `${regName(r)}=${hex32(cpu.regs[r])}`).join(', ')}`
-        : '';
-    const branch = result.branched ? ' · control transfer' : '';
-    paint(`${hex32(beforePc)}: ${result.decoded.mnemonic}${writes}${branch}`);
-  });
-
-  resetBtn.addEventListener('click', () => reset());
-
-  reset(program);
 }

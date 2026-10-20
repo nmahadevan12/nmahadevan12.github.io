@@ -5,20 +5,25 @@ import { formatMonthRange, parseMonth } from '../lib/dates';
 
 interface Props {
   channels: CaptureChannel[];
+  /** Split so the homepage can put Experience above the capture and Education below. */
+  show?: 'experience' | 'education' | 'all';
 }
 
-const { channels } = Astro.props;
+const { channels, show = 'all' } = Astro.props;
+const showExperience = show === 'all' || show === 'experience';
+const showEducation = show === 'all' || show === 'education';
 const channelFor = (id: string) => channels.find((channel) => channel.id === id);
 const school = channelFor('uga');
 const schoolEnd = parseMonth(education.end);
 const schoolDates = `${formatMonthRange(parseMonth(education.start), schoolEnd)}${schoolEnd > new Date() ? ' (expected)' : ''}`;
 ---
 
+{showExperience && (
 <section class="section" id="experience" aria-labelledby="experience-title">
   <div class="container">
     <div class="section-head">
       <h2 class="section-title" id="experience-title">Experience</h2>
-      <p class="lede">Flight software, embedded research, and teaching at UGA.</p>
+      <p class="lede">Flight software, embedded research, and teaching at UGA — alongside coursework.</p>
     </div>
 
     <ol class="jobs" role="list">
@@ -58,7 +63,9 @@ const schoolDates = `${formatMonthRange(parseMonth(education.start), schoolEnd)}
     </ol>
   </div>
 </section>
+)}
 
+{showEducation && (
 <section class="section split-section" aria-label="Education and skills">
   <div class="container split">
     <div id="education">
@@ -146,6 +153,7 @@ const schoolDates = `${formatMonthRange(parseMonth(education.start), schoolEnd)}
     </div>
   </div>
 </section>
+)}
 
 <style>
   .jobs {

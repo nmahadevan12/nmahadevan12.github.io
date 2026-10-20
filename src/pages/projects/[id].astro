@@ -4,19 +4,38 @@ import { render } from 'astro:content';
 import CoverMap from '../../components/CoverMap.astro';
 import Icon from '../../components/Icon.astro';
 import ProjectCover from '../../components/ProjectCover.astro';
+import PcbViewer from '../../components/PcbViewer.astro';
+import PiBareMetalDemos from '../../components/PiBareMetalDemos.astro';
 import RiscVDemos from '../../components/RiscVDemos.astro';
 import WakeWordDemos from '../../components/WakeWordDemos.astro';
+import MisDemos from '../../components/MisDemos.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { IconName } from '../../lib/icons';
-import { formatDateRange, getProjects, type Project } from '../../lib/projects';
+import {
+  formatDateRange,
+  getAllProjectsIncludingDrafts,
+  getProjects,
+  type Project,
+} from '../../lib/projects';
 import { AREA_LABELS, STATUS_LABELS } from '../../lib/taxonomy';
 
 export async function getStaticPaths() {
-  const projects = await getProjects();
-  return projects.map((project, index) => ({
-    params: { id: project.id },
-    props: { project, previous: projects[index - 1], next: projects[index + 1] },
-  }));
+  // Listings never show drafts; in DEV, draft URLs still build so you can preview them.
+  const projects = import.meta.env.DEV
+    ? await getAllProjectsIncludingDrafts()
+    : await getProjects();
+  const nav = await getProjects();
+  return projects.map((project) => {
+    const i = nav.findIndex((p) => p.id === project.id);
+    return {
+      params: { id: project.id },
+      props: {
+        project,
+        previous: i > 0 ? nav[i - 1] : undefined,
+        next: i >= 0 ? nav[i + 1] : undefined,
+      },
+    };
+  });
 }
 
 interface Props {
@@ -53,9 +72,15 @@ const gallery = await Promise.all(
 );
 
 /** Specs stops with the writeup; interactives (+ gallery) go full-width below. */
-const wideExtras = project.id === 'edge-ai-wake-word' || project.id === 'risc-v-emulator';
+const wideExtras =
+  project.id === 'edge-ai-wake-word' ||
+  project.id === 'risc-v-emulator' ||
+  project.id === 'raspberry-pi-bare-metal' ||
+  project.id === 'multifunction-instrumentation-system';
 const showWakeDemos = project.id === 'edge-ai-wake-word';
 const showRiscDemos = project.id === 'risc-v-emulator';
+const showPiDemos = project.id === 'raspberry-pi-bare-metal';
+const showMisDemos = project.id === 'multifunction-instrumentation-system';
 ---
 
 <BaseLayout title={data.title} description={data.summary}>
@@ -97,7 +122,17 @@ const showRiscDemos = project.id === 'risc-v-emulator';
     </header>
 
     {
-      data.cover && data.coverHotspots.length > 0 ? (
+      data.model3d ? (
+        <div class="container cover">
+          <PcbViewer
+            src={data.model3d}
+            alt={data.model3dAlt ?? data.coverAlt ?? data.title}
+            caption={data.model3dCaption ?? data.coverCaption}
+            parts={data.model3dParts}
+            nets={data.model3dNets}
+          />
+        </div>
+      ) : data.cover && data.coverHotspots.length > 0 ? (
         <div class="container cover">
           <CoverMap
             src={data.cover}
@@ -110,8 +145,19 @@ const showRiscDemos = project.id === 'risc-v-emulator';
           />
         </div>
       ) : (
-        <figure class="container cover">
-          <div class:list={['cover-well', { art: !data.cover }]}>
+        <figure
+          class:list={[
+            'container',
+            'cover',
+            { contain: data.coverFit === 'contain', photo: !!data.cover },
+          ]}
+        >
+          <div
+            class:list={[
+              'cover-well',
+              { art: !data.cover, contain: data.coverFit === 'contain', photo: !!data.cover },
+            ]}
+          >
             <ProjectCover
               project={project}
               width={1600}
@@ -169,6 +215,8 @@ const showRiscDemos = project.id === 'risc-v-emulator';
 
         {!wideExtras && showWakeDemos && <WakeWordDemos />}
         {!wideExtras && showRiscDemos && <RiscVDemos />}
+        {!wideExtras && showPiDemos && <PiBareMetalDemos />}
+        {!wideExtras && showMisDemos && <MisDemos />}
 
         {
           !wideExtras && gallery.length > 0 && (
@@ -204,6 +252,8 @@ const showRiscDemos = project.id === 'risc-v-emulator';
         <div class="container extras">
           {showWakeDemos && <WakeWordDemos />}
           {showRiscDemos && <RiscVDemos />}
+          {showPiDemos && <PiBareMetalDemos />}
+          {showMisDemos && <MisDemos />}
           {gallery.length > 0 && (
             <section class="gallery" aria-labelledby="gallery-title">
               <h2 id="gallery-title">Gallery</h2>
@@ -355,6 +405,11 @@ const showRiscDemos = project.id === 'risc-v-emulator';
     gap: 0.75rem;
   }
 
+  .cover.contain,
+  .cover.photo {
+    gap: 0.4rem;
+  }
+
   .cover-well {
     display: grid;
     place-items: center;
@@ -364,11 +419,32 @@ const showRiscDemos = project.id === 'risc-v-emulator';
     background: var(--well);
   }
 
+  /* No frame — just round the photo itself. */
+  .cover-well.photo,
+  .cover-well.contain {
+    border: none;
+    border-radius: 0;
+    background: transparent;
+  }
+
   .cover-well :global(img) {
+    display: block;
     width: auto;
     max-width: 100%;
     height: auto;
     max-height: min(620px, 75vh);
+  }
+
+  .cover-well.photo :global(img),
+  .cover-well.contain :global(img) {
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--radius-lg);
+  }
+
+  .cover-well.contain :global(img) {
+    max-height: min(400px, 50vh);
   }
 
   .cover-well.art {
@@ -402,7 +478,9 @@ const showRiscDemos = project.id === 'risc-v-emulator';
   }
 
   .extras :global(.ww-demos),
-  .extras :global(.rv-demos) {
+  .extras :global(.rv-demos),
+  .extras :global(.pi-demos),
+  .extras :global(.mis-demos) {
     margin-top: 0;
   }
 

@@ -1,0 +1,123 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  /** JSON map of KiCad refs → values, keyed for mesh picking. */
+  parts?: string;
+  /** JSON of nets / track geometry for copper picking. */
+  nets?: string;
+}
+
+const {
+  src,
+  alt,
+  caption,
+  parts = '/models/light-tracker-parts.json',
+  nets = '/models/light-tracker-nets.json',
+} = Astro.props;
+---
+
+<figure class="pcb-viewer">
+  <div
+    class="stage"
+    data-pcb-viewer
+    data-src={src}
+    data-parts={parts}
+    data-nets={nets}
+    role="img"
+    aria-label={alt}
+  >
+    <canvas></canvas>
+    <div class="tip" data-tip hidden>
+      <strong data-ref></strong>
+      <span data-val></span>
+    </div>
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+  <p class="hint">Drag to orbit · scroll to zoom · hover to highlight · click for details</p>
+</figure>
+
+<script>
+  import { mountPcbViewer } from '../scripts/pcb-viewer';
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-pcb-viewer]')) {
+    void mountPcbViewer(root);
+  }
+</script>
+
+<style>
+  .pcb-viewer {
+    display: grid;
+    gap: 0.45rem;
+    justify-items: center;
+    isolation: isolate;
+  }
+
+  .stage {
+    position: relative;
+    z-index: 0;
+    width: min(100%, 52rem);
+    height: min(440px, 55vh);
+    overflow: hidden;
+    border: 1.5px solid #c5ccd6;
+    border-radius: var(--radius-lg);
+    background: #ffffff;
+    contain: layout paint;
+    touch-action: none;
+    cursor: grab;
+  }
+
+  .stage:active {
+    cursor: grabbing;
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .tip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    display: grid;
+    gap: 0.15rem;
+    min-width: 7rem;
+    max-width: 18rem;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: rgb(255 255 255 / 0.96);
+    box-shadow: 0 10px 28px -16px rgb(16 24 40 / 0.45);
+    pointer-events: none;
+  }
+
+  .tip strong {
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .tip span {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-family: var(--font-mono);
+    line-height: 1.35;
+  }
+
+  figcaption {
+    color: var(--text-faint);
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .hint {
+    margin: 0;
+    color: var(--text-faint);
+    font-size: 13px;
+    text-align: center;
+  }
+</style>

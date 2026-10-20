@@ -47,6 +47,14 @@ const projects = defineCollection({
         )
         .default([]),
       gallery: z.array(z.object({ src: image(), caption: z.string() })).default([]),
+      // Public URL to a GLB/glTF (e.g. KiCad export) for an interactive cover viewer.
+      model3d: z.string().optional(),
+      model3dAlt: z.string().optional(),
+      model3dCaption: z.string().optional(),
+      // JSON of { ref, value, footprint }[] for click-to-inspect on the 3D board.
+      model3dParts: z.string().optional(),
+      // JSON of nets / tracks for click-to-inspect copper (roles + geometry).
+      model3dNets: z.string().optional(),
       repo: z.url().optional(),
       video: z.url().optional(),
       demo: z.url().optional(),

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 560" role="img" aria-labelledby="title desc">
+  <title id="title">Raspberry Pi 3B bare-metal memory map</title>
+  <desc id="desc">kernel8.img load address 0x80000 with boot stub, main, empty bss, and stack growing downward. Peripheral GPIO window at 0x3F200000.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 Z" fill="#667085"/>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 Z" fill="#1b7db3"/>
+    </marker>
+  </defs>
+
+  <rect width="1120" height="560" fill="#ffffff"/>
+
+  <text x="48" y="44" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="22" font-weight="600">AArch64 load map</text>
+  <text x="48" y="68" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="14">From linker.ld and kernel8.map  -  image is 188 bytes at 0x80000</text>
+
+  <rect x="48" y="100" width="520" height="400" rx="10" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1.5"/>
+
+  <rect x="72" y="124" width="280" height="70" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="212" y="154" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="14" font-weight="600">Free RAM / stack</text>
+  <text x="212" y="174" text-anchor="middle" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">SP = _start, grows down</text>
+
+  <path d="M 212 194 V 228" fill="none" stroke="#1b7db3" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+  <text x="224" y="218" fill="#1b7db3" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">stack</text>
+
+  <rect x="72" y="236" width="280" height="48" rx="6" fill="#e8f5fb" stroke="#1b7db3" stroke-width="1.75"/>
+  <text x="88" y="258" fill="#166a99" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">0x80000</text>
+  <text x="212" y="266" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="14" font-weight="600">.text.boot  /  _start</text>
+
+  <rect x="72" y="284" width="280" height="48" rx="6" fill="#ffffff" stroke="#26a3d9" stroke-width="1.5"/>
+  <text x="88" y="306" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">0x80050</text>
+  <text x="212" y="314" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="14" font-weight="600">.text  /  main</text>
+
+  <rect x="72" y="332" width="280" height="40" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="88" y="356" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">0x800C0</text>
+  <text x="212" y="358" text-anchor="middle" fill="#475467" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13">.bss  (__bss_start == __bss_end)</text>
+
+  <text x="212" y="400" text-anchor="middle" fill="#98a2b3" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">kernel8.img ends ~0x800BC (188 bytes)</text>
+
+  <text x="372" y="150" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">below load address</text>
+  <text x="372" y="266" fill="#1b7db3" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">GPU loads kernel8.img here</text>
+  <text x="372" y="314" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">blink loop in C</text>
+
+  <rect x="620" y="100" width="452" height="400" rx="10" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1.5"/>
+  <text x="644" y="132" fill="#475467" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13">BCM2837 MMIO</text>
+
+  <rect x="644" y="156" width="404" height="56" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="660" y="180" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12">PERIPH_BASE</text>
+  <text x="660" y="200" fill="#141415" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="15" font-weight="600">0x3F000000</text>
+
+  <rect x="644" y="228" width="404" height="56" rx="6" fill="#ffffff" stroke="#1b7db3" stroke-width="1.5"/>
+  <text x="660" y="252" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12">GPIO_BASE</text>
+  <text x="660" y="272" fill="#141415" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="15" font-weight="600">0x3F200000</text>
+
+  <rect x="644" y="304" width="404" height="148" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="660" y="332" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="14" font-weight="600">Registers used in main.c</text>
+  <text x="660" y="360" fill="#475467" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13">GPFSEL1   0x3F200004   mode bits [23:21]</text>
+  <text x="660" y="384" fill="#475467" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13">GPSET0    0x3F20001C   set pin 17</text>
+  <text x="660" y="408" fill="#475467" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13">GPCLR0    0x3F200028   clear pin 17</text>
+  <text x="660" y="432" fill="#98a2b3" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">config.txt: arm_64bit=1</text>
+
+  <text x="48" y="532" fill="#98a2b3" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">Cores 1-3 never leave hang in boot.S. Core 0 alone reaches the GPIO blink loop.</text>
+</svg>

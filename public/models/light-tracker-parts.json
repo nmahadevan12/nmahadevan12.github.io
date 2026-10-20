@@ -1,0 +1,272 @@
+[
+  {
+    "ref": "C1",
+    "value": "100n 1%",
+    "footprint": "C_0805_2012Metric"
+  },
+  {
+    "ref": "C2",
+    "value": "100n 1%",
+    "footprint": "C_0805_2012Metric"
+  },
+  {
+    "ref": "C3",
+    "value": "12p 1%",
+    "footprint": "C_0805_2012Metric"
+  },
+  {
+    "ref": "C4",
+    "value": "12p 1%",
+    "footprint": "C_0805_2012Metric"
+  },
+  {
+    "ref": "C5",
+    "value": "100n 1%",
+    "footprint": "C_0805_2012Metric"
+  },
+  {
+    "ref": "D10",
+    "value": "1N4007",
+    "footprint": "D_DO-41_SOD81_P2.54mm_Vertical_AnodeUp"
+  },
+  {
+    "ref": "D3",
+    "value": "1N4007",
+    "footprint": "D_DO-41_SOD81_P2.54mm_Vertical_AnodeUp"
+  },
+  {
+    "ref": "D4",
+    "value": "1N4007",
+    "footprint": "D_DO-41_SOD81_P2.54mm_Vertical_AnodeUp"
+  },
+  {
+    "ref": "D5",
+    "value": "1N4007",
+    "footprint": "D_DO-41_SOD81_P2.54mm_Vertical_AnodeUp"
+  },
+  {
+    "ref": "D6",
+    "value": "1N4007",
+    "footprint": "D_DO-41_SOD81_P2.54mm_Vertical_AnodeUp"
+  },
+  {
+    "ref": "D7",
+    "value": "1N4007",
+    "footprint": "D_DO-41_SOD81_P2.54mm_Vertical_AnodeUp"
+  },
+  {
+    "ref": "D8",
+    "value": "1N4007",
+    "footprint": "D_DO-41_SOD81_P2.54mm_Vertical_AnodeUp"
+  },
+  {
+    "ref": "D9",
+    "value": "1N4007",
+    "footprint": "D_DO-41_SOD81_P2.54mm_Vertical_AnodeUp"
+  },
+  {
+    "ref": "J1",
+    "value": "LDR + POT",
+    "footprint": "PinSocket_1x09_P2.54mm_Vertical"
+  },
+  {
+    "ref": "J2",
+    "value": "HALL SCREW TERMINAL",
+    "footprint": "PinSocket_1x04_P2.54mm_Vertical"
+  },
+  {
+    "ref": "J3",
+    "value": "BATTERIES + MOTOR OUTPUTS",
+    "footprint": "TerminalBlock_Phoenix_MKDS-1,5-7-5.08_1x07_P5.08mm_Horizontal"
+  },
+  {
+    "ref": "J6",
+    "value": "FTDI CABLE",
+    "footprint": "PinHeader_1x06_P2.54mm_Vertical"
+  },
+  {
+    "ref": "J7",
+    "value": "CAPACITIVE SENSOR",
+    "footprint": "PinSocket_1x02_P2.54mm_Vertical"
+  },
+  {
+    "ref": "J8",
+    "value": "ISP",
+    "footprint": "PinHeader_2x03_P2.54mm_Vertical"
+  },
+  {
+    "ref": "Q10",
+    "value": "RFP40N10",
+    "footprint": "TO-220-3_Vertical"
+  },
+  {
+    "ref": "Q3",
+    "value": "IRF9540N",
+    "footprint": "TO-220-3_Vertical"
+  },
+  {
+    "ref": "Q4",
+    "value": "IRF9540N",
+    "footprint": "TO-220-3_Vertical"
+  },
+  {
+    "ref": "Q5",
+    "value": "RFP40N10",
+    "footprint": "TO-220-3_Vertical"
+  },
+  {
+    "ref": "Q6",
+    "value": "RFP40N10",
+    "footprint": "TO-220-3_Vertical"
+  },
+  {
+    "ref": "Q7",
+    "value": "IRF9540N",
+    "footprint": "TO-220-3_Vertical"
+  },
+  {
+    "ref": "Q8",
+    "value": "RFP40N10",
+    "footprint": "TO-220-3_Vertical"
+  },
+  {
+    "ref": "Q9",
+    "value": "IRF9540N",
+    "footprint": "TO-220-3_Vertical"
+  },
+  {
+    "ref": "R10",
+    "value": "40k 1%",
+    "footprint": "R_0805_2012Metric"
+  },
+  {
+    "ref": "R15",
+    "value": "1k 1%",
+    "footprint": "R_0805_2012Metric"
+  },
+  {
+    "ref": "R16",
+    "value": "1k 1%",
+    "footprint": "R_0805_2012Metric"
+  },
+  {
+    "ref": "R18",
+    "value": "1k 1%",
+    "footprint": "R_0805_2012Metric"
+  },
+  {
+    "ref": "R19",
+    "value": "1k 1%",
+    "footprint": "R_0805_2012Metric"
+  },
+  {
+    "ref": "R20",
+    "value": "10k 1%",
+    "footprint": "R_0805_2012Metric"
+  },
+  {
+    "ref": "R21",
+    "value": "40k 1%",
+    "footprint": "R_0805_2012Metric"
+  },
+  {
+    "ref": "R4",
+    "value": "10k 1%",
+    "footprint": "R_0805_2012Metric"
+  },
+  {
+    "ref": "R5",
+    "value": "40k 1%",
+    "footprint": "R_0805_2012Metric"
+  },
+  {
+    "ref": "R6",
+    "value": "10k 1%",
+    "footprint": "R_0805_2012Metric"
+  },
+  {
+    "ref": "R7",
+    "value": "40k 1%",
+    "footprint": "R_0805_2012Metric"
+  },
+  {
+    "ref": "R8",
+    "value": "10k 1%",
+    "footprint": "R_0805_2012Metric"
+  },
+  {
+    "ref": "R9",
+    "value": "10k 1%",
+    "footprint": "R_0805_2012Metric"
+  },
+  {
+    "ref": "TP1",
+    "value": "TestPoint",
+    "footprint": "TestPoint_Pad_1.0x1.0mm"
+  },
+  {
+    "ref": "TP10",
+    "value": "TestPoint",
+    "footprint": "TestPoint_Pad_1.0x1.0mm"
+  },
+  {
+    "ref": "TP11",
+    "value": "TestPoint",
+    "footprint": "TestPoint_Pad_1.0x1.0mm"
+  },
+  {
+    "ref": "TP12",
+    "value": "TestPoint",
+    "footprint": "TestPoint_Pad_1.0x1.0mm"
+  },
+  {
+    "ref": "TP2",
+    "value": "TestPoint",
+    "footprint": "TestPoint_Pad_1.0x1.0mm"
+  },
+  {
+    "ref": "TP3",
+    "value": "TestPoint",
+    "footprint": "TestPoint_Pad_1.0x1.0mm"
+  },
+  {
+    "ref": "TP4",
+    "value": "TestPoint",
+    "footprint": "TestPoint_Pad_1.0x1.0mm"
+  },
+  {
+    "ref": "TP5",
+    "value": "TestPoint",
+    "footprint": "TestPoint_Pad_1.0x1.0mm"
+  },
+  {
+    "ref": "TP7",
+    "value": "TestPoint",
+    "footprint": "TestPoint_Pad_1.0x1.0mm"
+  },
+  {
+    "ref": "TP8",
+    "value": "TestPoint",
+    "footprint": "TestPoint_Pad_1.0x1.0mm"
+  },
+  {
+    "ref": "TP9",
+    "value": "TestPoint",
+    "footprint": "TestPoint_Pad_1.0x1.0mm"
+  },
+  {
+    "ref": "U1",
+    "value": "ATmega328P-P",
+    "footprint": "DIP-28_W7.62mm_LongPads"
+  },
+  {
+    "ref": "U3",
+    "value": "OP495GS",
+    "footprint": "SOIC-16W_7.5x10.3mm_P1.27mm"
+  },
+  {
+    "ref": "Y1",
+    "value": "9.216M",
+    "footprint": "Crystal_SMD_5032-2Pin_5.0x3.2mm"
+  }
+]

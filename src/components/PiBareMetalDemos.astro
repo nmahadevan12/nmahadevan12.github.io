@@ -1,0 +1,469 @@
+---
+---
+
+<section class="pi-demos" aria-labelledby="pi-demos-title" data-pi-demos>
+  <h2 id="pi-demos-title">Interactive bring-up</h2>
+  <p class="lede">
+    Walk the AArch64 boot stub from <code>boot.S</code>, then poke the same BCM2837 GPIO registers
+    <code>main.c</code> writes — GPFSEL1, GPSET0, and GPCLR0 on pin 17.
+  </p>
+
+  <div class="panel" data-boot-demo id="boot-stub">
+    <div class="panel-head">
+      <h3>Boot stub</h3>
+      <p>
+        GPU firmware loads <code>kernel8.img</code> at <code>0x80000</code>. Core 0 parks the others,
+        sets the stack, clears <code>.bss</code>, and calls <code>main</code>.
+      </p>
+    </div>
+
+    <div class="cores" data-cores aria-label="Four Cortex-A53 cores"></div>
+
+    <div class="boot-steps" data-boot-steps role="list" aria-label="Boot sequence steps"></div>
+
+    <div class="boot-body">
+      <p class="boot-detail" data-boot-detail></p>
+      <pre class="boot-code" data-boot-code></pre>
+    </div>
+
+    <div class="boot-nav">
+      <button type="button" class="btn-soft" data-boot-prev>Previous</button>
+      <button type="button" class="btn-soft" data-boot-next>Next</button>
+    </div>
+  </div>
+
+  <div class="panel" data-gpio-demo id="gpio-blink">
+    <div class="panel-head">
+      <h3>GPIO 17 blink</h3>
+      <p>
+        Same MMIO as the firmware: set GPFSEL1 bits <code>[23:21] = 001</code>, then pulse
+        <code>GPSET0</code> / <code>GPCLR0</code> bit 17. Timing here is slowed so you can see it.
+      </p>
+    </div>
+
+    <div class="gpio-stage">
+      <div class="led-wrap">
+        <div class="led" data-led data-on="0" data-armed="0" aria-hidden="true"></div>
+        <div class="led-meta">
+          <span class="led-label">GPIO 17</span>
+          <strong data-pin-state>not configured</strong>
+        </div>
+      </div>
+
+      <div class="reg-cards" aria-label="Memory-mapped registers">
+        <div class="reg">
+          <span class="addr">GPFSEL1 · 0x3F200004</span>
+          <code data-gpfsel-hex>0x00000000</code>
+        </div>
+        <div class="reg">
+          <span class="addr">GPSET0 · 0x3F20001C</span>
+          <code data-gpset-hex>0x00000000</code>
+        </div>
+        <div class="reg">
+          <span class="addr">GPCLR0 · 0x3F200028</span>
+          <code data-gpclr-hex>0x00000000</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="gpfsel" data-gpfsel-bits role="group" aria-label="GPFSEL1 pin fields GPIO 10 through 19"></div>
+
+    <div class="gpio-controls">
+      <button type="button" class="btn-soft" data-gpio-config>Configure pin 17</button>
+      <button type="button" class="btn-play" data-gpio-play disabled>Blink</button>
+      <button type="button" class="btn-soft" data-gpio-step disabled>Step</button>
+      <button type="button" class="btn-soft" data-gpio-reset>Reset</button>
+    </div>
+
+    <div class="mmio-log" data-mmio-log aria-live="polite" aria-label="MMIO write log"></div>
+  </div>
+</section>
+
+<script>
+  import { mountPiBareMetalDemos } from '../scripts/pi-bare-metal-demos';
+
+  const root = document.querySelector<HTMLElement>('[data-pi-demos]');
+  if (root) mountPiBareMetalDemos(root);
+</script>
+
+<style>
+  .pi-demos {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 3.5rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  .lede {
+    max-width: 44rem;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 1.02rem;
+    line-height: 1.55;
+  }
+
+  .panel {
+    display: grid;
+    gap: 1rem;
+    padding: 1.15rem 1.2rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: #fff;
+  }
+
+  .panel-head h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1.05rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  .panel-head p {
+    margin: 0;
+    max-width: 46rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .cores {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.55rem;
+  }
+
+  .cores :global(.core) {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.65rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-subtle);
+  }
+
+  .cores :global(.core[data-state='run']) {
+    border-color: #9fd0a8;
+    background: #f3faf5;
+  }
+
+  .cores :global(.core[data-state='parked']) {
+    border-color: var(--border);
+    background: #f3f4f6;
+    color: var(--text-faint);
+  }
+
+  .cores :global(.core strong) {
+    font-size: 0.82rem;
+    font-weight: 650;
+  }
+
+  .cores :global(.core span) {
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+  }
+
+  .boot-steps {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.4rem;
+  }
+
+  .boot-steps :global(button) {
+    display: grid;
+    gap: 0.25rem;
+    justify-items: start;
+    padding: 0.55rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .boot-steps :global(button[data-active='1']) {
+    border-color: var(--btn);
+    box-shadow: inset 0 0 0 1px var(--btn);
+  }
+
+  .boot-steps :global(button[data-done='1']) {
+    background: var(--bg-subtle);
+  }
+
+  .boot-steps :global(.n) {
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .boot-steps :global(.t) {
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .boot-body {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 0.85rem;
+  }
+
+  .boot-detail {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .boot-code {
+    margin: 0;
+    padding: 0.75rem 0.85rem;
+    border-radius: var(--radius);
+    background: #0f1720;
+    color: #e8eef5;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    line-height: 1.45;
+    white-space: pre-wrap;
+  }
+
+  .boot-nav,
+  .gpio-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .btn-soft,
+  .btn-play {
+    appearance: none;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.45rem 0.85rem;
+    cursor: pointer;
+  }
+
+  .btn-play {
+    background: var(--btn);
+    border-color: var(--btn);
+    color: var(--btn-text);
+  }
+
+  .btn-play:hover:not(:disabled) {
+    background: var(--btn-hover);
+  }
+
+  .btn-soft:hover:not(:disabled),
+  .btn-play:hover:not(:disabled) {
+    filter: brightness(0.98);
+  }
+
+  .btn-soft:disabled,
+  .btn-play:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .gpio-stage {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.25rem;
+    align-items: center;
+  }
+
+  .led-wrap {
+    display: grid;
+    justify-items: center;
+    gap: 0.55rem;
+    min-width: 7.5rem;
+  }
+
+  .led {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 1px solid #c5ccd6;
+    background: radial-gradient(circle at 35% 30%, #f3f4f6, #d1d5db 70%);
+    box-shadow: inset 0 -2px 6px rgb(0 0 0 / 0.12);
+    transition:
+      background 120ms ease,
+      box-shadow 120ms ease,
+      border-color 120ms ease;
+  }
+
+  .led[data-armed='1'][data-on='0'] {
+    border-color: #9aa3af;
+    background: radial-gradient(circle at 35% 30%, #e5e7eb, #9ca3af 75%);
+  }
+
+  .led[data-on='1'] {
+    border-color: #86efac;
+    background: radial-gradient(circle at 35% 30%, #bbf7d0, #22c55e 68%);
+    box-shadow:
+      0 0 0 4px rgb(34 197 94 / 0.18),
+      0 0 28px rgb(34 197 94 / 0.45),
+      inset 0 -2px 6px rgb(0 0 0 / 0.08);
+  }
+
+  .led-meta {
+    display: grid;
+    justify-items: center;
+    gap: 0.1rem;
+    text-align: center;
+  }
+
+  .led-label {
+    color: var(--text-faint);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .led-meta strong {
+    font-size: 0.88rem;
+    font-weight: 650;
+  }
+
+  .reg-cards {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .reg {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.85rem;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-subtle);
+  }
+
+  .reg .addr {
+    color: var(--text-faint);
+    font-size: 0.78rem;
+  }
+
+  .reg code {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .gpfsel {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: 0.35rem;
+  }
+
+  .gpfsel :global(.field) {
+    display: grid;
+    gap: 0.25rem;
+    justify-items: center;
+    padding: 0.45rem 0.2rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--text-faint);
+    cursor: default;
+  }
+
+  .gpfsel :global(.field[data-focus='1']) {
+    border-color: var(--btn);
+    background: #f3f9fc;
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .gpfsel :global(.field:disabled) {
+    opacity: 0.72;
+  }
+
+  .gpfsel :global(.pin) {
+    font-size: 0.68rem;
+    font-weight: 650;
+  }
+
+  .gpfsel :global(.bits) {
+    display: inline-flex;
+    gap: 2px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .gpfsel :global(.bits i) {
+    width: 0.95rem;
+    text-align: center;
+    border-radius: 3px;
+    background: #eef0f3;
+    font-style: normal;
+  }
+
+  .gpfsel :global(.bits i[data-on='1']) {
+    background: #d7ecf7;
+    color: #166a99;
+    font-weight: 700;
+  }
+
+  .gpfsel :global(.mode) {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+  }
+
+  .mmio-log {
+    min-height: 5.5rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: #0f1720;
+    color: #c9d4e0;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.45;
+    overflow: hidden;
+  }
+
+  .mmio-log :global(div) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (max-width: 900px) {
+    .cores,
+    .boot-steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .boot-body,
+    .gpio-stage {
+      grid-template-columns: 1fr;
+    }
+
+    .gpfsel {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 520px) {
+    .boot-steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,7 +1,7 @@
 ---
 title: Edge AI Wake-Word Engine
 channel: Wake-word engine
-summary: A bare-metal wake-word pipeline on an STM32L4 (Cortex-M4F) with PDM microphone capture, on-chip DSP, a 921.6 kbps binary UART link, and an MFCC classifier that detects “Hey STM32” with 92% test accuracy.
+summary: A bare-metal wake-word detector on an STM32 that listens for “Hey STM32” from the board’s microphone.
 status: completed
 areas: [embedded, signal]
 start: 2026-08
@@ -18,95 +18,36 @@ highlights:
 repo: https://github.com/nmahadevan12/Edge-AI-STM32
 cover: ./board.png
 coverAlt: STMicroelectronics B-L475E-IOT01A Discovery kit for IoT node (STM32L475)
-coverCaption: B-L475E-IOT01A Discovery kit — STM32L475VG with onboard MEMS mics, sensors, and ST-LINK.
+coverCaption: B-L475E-IOT01A — markers cover the wake-word path (mics, MCU, ST-LINK), not the unused radios.
 coverFit: contain
 coverHotspots:
-  - id: user
-    label: USER button
-    detail: Blue user button — useful for bring-up hooks and simple firmware tests.
-    x: 7
-    y: 24
-  - id: reset
-    label: RESET
-    detail: Hardware reset for the STM32 during flashing and debug.
-    x: 7
-    y: 44
-  - id: wifi
-    label: Inventek eS-WiFi
-    detail: 802.11 b/g/n Wi-Fi module (ISM43362). Not used by the wake-word pipeline.
-    x: 21
-    y: 29
-  - id: usb-otg
-    label: USB OTG
-    detail: USB Full-Speed OTG Micro-AB connector.
-    x: 40
-    y: 5
-  - id: stlink
-    label: USB ST-LINK
-    detail: On-board ST-LINK/V2-1 — flash, debug, and virtual COM for UART telemetry.
-    x: 80
-    y: 5
   - id: mics
     label: MEMS microphones
-    detail: Dual MP34DT01 PDM mics. DFSDM turns them into 24-bit PCM for energy detection.
+    detail: Dual MP34DT01 PDM mics — DFSDM turns the stream into 24-bit PCM for the energy detector.
     x: 62
     y: 14
-  - id: dig-headers
-    label: Arduino digital headers
-    detail: D0–D15 headers for shields and external I/O.
-    x: 58
-    y: 18
-  - id: ble
-    label: Bluetooth Low Energy
-    detail: SPBTLE-RF module for BLE on the IoT node.
-    x: 92
-    y: 28
   - id: mcu
     label: STM32L475VG
     detail: Arm Cortex-M4F at 80 MHz — runs the bare-metal wake-word firmware with no HAL.
     x: 52
     y: 48
-  - id: imu
-    label: Motion sensors
-    detail: LSM6DSL accel/gyro and nearby magnetometer for the Discovery kit’s sensing suite.
-    x: 65
-    y: 43
-  - id: subghz
-    label: Sub-GHz radio
-    detail: SPSGRF-915 Sub-GHz transceiver module.
-    x: 92
-    y: 58
-  - id: nfc
-    label: NFC antenna
-    detail: Printed NFC coil with M24SR dynamic tag.
-    x: 10
-    y: 72
-  - id: tof
-    label: Time-of-flight
-    detail: VL53L0X laser ranging / gesture sensor.
-    x: 78
-    y: 72
-  - id: pmod
-    label: PMOD
-    detail: 12-pin PMOD expansion connector.
-    x: 30
-    y: 87
-  - id: power-hdr
-    label: Power / analog headers
-    detail: Arduino power rails (3V3, 5V, GND, VIN) and A0–A5 analog pins.
-    x: 68
-    y: 94
+  - id: stlink
+    label: USB ST-LINK
+    detail: On-board ST-LINK/V2-1 — flash, debug, and virtual COM for the 921.6 kbps UART telemetry.
+    x: 80
+    y: 5
+  - id: reset
+    label: RESET
+    detail: Hardware reset for bring-up and flashing.
+    x: 7
+    y: 44
 gallery:
   - src: ./example-captures.png
     caption: Captures streamed from the board. “hey_stm” utterances are on the top row, background noise and other speech on the bottom.
   - src: ./detect-flag.png
     caption: Live telemetry of PCM, energy, and the sound-detect flag around a trigger event.
-  - src: ./energy-event.png
-    caption: Sample and window energy during a loud acoustic event.
   - src: ./dfsdm-speech.png
     caption: DFSDM microphone samples over a longer capture with several speech bursts.
-  - src: ./dfsdm-offset.png
-    caption: Unfiltered microphone signal with an initial negative DC offset and its drift (to 0) over time.
   - src: ./confusion-matrix.png
     caption: Hold-out confusion matrix. Every wake word was detected, and 46 of 50 test clips were classified correctly.
 ---

@@ -1,7 +1,7 @@
 ---
 title: Multifunction Instrumentation System
 channel: M.I.S. test bench
-summary: A Raspberry Pi 4 test bench that replaces six lab instruments (ohmmeter, voltmeter, DC reference, square- and sine-wave generators, and a frequency meter) using custom analog front-ends and a 4-layer Pi HAT layout.
+summary: A Raspberry Pi 4 test bench with a digital multimeter and function generator built from custom analog front-ends.
 status: completed
 areas: [hardware, embedded]
 start: 2026-01
@@ -15,7 +15,6 @@ highlights:
   - Discrete SAR ADC built from an SPI digipot and a comparator for the voltmeter, ohmmeter, and DC reference
   - Improved DC resolution 6× and voltmeter precision 2× through digipot calibration
   - 4-layer mixed-signal Pi HAT PCB with dedicated power and ground planes
-  - Microsecond-timestamped edge capture with pigpio for a 1–10 kHz frequency meter with outlier rejection
 repo: https://github.com/nmahadevan12/MIS
 video: https://youtu.be/Nd_8IkFf7bE
 cover: ./bench.jpg
@@ -39,6 +38,8 @@ gallery:
 
 The M.I.S. folds a bench of lab instruments into one platform. The Raspberry Pi 4 is the only processor: Python firmware runs the measurement algorithms, waveform output, and a menu-driven interface on a 20×4 I²C LCD with a rotary encoder. Custom analog circuits handle signal conditioning, comparison, and generation.
 
+## Results
+
 | Instrument | Range | Accuracy |
 | --- | --- | --- |
 | Ohmmeter | 500 Ω – 10 kΩ | ±10% |
@@ -47,6 +48,8 @@ The M.I.S. folds a bench of lab instruments into one platform. The Raspberry Pi 
 | Square-wave generator | 100 Hz – 10 kHz, up to ±10 V | ±1 V amplitude |
 | Sine-wave generator | 1 – 10 kHz, 0 – 10 V peak | ±0.2 V amplitude |
 | Frequency meter | 1 – 10 kHz | ±2% |
+
+Digipot calibration improved DC resolution **6×** and voltmeter precision **2×**. Split-rail bring-up measured **−12.04 V / +12.05 V** under load.
 
 ## Measuring with a comparator and a digipot
 
@@ -57,7 +60,9 @@ The Pi has no ADC, so the voltmeter and ohmmeter use a discrete successive-appro
 
 ## Generating signals
 
-- **DC reference:** five GPIO pins drive an R-2R ladder, followed by gain and offset stages for a bipolar output. An earlier binary-weighted design suffered from cross-loading between bits; the R-2R ladder presents a constant impedance and stays monotonic across all 32 codes.
+Click bits on the interactive R-2R ladder below — the ladder stays at 0–3.3 V; the op-amps map that to −5…+5 V.
+
+- **DC reference:** five GPIO pins drive an R-2R ladder (0–3.3 V), a non-inverting stage scales to 0–10 V, and a difference amp subtracts 5 V for a bipolar −5…+5 V output. An earlier binary-weighted design suffered from cross-loading between bits; the R-2R ladder presents a constant impedance and stays monotonic across all 32 codes.
 - **Square wave:** the Pi's hardware PWM is RC-filtered, then an MCP4231 dual digipot sets amplitude and offset ahead of a gain-of-10 difference amplifier, giving a 0 V-centered output up to ±10 V.
 - **Sine wave:** the Pi's audio output is buffered, offset, and scaled, with an MCP4131 providing digital amplitude control up to 10 V peak.
 

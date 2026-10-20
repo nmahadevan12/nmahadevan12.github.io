@@ -9,14 +9,14 @@ import { featuredFirst, getProjects } from '../lib/projects';
 
 const projects = await getProjects();
 const channels = buildCaptureChannels(projects);
-const shown = featuredFirst(projects).slice(0, 4);
+/** Strongest completed work only — no drafts / thin WIP on the homepage row. */
+const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4);
 ---
 
 <BaseLayout>
   {
     /*
-      Four independent photos in the same two-stage layout as saleae.com.
-      Replace the files in public/hero/: 1-left.jpg, 1-right.jpg, 2-left.jpg, 2-right.jpg.
+      Hero photos in public/hero/: 1-left.jpg, 1-right.jpg.
     */
   }
   <section class="stage stage-1" aria-labelledby="hero-title">
@@ -26,39 +26,17 @@ const shown = featuredFirst(projects).slice(0, 4);
     </div>
     <div class="stage-copy">
       <h1 id="hero-title">{site.name}</h1>
-      <p class="lede">{site.intro}</p>
+      <p class="lede">
+        {site.intro}
+        <br />
+        <span class="lede-meta">{site.introMeta}</span>
+      </p>
+      <p class="lede-detail">{site.introDetail}</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="/projects/">View projects</a>
         <a class="btn btn-secondary" href={site.resume} target="_blank" rel="noopener">Résumé</a>
+        <a class="btn btn-secondary" href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a>
       </div>
-    </div>
-  </section>
-
-  <section class="stage stage-2" aria-labelledby="stage-two-title">
-    <div class="stage-photos" aria-hidden="true">
-      <img class="photo photo-left" src="/hero/2-left.png" alt="" width="890" height="418" decoding="async" />
-      <img class="photo photo-right" src="/hero/2-right.png" alt="" width="1002" height="904" decoding="async" />
-    </div>
-    <div class="stage-copy">
-      <h2 class="stage-h" id="stage-two-title">From the bench</h2>
-      <p class="lede">Firmware, analog circuits, and PCBs — the same way they show up on a capture.</p>
-      <div class="btn-row">
-        <a class="btn btn-primary" href="#capture">Open the capture</a>
-        <a class="btn btn-secondary" href="/projects/">View projects</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="section capture-section" aria-labelledby="capture-title">
-    <div class="capture-wrap">
-      <div class="capture-head">
-        <h2 class="section-title" id="capture-title">The work, as a capture</h2>
-        <p class="lede">
-          Each channel is a role or a project — the text, sent as 8N1 UART.
-          <span class="hint">Pinch, scroll, swipe — it’s interactive.</span>
-        </p>
-      </div>
-      <Capture channels={channels} />
     </div>
   </section>
 
@@ -74,7 +52,24 @@ const shown = featuredFirst(projects).slice(0, 4);
     </div>
   </section>
 
-  <Resume channels={channels} />
+  <Resume channels={channels} show="experience" />
+
+  <section class="section capture-section" id="capture" aria-labelledby="capture-title">
+    <div class="capture-wrap">
+      <div class="capture-head">
+        <h2 class="section-title" id="capture-title">Timeline</h2>
+        <p class="lede">
+          Same roles and projects as a logic-analyzer-style capture — click a channel for details.
+          Prefer plain text? Jump to <a href="#experience">Experience</a> or
+          <a href="#projects">Projects</a> above.
+          <span class="hint">Optional: pinch, scroll, or swipe to explore the UART decode.</span>
+        </p>
+      </div>
+      <Capture channels={channels} />
+    </div>
+  </section>
+
+  <Resume channels={channels} show="education" />
 
   <section class="section contact" id="contact" aria-labelledby="contact-title">
     <div class="container contact-inner">
@@ -98,18 +93,9 @@ const shown = featuredFirst(projects).slice(0, 4);
     height: 400px;
   }
 
-  /* Fill the first screen so stage 2 starts just below the fold. */
   .stage-1 {
     height: calc(100svh - var(--header-h));
     min-height: 400px;
-  }
-
-  /* Saleae-style sweep: white at the headline, greying toward the floor, white at the sides. */
-  .stage-2 {
-    background:
-      linear-gradient(to right, #fff 0%, rgb(255 255 255 / 0) 16%, rgb(255 255 255 / 0) 84%, #fff 100%),
-      radial-gradient(ellipse 75% 55% at 20% 78%, #f4f6f8 0%, transparent 68%),
-      linear-gradient(180deg, #ffffff 0%, #f6f7f9 30%, #eef0f3 64%, #e2e5eb 100%);
   }
 
   .stage::after {
@@ -129,62 +115,43 @@ const shown = featuredFirst(projects).slice(0, 4);
     pointer-events: none;
   }
 
-  .stage-2 .stage-photos {
-    isolation: auto;
-  }
-
   .photo {
     position: absolute;
     max-width: none;
     user-select: none;
   }
 
-  /* Laptop screen crops: tall, enter from the outer edge. Fade the hard top crop into white. */
+  /* Laptop + analyzer pair — slight left bias, modest gap between them. */
   .stage-1 .photo-left {
-    left: 0;
+    left: 7%;
     bottom: 0;
     height: 50%;
     width: auto;
-    max-width: 40%;
+    max-width: 36%;
     object-fit: contain;
     object-position: right bottom;
     -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 28%, #000 100%);
     mask-image: linear-gradient(to bottom, transparent 0%, #000 28%, #000 100%);
   }
 
-  /* Ultra-wide analyzer + probe: same baseline as the laptop. */
   .stage-1 .photo-right {
-    left: 36%;
-    right: auto;
+    left: auto;
+    right: 10%;
     bottom: 0;
-    width: 52%;
+    width: 56%;
     height: 28%;
     object-fit: cover;
-    object-position: 8% 100%;
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 35%, #000 100%);
-    mask-image: linear-gradient(to bottom, transparent 0%, #000 35%, #000 100%);
-  }
-
-  /* Logic analyzer: cutout, sitting on the left. */
-  .stage-2 .photo-left {
-    left: 4%;
-    bottom: 7%;
-    width: 36%;
-    height: auto;
-    max-height: 30%;
-    object-fit: contain;
-    object-position: center bottom;
-  }
-
-  /* MacBook cutout: enter from the right. */
-  .stage-2 .photo-right {
-    right: 0;
-    bottom: 0;
-    height: 50%;
-    width: auto;
-    max-width: 44%;
-    object-fit: contain;
+    /* Anchor left so the Saleae side with the logo is never cropped. */
     object-position: left bottom;
+    /* Fade top + only the far right edge of the probe. */
+    -webkit-mask-image:
+      linear-gradient(to bottom, transparent 0%, #000 35%, #000 100%),
+      linear-gradient(to right, #000 88%, transparent 100%);
+    -webkit-mask-composite: destination-in;
+    mask-image:
+      linear-gradient(to bottom, transparent 0%, #000 35%, #000 100%),
+      linear-gradient(to right, #000 88%, transparent 100%);
+    mask-composite: intersect;
   }
 
   .stage-copy {
@@ -196,8 +163,7 @@ const shown = featuredFirst(projects).slice(0, 4);
     text-align: center;
   }
 
-  .stage h1,
-  .stage-h {
+  .stage h1 {
     font-size: clamp(1.85rem, 5.5vw, 4.5rem);
     font-weight: 600;
     letter-spacing: -0.02em;
@@ -205,10 +171,23 @@ const shown = featuredFirst(projects).slice(0, 4);
   }
 
   .stage .lede {
-    max-width: 38rem;
+    max-width: 42rem;
     margin: 0.5rem auto 0;
     color: #475467;
-    font-size: clamp(1rem, 2.4vw, 2rem);
+    font-size: clamp(0.95rem, 2vw, 1.25rem);
+    line-height: 1.45;
+  }
+
+  .stage .lede-meta {
+    white-space: nowrap;
+  }
+
+  .stage .lede-detail {
+    max-width: 40rem;
+    margin: 0.4rem auto 0;
+    color: #667085;
+    font-size: clamp(0.88rem, 1.6vw, 1.05rem);
+    line-height: 1.45;
   }
 
   .stage .btn-row {
@@ -227,23 +206,22 @@ const shown = featuredFirst(projects).slice(0, 4);
   }
 
   @media (max-width: 639px) {
-    .stage-1 .photo-left,
-    .stage-2 .photo-right {
+    .stage-1 .photo-left {
+      left: 4%;
       height: 46%;
-      max-width: 48%;
+      max-width: 44%;
     }
 
     .stage-1 .photo-right {
-      left: 28%;
+      right: 4%;
       width: 62%;
       height: 26%;
       bottom: 0;
+      object-position: left bottom;
     }
 
-    .stage-2 .photo-left {
-      width: 48%;
-      max-height: 26%;
-      bottom: 4%;
+    .stage .lede-meta {
+      white-space: normal;
     }
   }
 
@@ -279,8 +257,7 @@ const shown = featuredFirst(projects).slice(0, 4);
       padding-top: 6.5rem;
     }
 
-    .stage h1,
-    .stage-h {
+    .stage h1 {
       line-height: 90px;
     }
 
@@ -304,13 +281,23 @@ const shown = featuredFirst(projects).slice(0, 4);
   }
 
   .capture-head {
-    max-width: 40rem;
+    max-width: 42rem;
     margin-bottom: 1.15rem;
   }
 
   .capture-head .lede {
     margin-top: 0.45rem;
     font-size: clamp(1rem, 1.6vw, 1.15rem);
+  }
+
+  .capture-head .lede a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .capture-head .lede a:hover {
+    color: var(--text);
   }
 
   .capture-head .hint {
