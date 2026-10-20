@@ -502,8 +502,16 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
   }
 
   .cover-well.art {
+    aspect-ratio: 1120 / 460;
+    width: 100%;
+    max-height: min(460px, 55vh);
     border-color: var(--border);
     background: #fff;
+  }
+
+  .cover-well.art .parallax-media,
+  .cover-well.art :global(.cover-art) {
+    height: 100%;
   }
 
   .cover figcaption {

@@ -550,9 +550,15 @@ kbd {
 
 .parallax-media {
   width: 100%;
-  height: 100%;
-  scale: 1.16;
+  /* Avoid height: 100% — percentage height inside auto-sized covers
+     (e.g. UART art) can explode the document to millions of pixels. */
+  scale: 1.12;
   transform-origin: center center;
+}
+
+/* Card wells have a fixed aspect box, so fill + slight overscan is safe. */
+.well > .parallax-media {
+  height: 100%;
 }
 
 /* Scroll-in for homepage sections / cards / job rows. */
