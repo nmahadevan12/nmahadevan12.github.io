@@ -10,7 +10,7 @@ end: 2026-08
 platform: STM32L475VG (ARM Cortex-M4F) · B-L475E-IOT01A
 featured: true
 metric: 92% hold-out · 16% false-accept
-tags: [ARM Cortex-M4, Bare-metal C, DFSDM, DSP, UART, Python]
+tags: [ARM Cortex-M4, Bare-metal C, DSP, UART, Python]
 highlights:
   - "Register-level C firmware with no HAL: RCC, GPIO, DFSDM, UART4, and SysTick configured directly, with a custom linker script and startup assembly"
   - Hardware PDM-to-PCM demodulation of the onboard MEMS microphone using DFSDM Sinc3 decimation (FOSR = 64)
