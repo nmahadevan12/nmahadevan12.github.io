@@ -188,13 +188,13 @@ kbd {
 }
 
 .section {
-  padding-block: clamp(4rem, 9vw, 6.5rem);
+  padding-block: clamp(3.5rem, 8vw, 5.75rem);
 }
 
 .section-title {
-  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-size: clamp(1.85rem, 3.6vw, 2.35rem);
   font-weight: 700;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.03em;
   line-height: 1.1;
 }
 
@@ -202,7 +202,7 @@ kbd {
   display: grid;
   justify-items: center;
   gap: 1.25rem;
-  margin-bottom: clamp(2rem, 4vw, 2.75rem);
+  margin-bottom: clamp(1.75rem, 3.5vw, 2.5rem);
   text-align: center;
 }
 
@@ -210,6 +210,50 @@ kbd {
   color: var(--text-muted);
   font-size: clamp(1.15rem, 2.2vw, 1.5rem);
   line-height: 1.35;
+}
+
+.eyebrow {
+  color: var(--btn);
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.section-lede {
+  color: var(--text-muted);
+  font-size: clamp(1rem, 1.7vw, 1.15rem);
+  line-height: 1.45;
+}
+
+.section-lede a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.page-band {
+  background: var(--bg-subtle);
+}
+
+.surface {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  box-shadow: 0 18px 40px -28px rgb(16 24 40 / 0.35);
+}
+
+.surface-pad {
+  padding-inline: 1.15rem;
+}
+
+.surface-pad > :first-child {
+  border-top: 0;
+}
+
+.surface-pad > :last-child {
+  border-bottom: 0;
 }
 
 /* Buttons, sized like saleae.com's */
@@ -229,16 +273,19 @@ kbd {
   transition:
     background-color 0.15s ease,
     border-color 0.15s ease,
-    color 0.15s ease;
+    color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .btn-primary {
   background: var(--btn);
   color: var(--btn-text);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.18) inset;
 }
 
 .btn-primary:hover {
   background: var(--btn-hover);
+  box-shadow: 0 8px 18px -12px rgb(22 106 153 / 0.7);
 }
 
 .btn-secondary {
@@ -495,6 +542,54 @@ kbd {
   border-top: 1px solid var(--border);
 }
 
+/* Scroll-in for homepage sections / cards / job rows. */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 96px, 0) scale(0.96);
+  filter: blur(2px);
+  transition:
+    opacity 1.15s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1.15s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1.15s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform, filter;
+}
+
+.reveal.is-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: blur(0);
+}
+
+.reveal-job {
+  opacity: 0;
+  transform: translate3d(0, 80px, 0);
+  transition:
+    opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal-job.is-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translate3d(0, 64px, 0) scale(0.97);
+  transition:
+    opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(var(--reveal-delay, 0ms) + var(--si, 0) * 140ms);
+}
+
+.reveal-stagger.is-in > * {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -502,5 +597,14 @@ kbd {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .reveal,
+  .reveal-job,
+  .reveal-stagger > * {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
   }
 }

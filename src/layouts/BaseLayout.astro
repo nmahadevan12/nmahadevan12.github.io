@@ -50,5 +50,43 @@ const ogImage = new URL(site.ogImage, Astro.site);
       <slot />
     </main>
     <Footer />
+    <script>
+      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = [...document.querySelectorAll<HTMLElement>('[data-reveal]')].filter(
+        (el) => !el.classList.contains('reveal') && !el.classList.contains('reveal-job'),
+      );
+
+      for (const el of items) el.classList.add('reveal');
+
+      if (reduceMotion) {
+        for (const el of items) el.classList.add('is-in');
+      } else if (items.length) {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const io = new IntersectionObserver(
+              (entries) => {
+                for (const entry of entries) {
+                  if (!entry.isIntersecting) continue;
+                  entry.target.classList.add('is-in');
+                  io.unobserve(entry.target);
+                }
+              },
+              { rootMargin: '0px 0px -12% 0px', threshold: 0.08 },
+            );
+
+            for (const el of items) {
+              const rect = el.getBoundingClientRect();
+              const vh = window.innerHeight || 1;
+              if (rect.top < vh * 0.85 && rect.bottom > 0) {
+                const delay = Number.parseInt(el.style.getPropertyValue('--reveal-delay') || '0', 10) || 0;
+                window.setTimeout(() => el.classList.add('is-in'), delay);
+              } else {
+                io.observe(el);
+              }
+            }
+          });
+        });
+      }
+    </script>
   </body>
 </html>

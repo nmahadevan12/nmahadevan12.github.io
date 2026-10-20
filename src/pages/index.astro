@@ -16,23 +16,29 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
 <BaseLayout>
   {
     /*
-      Hero photos in public/hero/: 1-left.jpg, 1-right.jpg.
+      Hero photos in public/hero/: 1-left.png, 1-right.png (transparent cutouts).
     */
   }
-  <section class="stage stage-1" aria-labelledby="hero-title">
+  <section class="stage stage-1" aria-labelledby="hero-title" data-hero>
+    <div class="stage-glow" aria-hidden="true"></div>
+    <div class="stage-floor" aria-hidden="true"></div>
     <div class="stage-photos" aria-hidden="true">
-      <img class="photo photo-left" src="/hero/1-left.jpg" alt="" width="822" height="864" decoding="async" />
-      <img class="photo photo-right" src="/hero/1-right.jpg" alt="" width="1988" height="390" decoding="async" />
+      <div class="photo-slot photo-slot-left" data-py="0.4">
+        <img class="photo photo-left" src="/hero/1-left.png" alt="" width="1323" height="1168" decoding="async" />
+      </div>
+      <div class="photo-slot photo-slot-right" data-py="0.62">
+        <img class="photo photo-right" src="/hero/1-right.png" alt="" width="1600" height="299" decoding="async" />
+      </div>
     </div>
-    <div class="stage-copy">
-      <h1 id="hero-title">{site.name}</h1>
-      <p class="lede">
+    <div class="stage-copy" data-py="0.14" data-fade="1">
+      <h1 id="hero-title" class="hero-line" style="--i: 0">{site.name}</h1>
+      <p class="lede hero-line" style="--i: 1">
         {site.intro}
         <br />
         <span class="lede-meta">{site.introMeta}</span>
       </p>
-      <p class="lede-detail">{site.introDetail}</p>
-      <div class="btn-row">
+      <p class="lede-detail hero-line" style="--i: 2">{site.introDetail}</p>
+      <div class="btn-row hero-line" style="--i: 3">
         <a class="btn btn-primary" href="/projects/">View projects</a>
         <a class="btn btn-secondary" href={site.resume} target="_blank" rel="noopener">Résumé</a>
         <a class="btn btn-secondary" href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a>
@@ -40,11 +46,14 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
     </div>
   </section>
 
-  <section class="section projects" id="projects" aria-labelledby="projects-title">
+  <section class="section band projects" id="projects" aria-labelledby="projects-title">
     <div class="container">
-      <div class="section-head">
-        <h2 class="section-title" id="projects-title">Projects</h2>
-        <a class="btn btn-secondary" href="/projects/">See all projects</a>
+      <div class="section-head section-head-row">
+        <div class="section-copy">
+          <h2 class="section-title" id="projects-title">Projects</h2>
+          <p class="section-lede">Firmware, hardware, and systems work — strongest pieces first.</p>
+        </div>
+        <a class="btn btn-secondary" href="/projects/">See all</a>
       </div>
       <div class="cards">
         {shown.map((project, index) => <ProjectCard project={project} eager={index < 2} />)}
@@ -59,25 +68,29 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
   <section class="section capture-section" id="capture" aria-labelledby="capture-title">
     <div class="capture-wrap">
       <div class="capture-head">
+        <p class="eyebrow">Logic analyzer view</p>
         <h2 class="section-title" id="capture-title">Timeline</h2>
-        <p class="lede">
-          Optional view of the same roles and projects as a logic-analyzer-style capture — click a channel for details.
-          Prefer plain text? Jump to <a href="#experience">Experience</a> or
-          <a href="#projects">Projects</a> above.
-          <span class="hint">Pinch, scroll, or swipe to explore the UART decode.</span>
+        <p class="section-lede">
+          Same roles and projects as a capture — click a channel for details, or stick with
+          <a href="#experience">Experience</a> and <a href="#projects">Projects</a> above.
         </p>
+        <p class="hint">Pinch, scroll, or swipe to explore the UART decode.</p>
       </div>
-      <Capture channels={channels} />
+      <div class="capture-frame">
+        <Capture channels={channels} />
+      </div>
     </div>
   </section>
 
   <section class="section contact" id="contact" aria-labelledby="contact-title">
     <div class="container contact-inner">
-      <h2 class="section-title" id="contact-title">Contact</h2>
-      <p class="lede">{site.availability} Email is the quickest way to reach me.</p>
+      <p class="eyebrow">Summer 2027</p>
+      <h2 class="section-title" id="contact-title">Let’s talk</h2>
+      <p class="section-lede">{site.availability}</p>
       <div class="btn-row">
         <a class="btn btn-primary" href={`mailto:${site.email}`}>Email me</a>
         <a class="btn btn-secondary" href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn btn-secondary" href={site.resume} target="_blank" rel="noopener">Résumé</a>
       </div>
       <p class="email">{site.email}</p>
     </div>
@@ -88,14 +101,18 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
   .stage {
     position: relative;
     overflow: hidden;
-    background: #fff;
+    background:
+      radial-gradient(ellipse 90% 55% at 50% -10%, #f4f8fb 0%, transparent 55%),
+      #fff;
     color: #141415;
     height: 400px;
   }
 
   .stage-1 {
     height: calc(100svh - var(--header-h));
-    min-height: 400px;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
   }
 
   .stage::after {
@@ -108,6 +125,34 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
     background: #e5e7eb;
   }
 
+  .stage-glow {
+    position: absolute;
+    inset: -15% -8% auto;
+    z-index: 0;
+    height: 55%;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 50% 65% at 50% calc(40% + var(--gy, 0) * 1px),
+      rgb(38 163 217 / 0.08),
+      transparent 72%
+    );
+    will-change: transform;
+    transform: translate3d(0, calc(var(--gy, 0) * 0.35px), 0);
+  }
+
+  /* Soft “table” under the hardware so cutouts feel staged, not floating. */
+  .stage-floor {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 0;
+    height: 42%;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 45% at 28% 70%, rgb(16 24 40 / 0.06), transparent 70%),
+      radial-gradient(ellipse 55% 40% at 72% 78%, rgb(16 24 40 / 0.05), transparent 70%),
+      linear-gradient(to top, rgb(248 250 252 / 0.95) 0%, transparent 70%);
+  }
+
   .stage-photos {
     position: absolute;
     inset: 0;
@@ -115,89 +160,144 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
     pointer-events: none;
   }
 
-  .photo {
+  .photo-slot {
     position: absolute;
+    bottom: 4%;
+    will-change: transform;
+    transform: translate3d(0, calc(var(--py, 0) * 1px), 0);
+  }
+
+  .photo-slot::after {
+    content: '';
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    bottom: -2%;
+    height: 12%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgb(16 24 40 / 0.16), transparent 70%);
+    filter: blur(6px);
+    z-index: 0;
+  }
+
+  .photo {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
     max-width: none;
+    object-fit: contain;
+    object-position: center bottom;
     user-select: none;
   }
 
-  /* Laptop + analyzer pair — slight left bias, modest gap between them. */
-  .stage-1 .photo-left {
-    left: 7%;
-    bottom: 0;
-    height: 50%;
-    width: auto;
-    max-width: 36%;
-    object-fit: contain;
-    object-position: right bottom;
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 28%, #000 100%);
-    mask-image: linear-gradient(to bottom, transparent 0%, #000 28%, #000 100%);
+  .stage-1 .photo-slot-left {
+    left: 4%;
+    width: min(42vw, 28rem);
+    height: min(48vh, 22rem);
+    animation: hero-float-l 7.5s ease-in-out infinite;
+  }
+
+  .stage-1 .photo-slot-right {
+    right: 3%;
+    width: min(48vw, 34rem);
+    height: min(28vh, 12rem);
+    bottom: 5%;
+    animation: hero-float-r 9s ease-in-out infinite;
   }
 
   .stage-1 .photo-right {
-    left: auto;
-    right: 10%;
-    bottom: 0;
-    width: 56%;
-    height: 28%;
-    object-fit: cover;
-    /* Anchor left so the Saleae side with the logo is never cropped. */
-    object-position: left bottom;
-    /* Fade top + only the far right edge of the probe. */
-    -webkit-mask-image:
-      linear-gradient(to bottom, transparent 0%, #000 35%, #000 100%),
-      linear-gradient(to right, #000 88%, transparent 100%);
-    -webkit-mask-composite: destination-in;
-    mask-image:
-      linear-gradient(to bottom, transparent 0%, #000 35%, #000 100%),
-      linear-gradient(to right, #000 88%, transparent 100%);
-    mask-composite: intersect;
+    -webkit-mask-image: linear-gradient(to right, #000 84%, transparent 100%);
+    mask-image: linear-gradient(to right, #000 84%, transparent 100%);
   }
 
   .stage-copy {
     position: relative;
     z-index: 20;
-    width: min(100% - 2 * var(--gutter), 90rem);
-    margin-inline: auto;
-    padding: 1.5rem var(--gutter) 0;
+    width: min(100% - 2 * var(--gutter), 44rem);
+    margin: 0 auto;
+    padding: clamp(2.75rem, 9vh, 6.5rem) var(--gutter) 0;
     text-align: center;
+    will-change: transform, opacity;
+    transform: translate3d(0, calc(var(--py, 0) * 1px), 0);
+    opacity: calc(1 - var(--fade, 0));
+  }
+
+  .hero-line {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+    animation: hero-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: calc(0.08s + var(--i, 0) * 0.09s);
+  }
+
+  @keyframes hero-rise {
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes hero-float-l {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 -10px;
+    }
+  }
+
+  @keyframes hero-float-r {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 -8px;
+    }
   }
 
   .stage h1 {
-    font-size: clamp(1.85rem, 5.5vw, 4.5rem);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
+    font-size: clamp(2.1rem, 6vw, 4.25rem);
+    font-weight: 650;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
   }
 
   .stage .lede {
-    max-width: 42rem;
-    margin: 0.5rem auto 0;
+    max-width: 36rem;
+    margin: 0.85rem auto 0;
     color: #475467;
-    font-size: clamp(0.95rem, 2vw, 1.25rem);
-    line-height: 1.45;
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    line-height: 1.5;
   }
 
   .stage .lede-meta {
     white-space: nowrap;
+    color: #344054;
+    font-weight: 500;
   }
 
   .stage .lede-detail {
-    max-width: 40rem;
-    margin: 0.4rem auto 0;
+    max-width: 34rem;
+    margin: 0.65rem auto 0;
     color: #667085;
-    font-size: clamp(0.88rem, 1.6vw, 1.05rem);
-    line-height: 1.45;
+    font-size: clamp(0.92rem, 1.5vw, 1.05rem);
+    line-height: 1.5;
   }
 
   .stage .btn-row {
-    margin-top: 1.25rem;
+    margin-top: 1.5rem;
+    justify-content: center;
+    gap: 0.65rem;
   }
 
   .stage .btn-secondary {
     border-color: #d1d5db;
     color: #141415;
-    background: #fff;
+    background: rgb(255 255 255 / 0.88);
+    backdrop-filter: blur(6px);
   }
 
   .stage .btn-secondary:hover {
@@ -206,18 +306,27 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
   }
 
   @media (max-width: 639px) {
-    .stage-1 .photo-left {
-      left: 4%;
-      height: 46%;
-      max-width: 44%;
+    .stage-1 {
+      min-height: 560px;
     }
 
-    .stage-1 .photo-right {
-      right: 4%;
-      width: 62%;
-      height: 26%;
-      bottom: 0;
-      object-position: left bottom;
+    .stage-copy {
+      padding-top: 2rem;
+      width: min(100% - 2 * var(--gutter), 100%);
+    }
+
+    .stage-1 .photo-slot-left {
+      left: 2%;
+      width: 48vw;
+      height: 34vh;
+      bottom: 3%;
+    }
+
+    .stage-1 .photo-slot-right {
+      right: 1%;
+      width: 58vw;
+      height: 18vh;
+      bottom: 4%;
     }
 
     .stage .lede-meta {
@@ -254,25 +363,45 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
     }
 
     .stage-copy {
-      padding-top: 6.5rem;
+      padding-top: clamp(4.5rem, 11vh, 7rem);
     }
 
-    .stage h1 {
-      line-height: 90px;
+    .stage-1 .photo-slot-left {
+      width: min(40vw, 30rem);
+      height: min(50vh, 24rem);
     }
 
-    .stage .lede {
-      margin-top: 0.5rem;
-    }
-
-    .stage .btn-row {
-      margin-top: 1.5rem;
+    .stage-1 .photo-slot-right {
+      width: min(46vw, 36rem);
+      height: min(30vh, 13rem);
     }
   }
 
+  .band {
+    background: var(--bg-subtle);
+  }
+
+  .section-head-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    margin-bottom: clamp(1.75rem, 3.5vw, 2.5rem);
+    text-align: left;
+    justify-items: stretch;
+  }
+
+  .section-copy {
+    display: grid;
+    gap: 0.45rem;
+    max-width: 36rem;
+  }
+
   .capture-section {
-    padding-top: clamp(2.75rem, 5vw, 4.25rem);
-    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+    padding-top: clamp(3.25rem, 6vw, 5rem);
+    padding-bottom: clamp(3rem, 6vw, 5rem);
+    border-top: 1px solid var(--border);
   }
 
   .capture-wrap {
@@ -281,58 +410,71 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
   }
 
   .capture-head {
-    max-width: 42rem;
-    margin-bottom: 1.15rem;
+    max-width: 40rem;
+    margin-bottom: 1.35rem;
   }
 
-  .capture-head .lede {
-    margin-top: 0.45rem;
-    font-size: clamp(1rem, 1.6vw, 1.15rem);
+  .capture-head .section-title {
+    margin-top: 0.35rem;
   }
 
-  .capture-head .lede a {
-    color: inherit;
-    text-decoration: underline;
-    text-underline-offset: 0.15em;
-  }
-
-  .capture-head .lede a:hover {
-    color: var(--text);
+  .capture-head .section-lede {
+    margin-top: 0.55rem;
   }
 
   .capture-head .hint {
-    display: block;
-    margin-top: 0.35rem;
-    color: var(--text-muted);
-    font-size: 0.95em;
+    margin-top: 0.45rem;
+    color: var(--text-faint);
+    font-size: 0.9rem;
+  }
+
+  .capture-frame {
+    overflow: hidden;
+    border: 1px solid var(--cap-frame);
+    border-radius: var(--radius-lg);
+    background: #fff;
+    box-shadow: 0 18px 40px -28px rgb(16 24 40 / 0.35);
+  }
+
+  .capture-frame :global(.cap) {
+    border-block: 0;
   }
 
   .cards {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.5rem;
+    gap: clamp(1.1rem, 2vw, 1.5rem);
   }
 
   .contact {
+    position: relative;
+    overflow: hidden;
     border-top: 1px solid var(--border);
+    background:
+      radial-gradient(ellipse 70% 80% at 50% 0%, rgb(38 163 217 / 0.1), transparent 60%),
+      linear-gradient(180deg, #f8fafc 0%, #fff 100%);
   }
 
   .contact-inner {
     display: grid;
     justify-items: center;
-    gap: 1.25rem;
+    gap: 0.85rem;
+    max-width: 36rem;
+    margin-inline: auto;
     text-align: center;
   }
 
-  .contact .lede {
-    max-width: 36rem;
+  .contact .section-lede {
+    max-width: 32rem;
   }
 
   .contact .btn-row {
-    margin-top: 0.75rem;
+    margin-top: 0.85rem;
+    gap: 0.65rem;
   }
 
   .email {
+    margin-top: 0.35rem;
     color: var(--text-faint);
     font-size: 14px;
     font-variant-numeric: tabular-nums;
@@ -342,5 +484,160 @@ const shown = featuredFirst(projects).filter((p) => p.data.featured).slice(0, 4)
     .cards {
       grid-template-columns: 1fr;
     }
+
+    .section-head-row {
+      flex-direction: column;
+      align-items: start;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .photo,
+    .photo-slot,
+    .stage-copy,
+    .stage-glow,
+    .hero-line {
+      will-change: auto;
+      transform: none !important;
+      opacity: 1 !important;
+      animation: none !important;
+    }
   }
 </style>
+
+<script>
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hero = document.querySelector('[data-hero]');
+
+  if (hero instanceof HTMLElement && !reduceMotion) {
+    const layers = [...hero.querySelectorAll('[data-py]')].filter(
+      (el) => el instanceof HTMLElement,
+    );
+    const glow = hero.querySelector('.stage-glow');
+    let ticking = false;
+
+    const update = () => {
+      ticking = false;
+      const y = window.scrollY;
+      const h = hero.offsetHeight || 1;
+      const t = Math.min(1, Math.max(0, y / h));
+
+      for (const el of layers) {
+        if (!(el instanceof HTMLElement)) continue;
+        const py = Number(el.dataset.py) || 0;
+        el.style.setProperty('--py', String(y * py));
+        if (el.dataset.fade != null) el.style.setProperty('--fade', String(t * 0.9));
+      }
+
+      if (glow instanceof HTMLElement) glow.style.setProperty('--gy', String(y * 0.35));
+    };
+
+    update();
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(update);
+      },
+      { passive: true },
+    );
+  }
+
+  /** @type {HTMLElement[]} */
+  const revealItems = [];
+
+  const pushReveal = (el, className = 'reveal') => {
+    if (!(el instanceof HTMLElement)) return;
+    el.classList.add(className);
+    revealItems.push(el);
+  };
+
+  // Section headers / blocks
+  const projects = document.querySelector('#projects');
+  const experience = document.querySelector('#experience');
+  const education = document.querySelector('.split-section');
+  const capture = document.querySelector('section.capture-section');
+  const contact = document.querySelector('#contact');
+
+  if (projects) {
+    const head = projects.querySelector('.section-head');
+    pushReveal(head);
+    projects.querySelectorAll('.cards > *').forEach((card, i) => {
+      if (card instanceof HTMLElement) {
+        card.style.setProperty('--reveal-delay', `${i * 80}ms`);
+        pushReveal(card);
+      }
+    });
+  }
+
+  if (experience) {
+    const head = experience.querySelector('.section-head');
+    pushReveal(head);
+    // Each job role animates on its own as it enters the viewport.
+    experience.querySelectorAll('.job').forEach((job, i) => {
+      if (job instanceof HTMLElement) {
+        job.style.setProperty('--reveal-delay', `${Math.min(i, 2) * 40}ms`);
+        pushReveal(job, 'reveal-job');
+      }
+    });
+  }
+
+  if (education) {
+    pushReveal(education.querySelector('#education'));
+    pushReveal(education.querySelector('#skills'));
+  }
+
+  if (capture) {
+    pushReveal(capture.querySelector('.capture-head'));
+    const cap = capture.querySelector('[data-capture], .cap');
+    if (cap instanceof HTMLElement) {
+      cap.style.setProperty('--reveal-delay', '120ms');
+      pushReveal(cap);
+    }
+  }
+
+  if (contact) {
+    contact.querySelectorAll('.contact-inner > *').forEach((child, i) => {
+      if (child instanceof HTMLElement) {
+        child.style.setProperty('--reveal-delay', `${i * 100}ms`);
+        pushReveal(child);
+      }
+    });
+  }
+
+  const markIn = (target) => {
+    target.classList.add('is-in');
+  };
+
+  if (reduceMotion) {
+    for (const el of revealItems) markIn(el);
+  } else {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              markIn(/** @type {HTMLElement} */ (entry.target));
+              io.unobserve(entry.target);
+            }
+          },
+          { rootMargin: '0px 0px -14% 0px', threshold: 0.08 },
+        );
+
+        for (const el of revealItems) {
+          const rect = el.getBoundingClientRect();
+          const vh = window.innerHeight || 1;
+          if (rect.top < vh * 0.82 && rect.bottom > 0) {
+            // Stagger slightly so a stack of on-screen jobs still cascades.
+            const delay = Number.parseInt(el.style.getPropertyValue('--reveal-delay') || '0', 10) || 0;
+            window.setTimeout(() => markIn(el), delay);
+          } else {
+            io.observe(el);
+          }
+        }
+      });
+    });
+  }
+</script>
