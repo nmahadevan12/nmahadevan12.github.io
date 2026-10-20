@@ -63,7 +63,7 @@ A wake-word pipeline on the B-L475E-IOT01A (STM32L475VG, ARM Cortex-M4F at 80 MH
 1. **PDM to PCM.** The MP34DT01 MEMS microphone's 1-bit PDM stream is decimated in hardware by DFSDM filter 0 (Sinc3, FOSR = 64), producing 24-bit PCM samples. FOSR 64 was the board/app-note starting point that kept the output rate manageable for the UART stream without obvious aliasing on speech; I did not sweep alternate FOSR values.
 2. **DC blocker.** A single-pole high-pass IIR removes drift and bias: `y[n] = x[n] − x[n−1] + R·y[n−1]` with `R = 0.995`. That pole sits close to DC so slow bias dies without eating much of the speech band; lower `R` cut too much energy from quiet utterances in early captures.
 3. **Energy envelope.** An exponential moving average tracks signal power: `E[n] = α·|y[n]| + (1 − α)·E[n−1]` with `α = 0.2`. Smaller `α` lagged real speech onsets; larger `α` made mechanical bumps look like speech. Scrub a real capture in the [energy / detect scrubber](#energy-scrubber) below.
-4. **Event state machine.** Energy above a threshold opens a 256-sample capture window. The capture is kept only if enough samples stay loud, and a quiet-abort path throws away mechanical bumps and clicks.
+4. **Event state machine.** Energy above `ENERGY_LOUD` (**1500**) opens a 256-sample capture window. The capture is kept only if `loud_count >= DEBOUNCE_VAL` (**20**). A quiet-abort path throws away mechanical bumps and clicks. (These are the constants in `src/main.c` — older notes that said 500 / 30 were stale.)
 
 ## Telemetry protocol
 

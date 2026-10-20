@@ -14,6 +14,7 @@ export const education = {
     'Informatics',
   ],
   honors: ['Zell Miller Scholar', 'UGA Dean’s List', 'Eagle Scout (2022)'],
+  memberships: ['UGA IEEE MicroMouse', 'UGA Outdoor Club'],
 };
 
 export interface Job {
@@ -40,11 +41,11 @@ export const experience: Job[] = [
     orgShort: 'UGA SSRL',
     start: '2026-09',
     points: [
-      'Building Zephyr RTOS flight software in C on STM32 for CubeSat command handling and subsystem communications',
-      'Implementing UART and RS-485 drivers so onboard computers can exchange framed commands and telemetry',
-      'Validating multi-subsystem bus behavior in Renode before hardware is on the bench, catching protocol bugs in software-first bring-up',
+      'Rewrote the F´ FileRecycler for MEMESat image/message storage after the prior version failed in F´ — scheduled and ground-commanded deletes by time or count; change builds and links clean, with hardware-in-the-loop testing still ahead',
+      'Got the flight STM32 flashing reliably after correcting pin mux / placement issues that blocked bring-up',
+      'Building Zephyr RTOS flight software in C on STM32 for CubeSat command handling and UART / RS-485 subsystem links, with Renode used to validate bus behavior before full bench hardware',
     ],
-    tags: ['C', 'Zephyr RTOS', 'STM32', 'UART', 'RS-485', 'Renode'],
+    tags: ['C', 'F´', 'Zephyr RTOS', 'STM32', 'UART', 'RS-485', 'Renode'],
   },
   {
     id: 'vip',
@@ -54,8 +55,8 @@ export const experience: Job[] = [
     orgShort: 'UGA VIPR',
     start: '2026-08',
     points: [
-      'Shipped C++ I²C and SPI drivers for IMU, temperature, and humidity sensors on an ATmega328P canine heat-stress wearable',
-      'Streaming those sensors live over Bluetooth to a host app so researchers can monitor animals in real time',
+      'Writing C++ I²C and SPI drivers for IMU, temperature, and humidity sensors on an ATmega328P canine heat-stress wearable',
+      'Implementing Bluetooth streaming of those sensors to a host app for real-time monitoring',
     ],
     tags: ['C++', 'ATmega328P', 'I²C', 'SPI', 'Bluetooth'],
   },
@@ -69,8 +70,9 @@ export const experience: Job[] = [
     points: [
       'Teaching 100+ students across two labs through analog filters, oscillators, transformers, and BJT amplifiers with SPICE checks',
       'Coaching TTL builds and benchtop debug with oscilloscopes, logic analyzers, and multimeters until circuits meet lab specs',
+      'Analyzed Lab 1 student AI-interaction writeups (n = 42) for the course — use cases, tool disclosure gaps, and design recommendations for ELEE 3270',
     ],
-    tags: ['SPICE', 'Analog circuits', 'Lab instruments'],
+    tags: ['SPICE', 'Analog circuits', 'Lab instruments', 'Course design'],
   },
   {
     id: 'tutor',
@@ -98,7 +100,7 @@ export const skills = [
   },
   {
     group: 'Firmware & toolchains',
-    items: ['Bare-metal C', 'Zephyr RTOS', 'Renode', 'arm-none-eabi-gcc', 'OpenOCD', 'Make / CMake', 'Git'],
+    items: ['Bare-metal C', 'F´', 'Zephyr RTOS', 'Renode', 'arm-none-eabi-gcc', 'OpenOCD', 'Make / CMake', 'Git'],
   },
   {
     group: 'Hardware & equipment',

@@ -1,7 +1,7 @@
 ---
 title: Multifunction Instrumentation System
 channel: M.I.S. test bench
-summary: A Raspberry Pi 4 test bench with a digital multimeter and function generator built from custom analog front-ends.
+summary: ECSE 2920 team of 5 — I owned the full Raspberry Pi DAQ / DMM and function-generator build from analog front-ends through software.
 status: completed
 areas: [hardware, embedded]
 start: 2026-01
@@ -11,9 +11,9 @@ platform: Raspberry Pi 4
 featured: true
 tags: [Python, Raspberry Pi, Analog design, Op-amps, ADC, DAC, SPI, I²C, KiCad]
 highlights:
-  - Raspberry Pi DMM and function generator in Python, powered by a ±12 V split-rail supply with an active virtual ground
-  - Discrete SAR ADC built from an SPI digipot and a comparator for the voltmeter, ohmmeter, and DC reference
-  - Improved DC resolution 6× and voltmeter precision 2× through digipot calibration
+  - Team of 5 on paper; I owned the full system — Pi software, analog front-ends, digipot SAR path, and calibration
+  - Discrete SAR ADC from an SPI digipot and comparator for the voltmeter, ohmmeter, and DC reference
+  - Digipot characterization and lookup tables improved DC resolution 6× and voltmeter precision 2× vs uncalibrated wiper steps
   - 4-layer mixed-signal Pi HAT PCB with dedicated power and ground planes
 repo: https://github.com/nmahadevan12/MIS
 video: https://youtu.be/Nd_8IkFf7bE
@@ -36,7 +36,7 @@ gallery:
 
 ## Overview
 
-The M.I.S. folds a bench of lab instruments into one platform. The Raspberry Pi 4 is the only processor: Python firmware runs the measurement algorithms, waveform output, and a menu-driven interface on a 20×4 I²C LCD with a rotary encoder. Custom analog circuits handle signal conditioning, comparison, and generation.
+ECSE 2920 course project listed as a team of five; I owned the design and implementation end to end. The M.I.S. folds a bench of lab instruments into one platform. The Raspberry Pi 4 is the only processor: Python firmware runs the measurement algorithms, waveform output, and a menu-driven interface on a 20×4 I²C LCD with a rotary encoder. Custom analog circuits handle signal conditioning, comparison, and generation.
 
 ## Results
 
@@ -49,7 +49,7 @@ The M.I.S. folds a bench of lab instruments into one platform. The Raspberry Pi 
 | Sine-wave generator | 1 – 10 kHz, 0 – 10 V peak | ±0.2 V amplitude |
 | Frequency meter | 1 – 10 kHz | ±2% |
 
-Digipot calibration improved DC resolution **6×** and voltmeter precision **2×**. Split-rail bring-up measured **−12.04 V / +12.05 V** under load.
+Those **6×** / **2×** gains come from characterizing the digipot’s real resistance steps and replacing naïve wiper-index math with calibrated lookup tables (plus interpolation on the voltmeter). Split-rail bring-up measured **−12.04 V / +12.05 V** under load.
 
 ## Measuring with a comparator and a digipot
 

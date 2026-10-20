@@ -128,6 +128,19 @@ const schoolDates = `${formatMonthRange(parseMonth(education.start), schoolEnd)}
             }
           </dd>
         </div>
+        <div>
+          <dt>Memberships &amp; clubs</dt>
+          <dd>
+            {
+              education.memberships.map((item, i) => (
+                <>
+                  {i > 0 && ' · '}
+                  <span class="item">{item}</span>
+                </>
+              ))
+            }
+          </dd>
+        </div>
       </dl>
     </div>
 

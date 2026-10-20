@@ -1,7 +1,7 @@
 ---
 title: 2-Axis Light Tracker
 channel: 2-axis light tracker
-summary: A battery-powered dual-axis solar tracker on an ATmega328P that points a panel at the sun.
+summary: Solo ELEE 4230 project — a battery-powered dual-axis light tracker on an ATmega328P driving DC motors through H-bridges.
 status: completed
 areas: [embedded, hardware]
 start: 2026-06
@@ -11,7 +11,7 @@ platform: ATmega328P (AVR)
 featured: true
 tags: [C, ATmega328P, Kalman filter, H-bridge, UART, KiCad, PCB design, Python]
 highlights:
-  - Bare-metal C firmware on an ATmega328P driving the base and panel DC motors through MOSFET H-bridges
+  - Solo build — bare-metal C on an ATmega328P driving base and panel DC motors through MOSFET H-bridges
   - LDR array with Hall-effect and potentiometer feedback for tilt-limit protection, plus an auto-calibration sweep at startup
   - Fixed-point Kalman filter on the ADC channels that cuts peak noise from 3 LSBs to under 1 LSB
   - Register-level UART driver (9.216 MHz crystal) streaming live telemetry to a Python logger
@@ -19,7 +19,7 @@ highlights:
 repo: https://github.com/nmahadevan12/Light-Tracker
 video: https://www.youtube.com/shorts/PQEl34fqnAk
 cover: ./build.png
-coverAlt: Bench prototype of the dual-axis light tracker with LDR shrouds, metal panel, and servo drive
+coverAlt: Bench prototype of the dual-axis light tracker with LDR shrouds, metal panel, and DC motor drive
 model3d: /models/light-tracker.glb
 model3dAlt: Interactive 3D model of the light tracker control board from KiCad
 model3dCaption: Four-layer control board exported from the KiCad PCB. Click a part or a copper trace to see what it does.
@@ -27,7 +27,7 @@ model3dParts: /models/light-tracker-parts.json
 model3dNets: /models/light-tracker-nets.json
 gallery:
   - src: ./build.png
-    caption: Bench prototype — dual-axis frame, LDR shroud array, and servo-driven panel on a rotating base.
+    caption: Bench prototype — dual-axis frame, LDR shroud array, and DC-motor-driven panel on a rotating base.
   - src: ./system-architecture.png
     caption: System architecture from light and battery rail through sensing, the ATmega328P, H-bridges, and UART telemetry.
   - src: ./signal-chain.png
@@ -52,7 +52,7 @@ gallery:
 
 ## Overview
 
-A closed-loop tracker that keeps a panel pointed at the brightest light source on two axes. The firmware is bare-metal AVR C and handles everything on one microcontroller: sensing, filtering, motor control, safety limits, and telemetry.
+Solo ELEE 4230 project. A closed-loop tracker that keeps a panel pointed at the brightest light source on two axes, with **DC motors** (not servos) on both axes through MOSFET H-bridges. The firmware is bare-metal AVR C and handles everything on one microcontroller: sensing, filtering, motor control, safety limits, and telemetry.
 
 ## Results
 
