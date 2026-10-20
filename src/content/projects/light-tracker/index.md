@@ -10,7 +10,7 @@ course: ELEE 4230
 platform: ATmega328P (AVR)
 featured: true
 metric: 3 → under 1 LSB noise
-tags: [C, ATmega328P, Kalman filter, H-bridge, UART, KiCad, PCB design, Python]
+tags: [C, ATmega328P, Kalman filter, H-bridge, UART, PCB design, Python]
 highlights:
   - Solo build — bare-metal C on an ATmega328P driving base and panel DC motors through MOSFET H-bridges
   - LDR array with Hall-effect and potentiometer feedback for tilt-limit protection, plus an auto-calibration sweep at startup
