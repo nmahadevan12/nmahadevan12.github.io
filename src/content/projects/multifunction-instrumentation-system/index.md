@@ -10,7 +10,7 @@ course: ECSE 2920
 platform: Raspberry Pi 4
 featured: true
 metric: ±0.2 V · ±2% frequency
-tags: [Python, Raspberry Pi, Analog design, ADC, DAC, SPI, I²C, KiCad]
+tags: [Python, Raspberry Pi, Analog design, ADC / DAC, SPI, I²C, KiCad]
 highlights:
   - Built the full measurement path — Pi software, analog front-ends, digipot SAR ADC, and digipot calibration LUTs; teammates owned enclosure, wiring docs, and demo slides
   - Discrete SAR ADC from an SPI digipot and comparator for the voltmeter, ohmmeter, and DC reference
