@@ -45,7 +45,7 @@ export const experience: Job[] = [
       'Got the flight STM32 flashing reliably after correcting pin mux / placement issues that blocked bring-up',
       'Building Zephyr RTOS flight software in C on STM32 for CubeSat command handling and UART / RS-485 subsystem links, with Renode used to validate bus behavior before full bench hardware',
     ],
-    tags: ['C', 'F´', 'Zephyr RTOS', 'STM32', 'UART', 'RS-485', 'Renode'],
+    tags: ['C', 'F´', 'Zephyr RTOS', 'STM32', 'UART', 'RS-485'],
   },
   {
     id: 'vip',
