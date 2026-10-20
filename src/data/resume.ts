@@ -70,7 +70,7 @@ export const experience: Job[] = [
     points: [
       'Teaching 100+ students across two labs through analog filters, oscillators, transformers, and BJT amplifiers with SPICE checks',
       'Coaching TTL builds and benchtop debug with oscilloscopes, logic analyzers, and multimeters until circuits meet lab specs',
-      'Analyzed Lab 1 student AI-interaction writeups (n = 42) for the course — use cases, tool disclosure gaps, and design recommendations for ELEE 3270',
+      'Analyzed student AI-interaction writeups across labs — use cases, tool disclosure gaps, and course-design recommendations',
     ],
     tags: ['SPICE', 'Analog circuits', 'Lab instruments', 'Course design'],
   },
