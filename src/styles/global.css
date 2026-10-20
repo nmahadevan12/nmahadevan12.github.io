@@ -542,6 +542,19 @@ kbd {
   border-top: 1px solid var(--border);
 }
 
+/* Scroll parallax — uses `translate` so it stacks with reveal `transform`. */
+[data-parallax] {
+  will-change: translate;
+  translate: 0 calc(var(--parallax-y, 0) * 1px);
+}
+
+.parallax-media {
+  width: 100%;
+  height: 100%;
+  scale: 1.1;
+  transform-origin: center center;
+}
+
 /* Scroll-in for homepage sections / cards / job rows. */
 .reveal {
   opacity: 0;
@@ -606,5 +619,14 @@ kbd {
     transform: none !important;
     filter: none !important;
     transition: none !important;
+  }
+
+  [data-parallax] {
+    will-change: auto;
+    translate: none !important;
+  }
+
+  .parallax-media {
+    scale: none;
   }
 }

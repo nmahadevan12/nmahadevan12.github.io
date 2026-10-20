@@ -40,6 +40,7 @@ const RESUME_PROJECTS = [
   'edge-ai-wake-word',
   'light-tracker',
   'multifunction-instrumentation-system',
+  'raspberry-pi-bare-metal',
   'risc-v-emulator',
 ];
 

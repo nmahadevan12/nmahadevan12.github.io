@@ -92,7 +92,7 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
 <BaseLayout title={data.title} description={data.summary} image={ogCover}>
   <article>
     <header class="head">
-      <div class="container head-inner" data-reveal>
+      <div class="container head-inner" data-reveal data-parallax="0.1">
         <nav class="crumbs" aria-label="Breadcrumb">
           <a href="/projects/">Projects</a>
           <span aria-hidden="true">/</span>
@@ -138,7 +138,7 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
     <div class="cover-band page-band">
       {
         data.model3d ? (
-          <div class="container cover" data-reveal>
+          <div class="container cover" data-reveal data-parallax="0.16">
             <PcbViewer
               src={data.model3d}
               alt={data.model3dAlt ?? data.coverAlt ?? data.title}
@@ -149,15 +149,17 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
           </div>
         ) : data.cover && data.coverHotspots.length > 0 ? (
           <div class="container cover" data-reveal>
-            <CoverMap
-              src={data.cover}
-              alt={data.coverAlt ?? data.title}
-              caption={data.coverCaption}
-              hotspots={data.coverHotspots}
-              width={1600}
-              sizes="(min-width: 1200px) 1120px, 100vw"
-              loading="eager"
-            />
+            <div class="parallax-media" data-parallax="0.22">
+              <CoverMap
+                src={data.cover}
+                alt={data.coverAlt ?? data.title}
+                caption={data.coverCaption}
+                hotspots={data.coverHotspots}
+                width={1600}
+                sizes="(min-width: 1200px) 1120px, 100vw"
+                loading="eager"
+              />
+            </div>
           </div>
         ) : (
           <figure
@@ -174,13 +176,15 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
                 { art: !data.cover, contain: data.coverFit === 'contain', photo: !!data.cover },
               ]}
             >
-              <ProjectCover
-                project={project}
-                width={1600}
-                sizes="(min-width: 1200px) 1120px, 100vw"
-                loading="eager"
-                art={{ width: 1120, height: 460 }}
-              />
+              <div class="parallax-media" data-parallax="0.22">
+                <ProjectCover
+                  project={project}
+                  width={1600}
+                  sizes="(min-width: 1200px) 1120px, 100vw"
+                  loading="eager"
+                  art={{ width: 1120, height: 460 }}
+                />
+              </div>
             </div>
             {data.coverCaption && <figcaption>{data.coverCaption}</figcaption>}
           </figure>
@@ -240,8 +244,8 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
             <section class="gallery" aria-labelledby="gallery-title">
               <h2 id="gallery-title">Gallery</h2>
               <div class="gallery-grid">
-                {gallery.map((item) => (
-                  <figure>
+                {gallery.map((item, i) => (
+                  <figure data-parallax={i % 2 === 0 ? '0.14' : '0.22'}>
                     <button
                       class="shot"
                       type="button"
@@ -267,7 +271,7 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
     {
       wideExtras && (
         <div class="extras-band page-band">
-          <div class="container extras" data-reveal>
+          <div class="container extras" data-reveal data-parallax="0.1">
             {showWakeDemos && <WakeWordDemos />}
             {showRiscDemos && <RiscVDemos />}
             {showPiDemos && <PiBareMetalDemos />}
@@ -276,8 +280,8 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
               <section class="gallery" aria-labelledby="gallery-title">
                 <h2 id="gallery-title">Gallery</h2>
                 <div class="gallery-grid">
-                  {gallery.map((item) => (
-                    <figure>
+                  {gallery.map((item, i) => (
+                    <figure data-parallax={i % 2 === 0 ? '0.14' : '0.22'}>
                       <button
                         class="shot"
                         type="button"
@@ -436,11 +440,17 @@ const showMisDemos = project.id === 'multifunction-instrumentation-system';
   .cover-band {
     padding-block: clamp(1.5rem, 3vw, 2.25rem);
     border-bottom: 1px solid var(--border);
+    overflow: clip;
   }
 
   .cover {
     display: grid;
     gap: 0.75rem;
+  }
+
+  .cover .parallax-media {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
   }
 
   .cover.contain,

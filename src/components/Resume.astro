@@ -21,7 +21,7 @@ const schoolDates = `${formatMonthRange(parseMonth(education.start), schoolEnd)}
 {showExperience && (
 <section class="section experience" id="experience" aria-labelledby="experience-title">
   <div class="container">
-    <div class="section-head section-head-start">
+    <div class="section-head section-head-start" data-parallax="0.12">
       <h2 class="section-title" id="experience-title">Experience</h2>
       <p class="section-lede">Flight software, embedded research, and teaching at UGA — alongside coursework.</p>
     </div>
@@ -68,7 +68,7 @@ const schoolDates = `${formatMonthRange(parseMonth(education.start), schoolEnd)}
 {showEducation && (
 <section class="section split-section" aria-label="Education and skills">
   <div class="container split">
-    <div id="education">
+    <div id="education" data-parallax="0.1">
       <h2 class="col-title">
         Education
         {
@@ -144,7 +144,7 @@ const schoolDates = `${formatMonthRange(parseMonth(education.start), schoolEnd)}
       </dl>
     </div>
 
-    <div id="skills">
+    <div id="skills" data-parallax="0.16">
       <h2 class="col-title">Skills</h2>
       <dl class="specs">
         {

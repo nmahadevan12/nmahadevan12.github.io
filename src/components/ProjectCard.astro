@@ -15,14 +15,16 @@ const Heading = headingLevel;
 
 <a class="card" href={`/projects/${project.id}/`} data-status={data.status} data-areas={data.areas.join(' ')}>
   <div class:list={['well', data.cover ? data.coverFit : 'art']}>
-    <ProjectCover
-      project={project}
-      width={760}
-      height={543}
-      sizes="(min-width: 1200px) 544px, (min-width: 760px) 46vw, 92vw"
-      loading={eager ? 'eager' : 'lazy'}
-      decorative
-    />
+    <div class="parallax-media" data-parallax="0.2">
+      <ProjectCover
+        project={project}
+        width={760}
+        height={543}
+        sizes="(min-width: 1200px) 544px, (min-width: 760px) 46vw, 92vw"
+        loading={eager ? 'eager' : 'lazy'}
+        decorative
+      />
+    </div>
   </div>
   <div class="body">
     <div class="row">

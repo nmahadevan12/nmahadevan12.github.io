@@ -56,6 +56,10 @@ const ogImage = new URL(image, Astro.site);
     </main>
     <Footer />
     <script>
+      import { mountParallax } from '../scripts/parallax';
+
+      mountParallax();
+
       const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
       const items = [...document.querySelectorAll<HTMLElement>('[data-reveal]')].filter(
         (el) => !el.classList.contains('reveal') && !el.classList.contains('reveal-job'),

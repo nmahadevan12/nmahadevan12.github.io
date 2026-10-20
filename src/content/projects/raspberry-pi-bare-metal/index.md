@@ -6,7 +6,8 @@ status: in-progress
 areas: [embedded]
 start: 2026-10
 platform: BCM2837 (ARM Cortex-A53, AArch64)
-draft: true
+featured: true
+metric: Personal · bare-metal AArch64 blink
 tags:
   - AArch64
   - Bare-metal
