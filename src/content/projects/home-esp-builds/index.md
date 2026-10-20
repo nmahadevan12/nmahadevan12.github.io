@@ -1,7 +1,7 @@
 ---
 title: ESP32 / Arduino Builds
 channel: ESP32 / Arduino builds
-summary: Personal ESP32 and Arduino projects — wireless door alarm, Wi‑Fi home control, light-sensing blinds, and a proximity lamp.
+summary: Personal ESP32 and Arduino projects I worked on before.
 status: completed
 areas: [embedded]
 start: 2024-01
