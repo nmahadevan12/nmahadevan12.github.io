@@ -72,7 +72,7 @@ export const experience: Job[] = [
       'Coaching TTL builds and benchtop debug with oscilloscopes, logic analyzers, and multimeters until circuits meet lab specs',
       'Analyzed student AI-interaction writeups across labs — use cases, tool disclosure gaps, and course-design recommendations',
     ],
-    tags: ['SPICE', 'Analog circuits', 'Lab instruments', 'Course design'],
+    tags: ['SPICE', 'Analog circuits', 'Lab instruments'],
   },
   {
     id: 'tutor',
