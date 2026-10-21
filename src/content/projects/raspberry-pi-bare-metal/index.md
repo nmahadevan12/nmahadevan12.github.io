@@ -23,10 +23,6 @@ coverAlt: Raspberry Pi 3 Model B single-board computer
 coverCaption: Raspberry Pi 3 Model B — the BCM2837 / Cortex-A53 board this firmware targets. Photo via Wikimedia Commons (CC BY-SA 4.0).
 coverFit: contain
 gallery:
-  - src: ./oscope-delay1-stopped.jpg
-    caption: Earlier GPIO blink bring-up on the scope (delay = 1) — Freq 1.0526 MHz, Pk-Pk 2.05 V.
-  - src: ./oscope-delay0-stopped.jpg
-    caption: Earlier GPIO blink bring-up on the scope (delay = 0) — Freq 7.02 MHz, Pk-Pk 1.89 V.
   - src: ./memory-map.png
     caption: Load map from linker.ld — kernel8.img at 0x80000, stack below _start, and the BCM2837 peripheral window used by main.c.
 ---
