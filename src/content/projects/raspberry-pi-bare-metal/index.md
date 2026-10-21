@@ -24,7 +24,7 @@ coverCaption: Raspberry Pi 3 Model B — the BCM2837 / Cortex-A53 board this fir
 coverFit: contain
 gallery:
   - src: ./memory-map.png
-    caption: Load map from the current kernel8.map — 388-byte image at 0x80000 (boot stub, miniUartSetup / Transmit, main) and the AUX mini UART MMIO window at 0x3F215000.
+    caption: Load map from the current kernel8.map — 485-byte image at 0x80000 (boot stub, miniUartSetup / Transmit / Pointer, main, rodata string) and the AUX mini UART MMIO window at 0x3F215000.
 ---
 
 ## Overview
@@ -45,4 +45,4 @@ Try the [boot stub walkthrough](#boot-stub) and [mini UART TX](#mini-uart) below
 
 `250 MHz / (8 × 271) ≈ 115,313` — about 0.1% off 115200.
 
-The loop calls `miniUartTransmit` for each byte of a C string, waiting on `AUX_MU_LSR` bit 5 (TX empty) before writing `AUX_MU_IO`. A host serial monitor (`make monitor`) reads the line at 115200 8N1 — Pi GPIO14 → adapter RX, shared GND.
+`miniUartPointer` walks a `char *` until NUL and calls `miniUartTransmit` for each byte, waiting on `AUX_MU_LSR` bit 5 (TX empty) before writing `AUX_MU_IO`. `main` passes a local string into that helper and loops with a software delay. A host serial monitor (`make monitor`) reads the line at 115200 8N1 — Pi GPIO14 → adapter RX, shared GND.
