@@ -1,18 +1,23 @@
-/** Interactive demos for the bare-metal Pi 3B blinky (BCM2837 GPIO + boot stub). */
+/** Interactive demos for the bare-metal Pi 3B firmware (boot stub + AUX mini UART). */
 
 const PERIPH_BASE = 0x3f00_0000;
 const GPIO_BASE = PERIPH_BASE + 0x20_0000;
-const GPFSEL1_ADDR = GPIO_BASE + 0x04;
-const GPSET0_ADDR = GPIO_BASE + 0x1c;
-const GPCLR0_ADDR = GPIO_BASE + 0x28;
+const UART_BASE = PERIPH_BASE + 0x215_000;
 
-/** Matches main.c: bits [23:21] = 001 for GPIO 17 output. */
-const GPIO_17_OUT = 1 << 21;
-const GPIO_17_PIN = 1 << 17;
+const GPFSEL1_ADDR = GPIO_BASE + 0x04;
+const AUX_ENABLES_ADDR = UART_BASE + 0x04;
+const AUX_MU_BAUD_ADDR = UART_BASE + 0x68;
+const AUX_MU_CNTL_ADDR = UART_BASE + 0x60;
+const AUX_MU_IO_ADDR = UART_BASE + 0x40;
+
+/** Matches main.c. */
+const MINI_UART = 1;
+const BAUD_RATE = 270;
+const DATA_BIT_SEL = 3;
+const TRANSMIT_ENABLE = 1 << 1;
+const MESSAGE = 'Hello Nikhil';
 
 const hex32 = (n: number) => `0x${(n >>> 0).toString(16).padStart(8, '0').toUpperCase()}`;
-
-const bit = (word: number, i: number) => ((word >>> i) & 1) as 0 | 1;
 
 type BootStep = {
   id: string;
@@ -49,14 +54,14 @@ const BOOT_STEPS: BootStep[] = [
   {
     id: 'main',
     title: 'Call main',
-    detail: 'Hand off to C. main configures GPFSEL1, then blinks GPSET0 / GPCLR0 forever.',
+    detail: 'Hand off to C. main brings up the AUX mini UART on GPIO 14, then transmits forever.',
     code: '2: bl main',
   },
 ];
 
 export function mountPiBareMetalDemos(root: HTMLElement) {
   mountBoot(root);
-  mountGpio(root);
+  mountUart(root);
 }
 
 function mountBoot(root: HTMLElement) {
@@ -128,157 +133,135 @@ function mountBoot(root: HTMLElement) {
   render();
 }
 
-function mountGpio(root: HTMLElement) {
-  const panel = root.querySelector<HTMLElement>('[data-gpio-demo]');
+function mountUart(root: HTMLElement) {
+  const panel = root.querySelector<HTMLElement>('[data-uart-demo]');
   if (!panel) return;
 
-  const bitsEl = panel.querySelector<HTMLElement>('[data-gpfsel-bits]');
-  const ledEl = panel.querySelector<HTMLElement>('[data-led]');
-  const pinStateEl = panel.querySelector<HTMLElement>('[data-pin-state]');
+  const outEl = panel.querySelector<HTMLElement>('[data-uart-out]');
+  const statusEl = panel.querySelector<HTMLElement>('[data-uart-status]');
   const logEl = panel.querySelector<HTMLElement>('[data-mmio-log]');
-  const playBtn = panel.querySelector<HTMLButtonElement>('[data-gpio-play]');
-  const stepBtn = panel.querySelector<HTMLButtonElement>('[data-gpio-step]');
-  const resetBtn = panel.querySelector<HTMLButtonElement>('[data-gpio-reset]');
+  const setupBtn = panel.querySelector<HTMLButtonElement>('[data-uart-setup]');
+  const playBtn = panel.querySelector<HTMLButtonElement>('[data-uart-play]');
+  const stepBtn = panel.querySelector<HTMLButtonElement>('[data-uart-step]');
+  const resetBtn = panel.querySelector<HTMLButtonElement>('[data-uart-reset]');
+  const auxEnHex = panel.querySelector<HTMLElement>('[data-aux-en-hex]');
+  const baudHex = panel.querySelector<HTMLElement>('[data-baud-hex]');
   const gpfselHex = panel.querySelector<HTMLElement>('[data-gpfsel-hex]');
-  const setHex = panel.querySelector<HTMLElement>('[data-gpset-hex]');
-  const clrHex = panel.querySelector<HTMLElement>('[data-gpclr-hex]');
-  if (!bitsEl || !ledEl || !pinStateEl || !logEl || !playBtn || !stepBtn || !resetBtn || !gpfselHex || !setHex || !clrHex)
+  const cntlHex = panel.querySelector<HTMLElement>('[data-cntl-hex]');
+  if (
+    !outEl ||
+    !statusEl ||
+    !logEl ||
+    !setupBtn ||
+    !playBtn ||
+    !stepBtn ||
+    !resetBtn ||
+    !auxEnHex ||
+    !baudHex ||
+    !gpfselHex ||
+    !cntlHex
+  ) {
     return;
+  }
 
+  let auxEnables = 0;
+  let baud = 0;
   let gpfsel1 = 0;
-  let pinHigh = false;
-  let configured = false;
-  let phase: 'idle' | 'set' | 'clr' = 'idle';
+  let cntl = 0;
+  let ready = false;
+  let index = 0;
   let playing = false;
   let timer = 0;
+  let line = '';
 
-  const pushLog = (line: string) => {
+  const pushLog = (text: string) => {
     const row = document.createElement('div');
-    row.textContent = line;
+    row.textContent = text;
     logEl.prepend(row);
-    while (logEl.children.length > 8) logEl.lastElementChild?.remove();
-  };
-
-  const renderBits = () => {
-    bitsEl.innerHTML = '';
-    // Show GPFSEL1 fields for GPIO 10–19 (3 bits each), highlight 17.
-    for (let pin = 19; pin >= 10; pin--) {
-      const lo = (pin - 10) * 3;
-      const field = document.createElement('button');
-      field.type = 'button';
-      field.className = 'field';
-      field.dataset.pin = String(pin);
-      if (pin === 17) field.dataset.focus = '1';
-      const b0 = bit(gpfsel1, lo);
-      const b1 = bit(gpfsel1, lo + 1);
-      const b2 = bit(gpfsel1, lo + 2);
-      const mode = (b0 | (b1 << 1) | (b2 << 2)) & 0x7;
-      field.title = `GPIO ${pin} → GPFSEL1[${lo + 2}:${lo}]`;
-      field.innerHTML = `
-        <span class="pin">GPIO ${pin}</span>
-        <span class="bits" aria-hidden="true">
-          <i data-on="${b2}">${b2}</i><i data-on="${b1}">${b1}</i><i data-on="${b0}">${b0}</i>
-        </span>
-        <span class="mode">${mode === 1 ? 'OUT' : mode === 0 ? 'IN' : `fn${mode}`}</span>
-      `;
-      if (pin === 17) {
-        field.addEventListener('click', () => {
-          // Match main.c: assign GPIO_17_OUT (clears other mode bits in this write).
-          gpfsel1 = GPIO_17_OUT;
-          configured = true;
-          pushLog(`${hex32(GPFSEL1_ADDR)} ← ${hex32(gpfsel1)}  // GPFSEL1 = GPIO_17_OUT`);
-          render();
-        });
-      } else {
-        field.disabled = true;
-      }
-      bitsEl.appendChild(field);
-    }
-  };
-
-  const renderLed = () => {
-    ledEl.dataset.on = pinHigh && configured ? '1' : '0';
-    ledEl.dataset.armed = configured ? '1' : '0';
-    pinStateEl.textContent = !configured ? 'not configured' : pinHigh ? 'HIGH (set)' : 'LOW (clear)';
-  };
-
-  const renderRegs = () => {
-    gpfselHex.textContent = hex32(gpfsel1);
-    setHex.textContent = phase === 'set' ? hex32(GPIO_17_PIN) : hex32(0);
-    clrHex.textContent = phase === 'clr' ? hex32(GPIO_17_PIN) : hex32(0);
+    while (logEl.children.length > 10) logEl.lastElementChild?.remove();
   };
 
   const render = () => {
-    renderBits();
-    renderLed();
-    renderRegs();
-    playBtn.textContent = playing ? 'Pause' : 'Blink';
-    stepBtn.disabled = !configured;
-    playBtn.disabled = !configured;
-  };
-
-  const doSet = () => {
-    phase = 'set';
-    pinHigh = true;
-    pushLog(`${hex32(GPSET0_ADDR)} ← ${hex32(GPIO_17_PIN)}  // GPSET0`);
-    render();
-  };
-
-  const doClr = () => {
-    phase = 'clr';
-    pinHigh = false;
-    pushLog(`${hex32(GPCLR0_ADDR)} ← ${hex32(GPIO_17_PIN)}  // GPCLR0`);
-    render();
-  };
-
-  const stepOnce = () => {
-    if (!configured) return;
-    if (phase === 'idle' || phase === 'clr') doSet();
-    else doClr();
+    auxEnHex.textContent = hex32(auxEnables);
+    baudHex.textContent = hex32(baud);
+    gpfselHex.textContent = hex32(gpfsel1);
+    cntlHex.textContent = hex32(cntl);
+    outEl.textContent = line || ' ';
+    statusEl.textContent = !ready ? 'idle' : playing ? 'transmitting' : 'ready';
+    playBtn.textContent = playing ? 'Pause' : 'Transmit loop';
+    playBtn.disabled = !ready;
+    stepBtn.disabled = !ready;
   };
 
   const stopPlay = () => {
     playing = false;
     if (timer) window.clearInterval(timer);
     timer = 0;
-    playBtn.textContent = 'Blink';
+    playBtn.textContent = 'Transmit loop';
+    statusEl.textContent = ready ? 'ready' : 'idle';
   };
 
+  const sendByte = () => {
+    if (!ready) return;
+    const ch = MESSAGE[index];
+    pushLog(`${hex32(AUX_MU_IO_ADDR)} ← ${hex32(ch.charCodeAt(0))}  // '${ch}'`);
+    line += ch;
+    if (line.length > 72) line = line.slice(-72);
+    index = (index + 1) % MESSAGE.length;
+    if (index === 0) line += ' ';
+    render();
+  };
+
+  setupBtn.addEventListener('click', () => {
+    stopPlay();
+    auxEnables |= MINI_UART;
+    pushLog(`${hex32(AUX_ENABLES_ADDR)} |= ${hex32(MINI_UART)}  // enable mini UART`);
+    cntl = 0;
+    pushLog(`${hex32(AUX_MU_CNTL_ADDR)} ← 0  // disable TX/RX`);
+    baud = BAUD_RATE;
+    pushLog(`${hex32(AUX_MU_BAUD_ADDR)} ← ${hex32(BAUD_RATE)}  // 115200 @ 250 MHz`);
+    pushLog(`AUX_MU_LCR ← ${hex32(DATA_BIT_SEL)}  // 8-bit`);
+    gpfsel1 = (gpfsel1 & ~(7 << 12)) | (2 << 12);
+    pushLog(`${hex32(GPFSEL1_ADDR)} ← ${hex32(gpfsel1)}  // GPIO14 Alt5 (TXD1)`);
+    cntl = TRANSMIT_ENABLE;
+    pushLog(`${hex32(AUX_MU_CNTL_ADDR)} ← ${hex32(TRANSMIT_ENABLE)}  // TX enable`);
+    ready = true;
+    index = 0;
+    render();
+  });
+
   playBtn.addEventListener('click', () => {
-    if (!configured) return;
+    if (!ready) return;
     if (playing) {
       stopPlay();
+      render();
       return;
     }
     playing = true;
+    statusEl.textContent = 'transmitting';
     playBtn.textContent = 'Pause';
-    // Slowed way down vs the firmware's tiny delay++ so the LED is visible.
-    timer = window.setInterval(stepOnce, 420);
+    timer = window.setInterval(sendByte, 140);
   });
 
   stepBtn.addEventListener('click', () => {
     stopPlay();
-    stepOnce();
+    sendByte();
   });
 
   resetBtn.addEventListener('click', () => {
     stopPlay();
+    auxEnables = 0;
+    baud = 0;
     gpfsel1 = 0;
-    pinHigh = false;
-    configured = false;
-    phase = 'idle';
+    cntl = 0;
+    ready = false;
+    index = 0;
+    line = '';
     logEl.innerHTML = '';
-    pushLog('Registers cleared — click GPIO 17 (or Configure) to match main.c');
+    pushLog(`UART_BASE ${hex32(UART_BASE)}  ·  GPIO14 → GPFSEL1[14:12] = Alt5`);
     render();
   });
 
-  panel.querySelector<HTMLButtonElement>('[data-gpio-config]')?.addEventListener('click', () => {
-    gpfsel1 = GPIO_17_OUT;
-    configured = true;
-    pushLog(`${hex32(GPFSEL1_ADDR)} ← ${hex32(gpfsel1)}  // GPFSEL1 = GPIO_17_OUT`);
-    render();
-  });
-
-  pushLog(`GPIO_BASE ${hex32(GPIO_BASE)}  ·  pin 17 → GPFSEL1[23:21]`);
+  pushLog(`UART_BASE ${hex32(UART_BASE)}  ·  GPIO14 → GPFSEL1[14:12] = Alt5`);
   render();
 }

@@ -4,8 +4,8 @@
 <section class="pi-demos" aria-labelledby="pi-demos-title" data-pi-demos>
   <h2 id="pi-demos-title">Interactive bring-up</h2>
   <p class="lede">
-    Walk the AArch64 boot stub from <code>boot.S</code>, then poke the same BCM2837 GPIO registers
-    <code>main.c</code> writes — GPFSEL1, GPSET0, and GPCLR0 on pin 17.
+    Walk the AArch64 boot stub from <code>boot.S</code>, then step the same AUX mini UART bring-up
+    <code>main.c</code> does — enable AUX, set baud, put GPIO 14 in Alt5, and transmit bytes.
   </p>
 
   <div class="panel" data-boot-demo id="boot-stub">
@@ -32,47 +32,49 @@
     </div>
   </div>
 
-  <div class="panel" data-gpio-demo id="gpio-blink">
+  <div class="panel" data-uart-demo id="mini-uart">
     <div class="panel-head">
-      <h3>GPIO 17 blink</h3>
+      <h3>Mini UART TX</h3>
       <p>
-        Same MMIO as the firmware: set GPFSEL1 bits <code>[23:21] = 001</code>, then pulse
-        <code>GPSET0</code> / <code>GPCLR0</code> bit 17. Timing here is slowed so you can see it.
+        Same MMIO as the firmware: enable AUX, program baud for 115200 at 250&nbsp;MHz, set GPIO 14 to
+        Alt5 (TXD1), then push bytes into <code>AUX_MU_IO</code> when the TX FIFO is empty.
       </p>
     </div>
 
-    <div class="gpio-stage">
-      <div class="led-wrap">
-        <div class="led" data-led data-on="0" data-armed="0" aria-hidden="true"></div>
-        <div class="led-meta">
-          <span class="led-label">GPIO 17</span>
-          <strong data-pin-state>not configured</strong>
+    <div class="uart-stage">
+      <div class="uart-terminal" aria-label="Serial output">
+        <div class="uart-chrome">
+          <span>115200 8N1 · GPIO 14 TX</span>
+          <strong data-uart-status>idle</strong>
         </div>
+        <pre class="uart-out" data-uart-out></pre>
       </div>
 
       <div class="reg-cards" aria-label="Memory-mapped registers">
+        <div class="reg">
+          <span class="addr">AUX_ENABLES · 0x3F215004</span>
+          <code data-aux-en-hex>0x00000000</code>
+        </div>
+        <div class="reg">
+          <span class="addr">AUX_MU_BAUD · 0x3F215068</span>
+          <code data-baud-hex>0x00000000</code>
+        </div>
         <div class="reg">
           <span class="addr">GPFSEL1 · 0x3F200004</span>
           <code data-gpfsel-hex>0x00000000</code>
         </div>
         <div class="reg">
-          <span class="addr">GPSET0 · 0x3F20001C</span>
-          <code data-gpset-hex>0x00000000</code>
-        </div>
-        <div class="reg">
-          <span class="addr">GPCLR0 · 0x3F200028</span>
-          <code data-gpclr-hex>0x00000000</code>
+          <span class="addr">AUX_MU_CNTL · 0x3F215060</span>
+          <code data-cntl-hex>0x00000000</code>
         </div>
       </div>
     </div>
 
-    <div class="gpfsel" data-gpfsel-bits role="group" aria-label="GPFSEL1 pin fields GPIO 10 through 19"></div>
-
-    <div class="gpio-controls">
-      <button type="button" class="btn-soft" data-gpio-config>Configure pin 17</button>
-      <button type="button" class="btn-play" data-gpio-play disabled>Blink</button>
-      <button type="button" class="btn-soft" data-gpio-step disabled>Step</button>
-      <button type="button" class="btn-soft" data-gpio-reset>Reset</button>
+    <div class="uart-controls">
+      <button type="button" class="btn-soft" data-uart-setup>Run miniUartSetup</button>
+      <button type="button" class="btn-play" data-uart-play disabled>Transmit loop</button>
+      <button type="button" class="btn-soft" data-uart-step disabled>Send next byte</button>
+      <button type="button" class="btn-soft" data-uart-reset>Reset</button>
     </div>
 
     <div class="mmio-log" data-mmio-log aria-live="polite" aria-label="MMIO write log"></div>
@@ -237,7 +239,7 @@
   }
 
   .boot-nav,
-  .gpio-controls {
+  .uart-controls {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
@@ -278,64 +280,49 @@
     cursor: not-allowed;
   }
 
-  .gpio-stage {
+  .uart-stage {
     display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 1.25rem;
-    align-items: center;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: stretch;
   }
 
-  .led-wrap {
+  .uart-terminal {
     display: grid;
-    justify-items: center;
-    gap: 0.55rem;
-    min-width: 7.5rem;
+    grid-template-rows: auto 1fr;
+    min-height: 11rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #0f1720;
   }
 
-  .led {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    border: 1px solid #c5ccd6;
-    background: radial-gradient(circle at 35% 30%, #f3f4f6, #d1d5db 70%);
-    box-shadow: inset 0 -2px 6px rgb(0 0 0 / 0.12);
-    transition:
-      background 120ms ease,
-      box-shadow 120ms ease,
-      border-color 120ms ease;
-  }
-
-  .led[data-armed='1'][data-on='0'] {
-    border-color: #9aa3af;
-    background: radial-gradient(circle at 35% 30%, #e5e7eb, #9ca3af 75%);
-  }
-
-  .led[data-on='1'] {
-    border-color: #86efac;
-    background: radial-gradient(circle at 35% 30%, #bbf7d0, #22c55e 68%);
-    box-shadow:
-      0 0 0 4px rgb(34 197 94 / 0.18),
-      0 0 28px rgb(34 197 94 / 0.45),
-      inset 0 -2px 6px rgb(0 0 0 / 0.08);
-  }
-
-  .led-meta {
-    display: grid;
-    justify-items: center;
-    gap: 0.1rem;
-    text-align: center;
-  }
-
-  .led-label {
-    color: var(--text-faint);
+  .uart-chrome {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.45rem 0.7rem;
+    border-bottom: 1px solid rgb(255 255 255 / 0.08);
+    color: #94a3b8;
     font-size: 0.72rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    font-family: var(--font-mono);
   }
 
-  .led-meta strong {
-    font-size: 0.88rem;
+  .uart-chrome strong {
+    color: #e2e8f0;
     font-weight: 650;
+  }
+
+  .uart-out {
+    margin: 0;
+    padding: 0.75rem 0.85rem;
+    color: #86efac;
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-all;
+    min-height: 7.5rem;
   }
 
   .reg-cards {
@@ -367,66 +354,6 @@
     color: var(--text);
   }
 
-  .gpfsel {
-    display: grid;
-    grid-template-columns: repeat(10, minmax(0, 1fr));
-    gap: 0.35rem;
-  }
-
-  .gpfsel :global(.field) {
-    display: grid;
-    gap: 0.25rem;
-    justify-items: center;
-    padding: 0.45rem 0.2rem 0.5rem;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: #fff;
-    color: var(--text-faint);
-    cursor: default;
-  }
-
-  .gpfsel :global(.field[data-focus='1']) {
-    border-color: var(--btn);
-    background: #f3f9fc;
-    color: var(--text);
-    cursor: pointer;
-  }
-
-  .gpfsel :global(.field:disabled) {
-    opacity: 0.72;
-  }
-
-  .gpfsel :global(.pin) {
-    font-size: 0.68rem;
-    font-weight: 650;
-  }
-
-  .gpfsel :global(.bits) {
-    display: inline-flex;
-    gap: 2px;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-  }
-
-  .gpfsel :global(.bits i) {
-    width: 0.95rem;
-    text-align: center;
-    border-radius: 3px;
-    background: #eef0f3;
-    font-style: normal;
-  }
-
-  .gpfsel :global(.bits i[data-on='1']) {
-    background: #d7ecf7;
-    color: #166a99;
-    font-weight: 700;
-  }
-
-  .gpfsel :global(.mode) {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-  }
-
   .mmio-log {
     min-height: 5.5rem;
     padding: 0.65rem 0.75rem;
@@ -453,12 +380,8 @@
     }
 
     .boot-body,
-    .gpio-stage {
+    .uart-stage {
       grid-template-columns: 1fr;
-    }
-
-    .gpfsel {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
     }
   }
 
