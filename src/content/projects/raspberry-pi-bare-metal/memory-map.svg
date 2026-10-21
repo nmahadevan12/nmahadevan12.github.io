@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 560" role="img" aria-labelledby="title desc">
   <title id="title">Raspberry Pi 3B bare-metal memory map</title>
-  <desc id="desc">kernel8.img load address 0x80000 with boot stub, main, empty bss, and stack growing downward. Peripheral GPIO window at 0x3F200000.</desc>
+  <desc id="desc">kernel8.img load address 0x80000 with boot stub, mini UART helpers, main, and empty bss. BCM2837 AUX mini UART window at 0x3F215000.</desc>
 
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -14,52 +14,65 @@
   <rect width="1120" height="560" fill="#ffffff"/>
 
   <text x="48" y="44" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="22" font-weight="600">AArch64 load map</text>
-  <text x="48" y="68" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="14">From linker.ld and kernel8.map  -  image is 188 bytes at 0x80000</text>
+  <text x="48" y="68" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="14">From linker.ld and kernel8.map — image is 388 bytes at 0x80000</text>
 
   <rect x="48" y="100" width="520" height="400" rx="10" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1.5"/>
 
-  <rect x="72" y="124" width="280" height="70" rx="6" fill="#ffffff" stroke="#d1d5db"/>
-  <text x="212" y="154" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="14" font-weight="600">Free RAM / stack</text>
-  <text x="212" y="174" text-anchor="middle" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">SP = _start, grows down</text>
+  <rect x="72" y="124" width="280" height="56" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="212" y="150" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="14" font-weight="600">Free RAM / stack</text>
+  <text x="212" y="168" text-anchor="middle" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">SP = _start, grows down</text>
 
-  <path d="M 212 194 V 228" fill="none" stroke="#1b7db3" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
-  <text x="224" y="218" fill="#1b7db3" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">stack</text>
+  <path d="M 212 180 V 208" fill="none" stroke="#1b7db3" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+  <text x="224" y="200" fill="#1b7db3" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">stack</text>
 
-  <rect x="72" y="236" width="280" height="48" rx="6" fill="#e8f5fb" stroke="#1b7db3" stroke-width="1.75"/>
-  <text x="88" y="258" fill="#166a99" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">0x80000</text>
-  <text x="212" y="266" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="14" font-weight="600">.text.boot  /  _start</text>
+  <rect x="72" y="216" width="280" height="42" rx="6" fill="#e8f5fb" stroke="#1b7db3" stroke-width="1.75"/>
+  <text x="88" y="234" fill="#166a99" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">0x80000</text>
+  <text x="212" y="244" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13" font-weight="600">.text.boot / _start</text>
 
-  <rect x="72" y="284" width="280" height="48" rx="6" fill="#ffffff" stroke="#26a3d9" stroke-width="1.5"/>
-  <text x="88" y="306" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">0x80050</text>
-  <text x="212" y="314" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="14" font-weight="600">.text  /  main</text>
+  <rect x="72" y="258" width="280" height="42" rx="6" fill="#ffffff" stroke="#26a3d9" stroke-width="1.5"/>
+  <text x="88" y="276" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">0x80050</text>
+  <text x="212" y="286" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13" font-weight="600">miniUartSetup</text>
 
-  <rect x="72" y="332" width="280" height="40" rx="6" fill="#ffffff" stroke="#d1d5db"/>
-  <text x="88" y="356" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">0x800C0</text>
-  <text x="212" y="358" text-anchor="middle" fill="#475467" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13">.bss  (__bss_start == __bss_end)</text>
+  <rect x="72" y="300" width="280" height="42" rx="6" fill="#ffffff" stroke="#26a3d9" stroke-width="1.5"/>
+  <text x="88" y="318" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">0x800B0</text>
+  <text x="212" y="328" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13" font-weight="600">miniUartTransmit</text>
 
-  <text x="212" y="400" text-anchor="middle" fill="#98a2b3" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">kernel8.img ends ~0x800BC (188 bytes)</text>
+  <rect x="72" y="342" width="280" height="42" rx="6" fill="#ffffff" stroke="#26a3d9" stroke-width="1.5"/>
+  <text x="88" y="360" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">0x800D0</text>
+  <text x="212" y="370" text-anchor="middle" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="13" font-weight="600">main · TX loop</text>
 
-  <text x="372" y="150" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">below load address</text>
-  <text x="372" y="266" fill="#1b7db3" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">GPU loads kernel8.img here</text>
-  <text x="372" y="314" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">blink loop in C</text>
+  <rect x="72" y="384" width="280" height="36" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="88" y="406" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">0x80188</text>
+  <text x="212" y="408" text-anchor="middle" fill="#475467" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">.bss (__bss_start == __bss_end)</text>
+
+  <text x="212" y="448" text-anchor="middle" fill="#98a2b3" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">kernel8.img is 388 bytes (.text through ~0x80184)</text>
+
+  <text x="372" y="244" fill="#1b7db3" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">GPU loads kernel8.img here</text>
+  <text x="372" y="286" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">AUX enable · baud · Alt5</text>
+  <text x="372" y="328" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">wait TX empty · write IO</text>
+  <text x="372" y="370" fill="#667085" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">"Hello Nikhil" forever</text>
 
   <rect x="620" y="100" width="452" height="400" rx="10" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1.5"/>
   <text x="644" y="132" fill="#475467" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13">BCM2837 MMIO</text>
 
-  <rect x="644" y="156" width="404" height="56" rx="6" fill="#ffffff" stroke="#d1d5db"/>
-  <text x="660" y="180" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12">PERIPH_BASE</text>
-  <text x="660" y="200" fill="#141415" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="15" font-weight="600">0x3F000000</text>
+  <rect x="644" y="152" width="404" height="48" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="660" y="172" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12">PERIPH_BASE</text>
+  <text x="660" y="190" fill="#141415" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="15" font-weight="600">0x3F000000</text>
 
-  <rect x="644" y="228" width="404" height="56" rx="6" fill="#ffffff" stroke="#1b7db3" stroke-width="1.5"/>
-  <text x="660" y="252" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12">GPIO_BASE</text>
-  <text x="660" y="272" fill="#141415" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="15" font-weight="600">0x3F200000</text>
+  <rect x="644" y="212" width="404" height="48" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="660" y="232" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12">GPIO_BASE · pin 14 Alt5</text>
+  <text x="660" y="250" fill="#141415" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="15" font-weight="600">0x3F200000</text>
 
-  <rect x="644" y="304" width="404" height="148" rx="6" fill="#ffffff" stroke="#d1d5db"/>
-  <text x="660" y="332" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="14" font-weight="600">Registers used in main.c</text>
-  <text x="660" y="360" fill="#475467" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13">GPFSEL1   0x3F200004   mode bits [23:21]</text>
-  <text x="660" y="384" fill="#475467" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13">GPSET0    0x3F20001C   set pin 17</text>
-  <text x="660" y="408" fill="#475467" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13">GPCLR0    0x3F200028   clear pin 17</text>
-  <text x="660" y="432" fill="#98a2b3" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">config.txt: arm_64bit=1</text>
+  <rect x="644" y="272" width="404" height="48" rx="6" fill="#ffffff" stroke="#1b7db3" stroke-width="1.5"/>
+  <text x="660" y="292" fill="#667085" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12">UART_BASE · AUX mini UART</text>
+  <text x="660" y="310" fill="#141415" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="15" font-weight="600">0x3F215000</text>
 
-  <text x="48" y="532" fill="#98a2b3" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">Cores 1-3 never leave hang in boot.S. Core 0 alone reaches the GPIO blink loop.</text>
+  <rect x="644" y="332" width="404" height="140" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="660" y="358" fill="#141415" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="14" font-weight="600">Registers used in main.c</text>
+  <text x="660" y="384" fill="#475467" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12.5">AUX_ENABLES  0x3F215004  mini UART on</text>
+  <text x="660" y="406" fill="#475467" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12.5">AUX_MU_BAUD  0x3F215068  270 → 115200</text>
+  <text x="660" y="428" fill="#475467" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12.5">GPFSEL1      0x3F200004  GPIO14 Alt5</text>
+  <text x="660" y="450" fill="#475467" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12.5">AUX_MU_IO    0x3F215040  TX byte</text>
+
+  <text x="48" y="532" fill="#98a2b3" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="12">Cores 1–3 stay in hang (boot.S). Core 0 reaches main and transmits on GPIO 14. config.txt: arm_64bit=1 · enable_uart=1 · core_freq=250</text>
 </svg>

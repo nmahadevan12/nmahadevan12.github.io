@@ -24,7 +24,7 @@ coverCaption: Raspberry Pi 3 Model B — the BCM2837 / Cortex-A53 board this fir
 coverFit: contain
 gallery:
   - src: ./memory-map.png
-    caption: Load map from linker.ld — kernel8.img at 0x80000, stack below _start, and the BCM2837 peripheral window used by main.c.
+    caption: Load map from the current kernel8.map — 388-byte image at 0x80000 (boot stub, miniUartSetup / Transmit, main) and the AUX mini UART MMIO window at 0x3F215000.
 ---
 
 ## Overview
@@ -41,4 +41,8 @@ Try the [boot stub walkthrough](#boot-stub) and [mini UART TX](#mini-uart) below
 
 ## Mini UART
 
-`miniUartSetup` enables the AUX mini UART, disables TX while baud and line control are programmed (`AUX_MU_BAUD = 270` for 115200 at 250 MHz), sets GPIO 14's GPFSEL1 field to Alt5, then enables transmit. The loop calls `miniUartTransmit` for each byte of a C string, waiting on `AUX_MU_LSR` bit 5 (TX empty) before writing `AUX_MU_IO`. A host serial monitor (`make monitor`) reads the line at 115200 8N1 — Pi GPIO14 → adapter RX, shared GND.
+`miniUartSetup` enables the AUX mini UART, disables TX while baud and line control are programmed, sets GPIO 14's GPFSEL1 field to Alt5 (TXD1), then enables transmit. Baud is locked with `AUX_MU_BAUD = 270` and `core_freq=250` in `config.txt`:
+
+`250 MHz / (8 × 271) ≈ 115,313` — about 0.1% off 115200.
+
+The loop calls `miniUartTransmit` for each byte of a C string, waiting on `AUX_MU_LSR` bit 5 (TX empty) before writing `AUX_MU_IO`. A host serial monitor (`make monitor`) reads the line at 115200 8N1 — Pi GPIO14 → adapter RX, shared GND.
