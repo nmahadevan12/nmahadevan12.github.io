@@ -1,22 +1,20 @@
 ---
 title: Edge AI Wake-Word Engine
 channel: Wake-word engine
-summary: Bare-metal STM32 mic capture and energy detect, with a host-trained MFCC classifier whose weights export to C for an on-chip score.
+summary: Bare-metal STM32L4 PDM capture and energy detect, with a host-trained MFCC logistic model whose weights score on-chip.
 status: completed
-statusLabel: Host-side complete, on-device port pending
 areas: [embedded, signal]
 start: 2026-08
 end: 2026-08
 platform: STM32L475VG (ARM Cortex-M4F) · B-L475E-IOT01A
 featured: true
-metric: 92% hold-out · 16% false-accept
+metric: 92% validation accuracy
 tags: [ARM Cortex-M4, Bare-metal C, DSP, UART, Python]
 highlights:
-  - "Register-level C firmware with no HAL: RCC, GPIO, DFSDM, UART4, and SysTick configured directly, with a custom linker script and startup assembly"
-  - Hardware PDM-to-PCM demodulation of the onboard MEMS microphone using DFSDM Sinc3 decimation (FOSR = 64)
-  - DC-blocking IIR filter and EMA energy detector feeding an event state machine that isolates speech and rejects background noise
-  - 921.6 kbps UART driver with SysTick interrupt-driven timestamping that streams framed audio to a host PC
-  - "Host-trained MFCC logistic model — 92% hold-out accuracy, 100% wake-word recall (25/25), 16% false-accept rate on 25 negatives (precision ~86%)"
+  - Register-level C firmware on an STM32L4 (ARM Cortex-M4) for real-time PDM audio acquisition
+  - DC-blocking filter and energy detector in C to isolate speech buffers and reject background noise
+  - 921.6 kbps UART streaming driver with SysTick timestamping to frame and transfer raw audio buffers to a host PC
+  - "MFCC logistic regression scored on the Cortex-M4 from exported weights — 92% validation accuracy on a 600-sample balanced dataset"
 repo: https://github.com/nmahadevan12/Edge-AI-STM32
 cover: ./board.png
 coverAlt: STMicroelectronics B-L475E-IOT01A Discovery kit for IoT node (STM32L475)

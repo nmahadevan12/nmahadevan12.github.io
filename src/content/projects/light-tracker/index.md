@@ -1,7 +1,7 @@
 ---
 title: 2-Axis Light Tracker
 channel: 2-axis light tracker
-summary: Solo ELEE 4230 project — a battery-powered dual-axis light tracker on an ATmega328P driving DC motors through H-bridges.
+summary: Solo ELEE 4230 project — battery-powered dual-axis light tracker in bare-metal C on an ATmega328P with MOSFET H-bridges and a fixed-point Kalman filter.
 status: completed
 areas: [embedded, hardware]
 start: 2026-06
@@ -12,11 +12,11 @@ featured: true
 metric: 3 → under 1 LSB noise
 tags: [C, ATmega328P, Kalman filter, H-bridge, UART, PCB design, Python]
 highlights:
-  - Solo build — bare-metal C on an ATmega328P driving base and panel DC motors through MOSFET H-bridges
-  - LDR array with Hall-effect and potentiometer feedback for tilt-limit protection, plus an auto-calibration sweep at startup
-  - Fixed-point Kalman filter on the ADC channels that cuts peak noise from 3 LSBs to under 1 LSB
-  - Register-level UART driver (9.216 MHz crystal) streaming live telemetry to a Python logger
-  - Four-layer PCB designed in KiCad around the ATmega328P
+  - Battery-powered dual-axis tracker in bare-metal C on an ATmega328P using MOSFET H-bridges to drive motors
+  - LDR array with Hall-effect and potentiometer feedback for tilt-limit protection
+  - Fixed-point Kalman filter smoothing ADC readings — peak noise from 3 LSBs to under 1 LSB without floating-point overhead
+  - Register-level 115.2 kbps UART driver streaming real-time Kalman-filtered tracking telemetry
+  - 4-layer PCB in KiCad with dedicated ground planes isolating motor switching noise from analog sensor traces
 repo: https://github.com/nmahadevan12/Light-Tracker
 video: https://www.youtube.com/shorts/PQEl34fqnAk
 cover: ./build.png

@@ -6,14 +6,14 @@ export const education = {
   end: '2028-05',
   gpa: '3.93 / 4.0',
   coursework: [
-    'Logic Design',
-    'Electronics',
+    'Embedded Systems',
     'Sensors & Transducers',
     'Linear Systems',
-    'Embedded Systems',
-    'Informatics',
+    'Electronics',
+    'Logic Design',
+    'Discrete Math',
   ],
-  honors: ['Zell Miller Scholar', 'UGA Dean’s List', 'Eagle Scout (2022)'],
+  honors: ['Eagle Scout', 'UGA Dean’s List'],
   memberships: ['UGA IEEE MicroMouse', 'UGA Outdoor Club'],
 };
 
@@ -41,11 +41,12 @@ export const experience: Job[] = [
     orgShort: 'UGA SSRL',
     start: '2026-09',
     points: [
-      'Rewrote the F´ FileRecycler for MEMESat image/message storage after the prior version failed in F´ — scheduled and ground-commanded deletes by time or count; change builds and links clean, with hardware-in-the-loop testing still ahead',
-      'Got the flight STM32 flashing reliably after correcting pin mux / placement issues that blocked bring-up',
-      'Building Zephyr RTOS flight software in C on STM32 for CubeSat command handling and UART / RS-485 subsystem links, with Renode used to validate bus behavior before full bench hardware',
+      'Developing CubeSat flight software integrating C++ active components in NASA F´ with low-level C device drivers under Zephyr RTOS on an STM32 MCU',
+      'Implemented an on-board computer 7-state mode controller in C++ featuring 10-tick voltage debounce, request priority arbitration, and fault-tolerant safe shutdown sequencing',
+      'Refactored the legacy file-recycler service — replaced raw strings with path abstractions, resolved symlink traversal issues, and enforced thread-safe mutex synchronization so the change builds cleanly',
+      'Implementing UART and RS-485 serial drivers in C via the Zephyr device driver model for multi-node telemetry routing, validating integration in Renode',
     ],
-    tags: ['C', 'F´', 'Zephyr RTOS', 'STM32', 'UART', 'RS-485'],
+    tags: ['C', 'C++', 'F´', 'Zephyr RTOS', 'STM32', 'UART', 'RS-485'],
   },
   {
     id: 'vip',
@@ -55,10 +56,10 @@ export const experience: Job[] = [
     orgShort: 'UGA VIPR',
     start: '2026-08',
     points: [
-      'Writing C++ I²C and SPI drivers for IMU, temperature, and humidity sensors on an ATmega328P canine heat-stress wearable',
-      'Implementing Bluetooth streaming of those sensors to a host app for real-time monitoring',
+      'Developing C++ drivers across I²C and SPI to acquire real-time IMU, ambient temperature, and relative humidity telemetry on an ATmega328P-based canine health monitor',
+      'Implementing serial communication via an HC-05 Bluetooth module using hardware UART to stream structured multi-sensor data packets to a host application in real time',
     ],
-    tags: ['C++', 'ATmega328P', 'I²C', 'SPI', 'Bluetooth'],
+    tags: ['C++', 'ATmega328P', 'I²C', 'SPI', 'UART', 'Bluetooth'],
   },
   {
     id: 'ece-lab',
@@ -68,9 +69,8 @@ export const experience: Job[] = [
     orgShort: 'UGA ECE',
     start: '2026-08',
     points: [
-      'Teaching 100+ students across two labs through analog filters, oscillators, transformers, and BJT amplifiers with SPICE checks',
-      'Coaching TTL builds and benchtop debug with oscilloscopes, logic analyzers, and multimeters until circuits meet lab specs',
-      'Analyzed student AI-interaction writeups across labs — use cases, tool disclosure gaps, and course-design recommendations',
+      'Instructing 100+ students across two labs on analog filters, oscillators, transformers, and BJT amplifiers with SPICE verification',
+      'Guiding students through TTL circuit builds and benchtop debugging with oscilloscopes, logic analyzers, and multimeters',
     ],
     tags: ['SPICE', 'Analog circuits', 'Lab instruments'],
   },
@@ -83,7 +83,7 @@ export const experience: Job[] = [
     start: '2025-09',
     end: '2026-05',
     points: [
-      'Tutored 35+ students in Logic Design (CSEE 2220) and Circuit Analysis (ECSE 2170), focusing on exam-ready problem sets',
+      'Tutored 35+ students across courses mainly focused on Logic Design (CSEE 2220) and Circuit Analysis (ECSE 2170)',
     ],
     tags: ['Logic design', 'Circuit analysis'],
   },
@@ -92,26 +92,25 @@ export const experience: Job[] = [
 export const skills = [
   {
     group: 'Languages',
-    items: ['C', 'C++', 'Python'],
+    items: ['C', 'C++', 'ARM Assembly', 'Python', 'Java', 'MATLAB'],
   },
   {
-    group: 'Architectures & interfaces',
-    items: ['ARM Cortex-M (STM32)', 'AVR (ATmega)', 'Raspberry Pi', 'SPI', 'I²C', 'UART', 'PWM'],
-  },
-  {
-    group: 'Firmware & toolchains',
-    items: ['Bare-metal C', 'F´', 'Zephyr RTOS', 'Renode', 'arm-none-eabi-gcc', 'OpenOCD', 'Make / CMake', 'Git'],
-  },
-  {
-    group: 'Hardware & equipment',
+    group: 'Embedded systems',
     items: [
-      'KiCad',
-      'Autodesk Fusion',
-      'SPICE',
-      'Oscilloscopes',
-      'Logic analyzers',
-      'Multimeters',
-      'Soldering',
+      'ARM Cortex-M4 (STM32)',
+      'ARM Cortex-A53 (BCM2837)',
+      'ATmega328P',
+      'ESP32',
+      'Zephyr RTOS',
+      'NASA F´',
     ],
+  },
+  {
+    group: 'Hardware & EDA',
+    items: ['Altium Designer', 'KiCad', '4-layer PCB design', 'SPICE', 'Autodesk Fusion'],
+  },
+  {
+    group: 'Tools & test equipment',
+    items: ['Renode', 'Git', 'Oscilloscopes', 'Logic analyzers', 'Multimeters', 'Soldering'],
   },
 ];

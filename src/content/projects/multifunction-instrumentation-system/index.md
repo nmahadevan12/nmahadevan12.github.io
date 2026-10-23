@@ -1,7 +1,7 @@
 ---
 title: Multifunction Instrumentation System
 channel: M.I.S. test bench
-summary: ECSE 2920 — I worked on the voltmeter, ohmmeter, DC reference, sine-wave generator, and frequency measurer on a five-person team.
+summary: ECSE 2920 — on a five-person team I owned the voltmeter, ohmmeter, DC reference, sine-wave generator, and frequency measurer.
 status: completed
 areas: [hardware, embedded]
 start: 2026-01
@@ -9,12 +9,13 @@ end: 2026-04
 course: ECSE 2920
 platform: Raspberry Pi 4
 featured: true
-metric: ±0.2 V · ±2% frequency
+metric: 6× DC resolution · 2× voltmeter precision
 tags: [Python, Raspberry Pi, Analog design, ADC / DAC, SPI, I²C, KiCad]
 highlights:
-  - Built the full measurement path — Pi software, analog front-ends, digipot SAR ADC, and digipot calibration LUTs; teammates owned enclosure, wiring docs, and demo slides
-  - Discrete SAR ADC from an SPI digipot and comparator for the voltmeter, ohmmeter, and DC reference
-  - Digipot characterization and lookup tables improved DC resolution 6× and voltmeter precision 2× vs uncalibrated wiper steps
+  - Raspberry Pi DMM and function generator in Python on a ±12 V split-rail supply with active virtual ground
+  - Discrete SAR ADC via SPI digipot and comparator for a 0–5 V voltmeter, 500 Ω–10 kΩ ohmmeter, and ±5 V reference
+  - Function generators (0–10 Vpk, 0–10 kHz) and a 0–10 kHz frequency counter buffered by op-amp conditioning stages
+  - Digipot calibration in software improved DC resolution 6× and voltmeter precision 2×
   - 4-layer mixed-signal Pi HAT PCB with dedicated power and ground planes
 repo: https://github.com/nmahadevan12/MIS
 video: https://youtu.be/Nd_8IkFf7bE
