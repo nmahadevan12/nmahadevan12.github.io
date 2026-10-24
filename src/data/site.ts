@@ -18,7 +18,7 @@ export const site = {
   location: 'Athens, GA',
   email: 'Nikhil.Mahadevan@uga.edu',
   /** Filename bumps when the PDF changes so browsers don’t keep an old cached copy. */
-  resume: '/Nikhil_Mahadevan_Resume_Oct24.pdf',
+  resume: '/Nikhil_Mahadevan_Resume_Oct24b.pdf',
   github: 'https://github.com/nmahadevan12',
   linkedin: 'https://www.linkedin.com/in/nmahadevan12',
   /** Absolute path under `public/` for link previews. */
