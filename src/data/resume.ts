@@ -50,7 +50,7 @@ export const experience: Job[] = [
     orgShort: 'UGA',
     start: '2026-08',
     points: [
-      'Developing C++ drivers across I²C and SPI to acquire real-time IMU, ambient temperature, and relative humidity telemetry on an ATmega328P-based canine health monitor',
+      'Developing C++ drivers across I²C and SPI to acquire real-time IMU, temperature, and humidity telemetry on an ATmega328P-based canine health monitor',
       'Streaming structured multi-sensor packets to a host application in real time over HC-05 Bluetooth via hardware UART',
     ],
     tags: ['C++', 'ATmega328P', 'I²C', 'SPI', 'UART', 'Bluetooth'],
