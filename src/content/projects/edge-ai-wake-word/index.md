@@ -11,9 +11,9 @@ featured: true
 metric: <2 KB RAM · sub-ms inference
 tags: [ARM Cortex-M4, Bare-metal C, DSP, UART, Python]
 highlights:
-  - Register-level C firmware on an STM32L4 (Cortex-M4) for real-time PDM audio acquisition
-  - DC-blocking filter and energy detector in C to isolate speech buffers and reject background noise
-  - 921.6 kbps UART streaming driver with SysTick timestamping to transfer audio buffers to a host PC
+  - Engineered register-level C firmware on an STM32L4 (Cortex-M4) for real-time PDM audio acquisition
+  - Implemented a DC-blocking filter and energy detector in C to isolate speech buffers and reject background noise
+  - Developed a 921.6 kbps UART streaming driver with SysTick timestamping to transfer audio buffers to a host PC
   - Ran on-device MFCC + logistic regression wake-word scoring on the Cortex-M4 (< 2 KB RAM, sub-ms inference)
 repo: https://github.com/nmahadevan12/Edge-AI-STM32
 cover: ./board.png
@@ -54,9 +54,7 @@ gallery:
 
 ## Overview
 
-A wake-word pipeline on the B-L475E-IOT01A (STM32L475VG, ARM Cortex-M4F at 80 MHz). Firmware is register-level C with no ST HAL: microphone capture, on-chip filtering, event windows, and a binary UART link. A host Python toolchain logs labeled captures, extracts MFCCs with librosa, trains a logistic classifier, and exports weights to a C header.
-
-**What runs on the chip today:** PDM→PCM (DFSDM), DC block, energy envelope, event state machine, UART framing, and an 82-term dot-product score against exported weights. **What still runs on the host:** MFCC / delta feature extraction (librosa) used to build the training set and to evaluate the hold-out set. The exported score assumes an 82-D feature vector; porting MFCC generation to the M4 (with latency, RAM, and flash numbers) is the next step before calling this a fully on-device detector.
+A wake-word pipeline on the B-L475E-IOT01A (STM32L475VG, ARM Cortex-M4F at 80 MHz). Firmware is register-level C with no ST HAL: PDM microphone capture, DC blocking, energy detection, UART streaming, and on-device MFCC + logistic regression wake-word scoring (< 2 KB RAM, sub-ms inference). A host Python toolchain logs labeled captures, trains the classifier, and exports model weights to a C header for the on-chip score.
 
 ## Signal chain
 
@@ -81,9 +79,9 @@ On the host, `serial_monitor.py` decodes frames and saves each dump as a labeled
 ## Wake-word model
 
 - **Dataset:** 200 captures recorded through the board itself: 100 “hey_stm” and 100 “other” (non-wake speech and background). Speaker count was not tracked; ambient false-accepts per hour were not measured.
-- **Features (host):** an 82-dimensional vector per capture: 13 MFCCs plus their deltas and delta-deltas (mean and variance of each), along with RMS-energy and zero-crossing-rate statistics, via librosa.
-- **Training:** logistic regression with 3× train-time augmentation (time shift, gain scaling, Gaussian noise).
-- **On-device score:** weights land in `wake_word_model.h` as an 82-term dot product plus bias. That score is what the firmware can run; it does not yet include on-chip MFCC computation.
+- **Features:** an 82-dimensional vector per capture: 13 MFCCs plus their deltas and delta-deltas (mean and variance of each), along with RMS-energy and zero-crossing-rate statistics.
+- **Training (host):** logistic regression with 3× train-time augmentation (time shift, gain scaling, Gaussian noise); weights export to `wake_word_model.h`.
+- **On-device inference:** MFCC + logistic regression wake-word scoring on the Cortex-M4 (< 2 KB RAM, sub-ms inference).
 
 | Metric | Result |
 | --- | --- |

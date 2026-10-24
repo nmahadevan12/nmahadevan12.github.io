@@ -12,11 +12,11 @@ featured: true
 metric: 3 → under 1 LSB noise
 tags: [C, ATmega328P, Kalman filter, H-bridge, UART, PCB design, Python]
 highlights:
-  - Battery-powered dual-axis tracker in bare-metal C on an ATmega328P using MOSFET H-bridges to drive motors
-  - LDR array with Hall-effect and potentiometer feedback for tilt-limit protection
-  - Fixed-point Kalman filter smoothing ADC readings — peak noise from 3 LSBs to under 1 LSB without using an FPU
-  - Register-level 115.2 kbps UART driver streaming real-time Kalman-filtered tracking telemetry
-  - 4-layer PCB in KiCad with dedicated ground planes isolating motor switching noise from analog sensor traces
+  - Built a battery-powered dual-axis light tracker in bare-metal C on an ATmega328P using MOSFET H-bridges to drive motors
+  - Integrated an LDR array with Hall-effect and potentiometer feedback for tilt limit protection
+  - Implemented a fixed-point Kalman filter to smooth ADC readings reducing peak noise from 3 LSBs to < 1 LSB without using an FPU
+  - Engineered a register-level 115.2 kbps UART driver to stream real-time Kalman-filtered tracking telemetry
+  - Designed a 4-layer PCB in KiCad with dedicated ground planes to isolate motor switching noise from analog sensor traces
 repo: https://github.com/nmahadevan12/Light-Tracker
 video: https://www.youtube.com/shorts/PQEl34fqnAk
 cover: ./build.png

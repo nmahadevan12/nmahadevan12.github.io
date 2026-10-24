@@ -63,8 +63,8 @@ export const experience: Job[] = [
     orgShort: 'UGA',
     start: '2026-08',
     points: [
-      'Instructing 100+ students across two labs on analog filters, oscillators, transformers, and BJT amplifiers with SPICE verification',
-      'Guiding students with TTL circuit builds and benchtop debugging using oscilloscopes, logic analyzers, and multimeters',
+      'Instructing 100+ students across two labs on analog filters, oscillators, transformers and BJT amplifiers with SPICE verification',
+      'Guiding students with TTL circuit builds and benchtop debugging using oscilloscopes, logic analyzers and multimeters',
     ],
     tags: ['SPICE', 'Analog circuits', 'Lab instruments'],
   },
