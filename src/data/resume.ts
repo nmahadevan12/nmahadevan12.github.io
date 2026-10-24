@@ -47,7 +47,7 @@ export const experience: Job[] = [
     role: 'Embedded Systems Research Intern',
     org: 'University of Georgia',
     channel: 'Embedded research',
-    orgShort: 'UGA',
+    orgShort: 'UGA VIPR',
     start: '2026-08',
     points: [
       'Developing C++ drivers across I²C and SPI to acquire real-time IMU, temperature, and humidity telemetry on an ATmega328P-based canine health monitor',
