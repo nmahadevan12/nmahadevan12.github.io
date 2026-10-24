@@ -45,7 +45,7 @@ export const experience: Job[] = [
   {
     id: 'vip',
     role: 'Embedded Systems Research Intern',
-    org: 'University of Georgia',
+    org: 'University of Georgia Vertically Integrated Projects for Research',
     channel: 'Embedded research',
     orgShort: 'UGA VIPR',
     start: '2026-08',
