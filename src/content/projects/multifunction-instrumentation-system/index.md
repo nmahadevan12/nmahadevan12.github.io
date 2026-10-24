@@ -12,11 +12,11 @@ featured: true
 metric: 6× DC resolution · 2× voltmeter precision
 tags: [Python, Raspberry Pi, Analog design, ADC / DAC, SPI, I²C, KiCad]
 highlights:
-  - Raspberry Pi DMM and function generator in Python on a ±12 V split-rail supply with active virtual ground
+  - Raspberry Pi digital multimeter and function generator in Python with a ±12 V split-rail supply and active virtual ground
   - Discrete SAR ADC via SPI digipot and comparator for a 0–5 V voltmeter, 500 Ω–10 kΩ ohmmeter, and ±5 V reference
-  - Function generators (0–10 Vpk, 0–10 kHz) and a 0–10 kHz frequency counter buffered by op-amp conditioning stages
+  - Function generators (0–10 Vpk, 0–10 kHz) and a 0–10 kHz frequency counter with op-amp conditioning
   - Digipot calibration in software improved DC resolution 6× and voltmeter precision 2×
-  - 4-layer mixed-signal Pi HAT PCB with dedicated power and ground planes
+  - 4-layer mixed-signal Pi HAT PCB in KiCad with dedicated power and ground planes
 repo: https://github.com/nmahadevan12/MIS
 video: https://youtu.be/Nd_8IkFf7bE
 cover: ./bench.jpg

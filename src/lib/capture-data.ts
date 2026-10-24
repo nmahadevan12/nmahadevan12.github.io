@@ -84,18 +84,14 @@ export function buildCaptureChannels(projects: Project[], now = new Date()): Cap
     dates: formatMonthRange(parseMonth(education.start), schoolEnd),
     startLabel: formatMonth(parseMonth(education.start)),
     endLabel: schoolEnd > now ? `${formatMonth(schoolEnd)} (expected)` : formatMonth(schoolEnd),
-    summary: `GPA ${education.gpa}. Coursework includes ${education.coursework.join(', ')}.`,
+    summary:
+      education.coursework.length > 0
+        ? `GPA ${education.gpa}. Coursework includes ${education.coursework.join(', ')}.`
+        : `GPA ${education.gpa}. ${education.honors.join(' · ')}.`,
     frames: [
       ...education.degrees,
       `GPA ${education.gpa.split(' ')[0]}`,
-      ...education.honors
-        .filter(
-          (honor) =>
-            !honor.startsWith('Zell Miller') &&
-            !honor.startsWith('Eagle Scout') &&
-            !honor.includes('Dean'),
-        )
-        .slice(0, 2),
+      ...education.honors.slice(0, 2),
     ],
     points: [],
     href: '#education',

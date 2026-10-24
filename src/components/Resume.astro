@@ -23,7 +23,7 @@ const schoolDates = `${formatMonthRange(parseMonth(education.start), schoolEnd)}
   <div class="container">
     <div class="section-head section-head-start" data-parallax="0.22">
       <h2 class="section-title" id="experience-title">Experience</h2>
-      <p class="section-lede">Flight software, embedded research, and teaching at UGA — alongside coursework.</p>
+      <p class="section-lede">Flight software, embedded research, and teaching at UGA.</p>
     </div>
 
     <ol class="jobs" role="list">
@@ -102,19 +102,21 @@ const schoolDates = `${formatMonthRange(parseMonth(education.start), schoolEnd)}
           <dt>GPA</dt>
           <dd>{education.gpa}</dd>
         </div>
-        <div>
-          <dt>Coursework</dt>
-          <dd>
-            {
-              education.coursework.map((item, i) => (
-                <>
-                  {i > 0 && ' · '}
-                  <span class="item">{item}</span>
-                </>
-              ))
-            }
-          </dd>
-        </div>
+        {
+          education.coursework.length > 0 && (
+            <div>
+              <dt>Coursework</dt>
+              <dd>
+                {education.coursework.map((item, i) => (
+                  <>
+                    {i > 0 && ' · '}
+                    <span class="item">{item}</span>
+                  </>
+                ))}
+              </dd>
+            </div>
+          )
+        }
         <div>
           <dt>Honors</dt>
           <dd>
@@ -128,19 +130,21 @@ const schoolDates = `${formatMonthRange(parseMonth(education.start), schoolEnd)}
             }
           </dd>
         </div>
-        <div>
-          <dt>Memberships &amp; clubs</dt>
-          <dd>
-            {
-              education.memberships.map((item, i) => (
-                <>
-                  {i > 0 && ' · '}
-                  <span class="item">{item}</span>
-                </>
-              ))
-            }
-          </dd>
-        </div>
+        {
+          education.memberships.length > 0 && (
+            <div>
+              <dt>Memberships &amp; clubs</dt>
+              <dd>
+                {education.memberships.map((item, i) => (
+                  <>
+                    {i > 0 && ' · '}
+                    <span class="item">{item}</span>
+                  </>
+                ))}
+              </dd>
+            </div>
+          )
+        }
       </dl>
     </div>
 
