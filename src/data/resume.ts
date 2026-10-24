@@ -29,7 +29,7 @@ export const experience: Job[] = [
   {
     id: 'ssrl',
     role: 'Flight Software Engineer',
-    org: 'Small Satellite Research Laboratory',
+    org: 'University of Georgia Small Satellite Research Laboratory',
     channel: 'Flight software',
     orgShort: 'UGA SSRL',
     start: '2026-09',
@@ -38,7 +38,7 @@ export const experience: Job[] = [
       'Refactored legacy flight state machine and file-recycler code into reviewable C++ modules with documented interfaces',
       'Implemented a 7-state flight state machine in C++ with voltage debounce, priority arbitration, and safe-shutdown sequencing',
       'Hardened file-recycler with path abstractions, safer symlink handling, and mutex-based thread safety',
-      'Review teammates’ FSW changes; building UART/RS-485 Zephyr drivers and validating them in Renode',
+      'Review teammates’ flight software changes; building UART/RS-485 Zephyr drivers and validating them in Renode',
     ],
     tags: ['C', 'C++', 'F´', 'Zephyr RTOS', 'STM32', 'UART', 'RS-485'],
   },

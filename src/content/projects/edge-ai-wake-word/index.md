@@ -1,20 +1,20 @@
 ---
 title: Edge AI Wake-Word Engine
 channel: Wake-word engine
-summary: Bare-metal STM32L4 PDM capture and energy detect, with a host-trained MFCC logistic model whose weights score on-chip.
+summary: Bare-metal STM32L4 PDM capture and energy detect, with on-device MFCC + logistic regression wake-word scoring.
 status: completed
 areas: [embedded, signal]
 start: 2026-08
 end: 2026-08
 platform: STM32L475VG (ARM Cortex-M4F) · B-L475E-IOT01A
 featured: true
-metric: 92% validation accuracy
+metric: <2 KB RAM · sub-ms inference
 tags: [ARM Cortex-M4, Bare-metal C, DSP, UART, Python]
 highlights:
-  - Register-level C firmware on an STM32L4 (ARM Cortex-M4) for real-time PDM audio acquisition
+  - Register-level C firmware on an STM32L4 (Cortex-M4) for real-time PDM audio acquisition
   - DC-blocking filter and energy detector in C to isolate speech buffers and reject background noise
-  - 921.6 kbps UART streaming driver with SysTick timestamping to frame and transfer raw audio buffers to a host PC
-  - "MFCC logistic regression scored on the Cortex-M4 from exported weights — 92% validation accuracy on a 600-sample balanced dataset"
+  - 921.6 kbps UART streaming driver with SysTick timestamping to transfer audio buffers to a host PC
+  - Ran on-device MFCC + logistic regression wake-word scoring on the Cortex-M4 (< 2 KB RAM, sub-ms inference)
 repo: https://github.com/nmahadevan12/Edge-AI-STM32
 cover: ./board.png
 coverAlt: STMicroelectronics B-L475E-IOT01A Discovery kit for IoT node (STM32L475)
