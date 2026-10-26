@@ -5,7 +5,15 @@ export const education = {
   start: '2024-08',
   end: '2028-05',
   gpa: '3.93 / 4.0',
-  coursework: [] as string[],
+  coursework: [
+    'Embedded Systems',
+    'Sensors & Transducers',
+    'Linear Systems',
+    'Electronics',
+    'Logic Design',
+    'Discrete Math',
+    'Thermodynamics',
+  ],
   honors: ['Eagle Scout', 'UGA Dean’s List'],
   memberships: [] as string[],
 };
@@ -35,9 +43,8 @@ export const experience: Job[] = [
     start: '2026-09',
     points: [
       'Developing CubeSat flight software in C++ and NASA F´ with C Zephyr drivers on STM32 for a ~15-person software team',
-      'Refactored legacy flight state machine and file-recycler code into reviewable C++ modules with documented interfaces',
-      'Implemented a 7-state flight state machine in C++ with voltage debounce, priority arbitration, and safe-shutdown sequencing',
-      'Hardened file-recycler with path abstractions, safer symlink handling, and mutex-based thread safety',
+      'Reimplemented the legacy 7-state flight state machine with voltage debounce, request prioritization, and safe-shutdown sequencing',
+      'Refactored the legacy file-recycler into thread-safe C++ with path abstractions, safer symlink handling, and documented interfaces',
       'Review teammates’ flight software changes; building UART/RS-485 Zephyr drivers and validating them in Renode',
     ],
     tags: ['C', 'C++', 'F´', 'Zephyr RTOS', 'STM32', 'UART', 'RS-485'],
@@ -86,7 +93,7 @@ export const experience: Job[] = [
 export const skills = [
   {
     group: 'Languages',
-    items: ['C', 'C++', 'ARM Assembly', 'Python', 'MATLAB'],
+    items: ['C', 'C++', 'ARM Assembly', 'Python', 'MATLAB', 'Java'],
   },
   {
     group: 'Embedded systems',
