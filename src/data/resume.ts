@@ -1,7 +1,10 @@
 export const education = {
   school: 'University of Georgia',
   location: 'Athens, GA',
-  degrees: ['B.S. Electrical Engineering', 'B.S. Computer Engineering'],
+  degrees: [
+    'B.S. Electrical and Electronics Engineering',
+    'B.S. Computer Systems Engineering',
+  ],
   start: '2024-08',
   end: '2028-05',
   gpa: '3.93 / 4.0',
@@ -9,10 +12,9 @@ export const education = {
     'Embedded Systems',
     'Sensors & Transducers',
     'Linear Systems',
-    'Electronics',
+    'Electronics I & II',
     'Logic Design',
     'Discrete Math',
-    'Thermodynamics',
   ],
   honors: ['Eagle Scout', 'UGA Dean’s List'],
   memberships: [] as string[],
@@ -42,12 +44,12 @@ export const experience: Job[] = [
     orgShort: 'UGA SSRL',
     start: '2026-09',
     points: [
-      'Developing CubeSat flight software in C++ and NASA F´ with C Zephyr drivers on STM32 for a ~15-person software team',
+      'Developing CubeSat flight software in C++ and NASA F Prime, with Zephyr drivers in C on STM32, for a ~15-person team',
       'Reimplemented the legacy 7-state flight state machine with voltage debounce, request prioritization, and safe-shutdown sequencing',
       'Refactored the legacy file-recycler into thread-safe C++ with path abstractions, safer symlink handling, and documented interfaces',
-      'Review teammates’ flight software changes; building UART/RS-485 Zephyr drivers and validating them in Renode',
+      'Reviewing teammates’ flight software changes and building UART/RS-485 Zephyr drivers, validated in Renode',
     ],
-    tags: ['C', 'C++', 'F´', 'Zephyr RTOS', 'STM32', 'UART', 'RS-485'],
+    tags: ['C', 'C++', 'NASA F Prime', 'Zephyr RTOS', 'STM32', 'UART', 'RS-485'],
   },
   {
     id: 'vip',
@@ -57,7 +59,7 @@ export const experience: Job[] = [
     orgShort: 'UGA VIPR',
     start: '2026-08',
     points: [
-      'Developing C++ drivers across I²C and SPI to acquire real-time IMU, temperature, and humidity telemetry on an ATmega328P-based canine health monitor',
+      'Writing C++ drivers (I²C, SPI) to read IMU, temperature, and humidity sensors on an ATmega328P canine health monitor',
       'Streaming structured multi-sensor packets to a host application in real time over HC-05 Bluetooth via hardware UART',
     ],
     tags: ['C++', 'ATmega328P', 'I²C', 'SPI', 'UART', 'Bluetooth'],
@@ -102,9 +104,11 @@ export const skills = [
       'ARM Cortex-A53 (BCM2837)',
       'ATmega328P',
       'ESP32',
-      'Zephyr RTOS',
-      'NASA F´',
     ],
+  },
+  {
+    group: 'Firmware & protocols',
+    items: ['Zephyr RTOS', 'NASA F Prime', 'I²C', 'SPI', 'UART', 'PWM'],
   },
   {
     group: 'Hardware & EDA',

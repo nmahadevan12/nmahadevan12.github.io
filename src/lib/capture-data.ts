@@ -77,7 +77,7 @@ export function buildCaptureChannels(projects: Project[], now = new Date()): Cap
     kind: 'education',
     title: education.school,
     name: education.school,
-    sub: 'B.S. EE + CompE',
+    sub: 'B.S. EEE + CSE',
     org: education.degrees.join(' · '),
     start: education.start,
     end: education.end,

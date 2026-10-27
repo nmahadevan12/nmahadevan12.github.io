@@ -1,20 +1,20 @@
 ---
 title: Edge AI Wake-Word Engine
 channel: Wake-word engine
-summary: Bare-metal STM32L4 PDM capture and energy detect, with on-device MFCC + logistic regression wake-word scoring.
+summary: Bare-metal STM32L4 PDM capture and energy detect, with an MFCC + logistic regression wake-word model trained and run on the Cortex-M4.
 status: completed
 areas: [embedded, signal]
 start: 2026-08
 end: 2026-08
 platform: STM32L475VG (ARM Cortex-M4F) · B-L475E-IOT01A
 featured: true
-metric: 92% held-out · ~80 µs @ 16 MHz
+metric: 92% held-out · ~80 µs inference
 tags: [ARM Cortex-M4, Bare-metal C, DSP, UART, Python]
 highlights:
   - Engineered register-level C firmware on an STM32L4 (Cortex-M4) for real-time PDM audio acquisition
   - Implemented a DC-blocking filter and energy detector in C to isolate speech buffers and reject background noise
   - Developed a 921.6 kbps UART streaming driver with SysTick timestamping to transfer audio buffers to a host PC
-  - "Deployed on-device MFCC + logistic regression wake-word scoring on the Cortex-M4 (<2 KB RAM); 92% held-out accuracy, ~80 µs inference at 16 MHz"
+  - "Trained a wake-word model (MFCC + logistic regression, 92% accuracy on 200 held-out samples) and ran it on the Cortex-M4 in < 2 KB of RAM at ~80 µs per inference"
 repo: https://github.com/nmahadevan12/Edge-AI-STM32
 cover: ./board.png
 coverAlt: STMicroelectronics B-L475E-IOT01A Discovery kit for IoT node (STM32L475)
@@ -54,7 +54,7 @@ gallery:
 
 ## Overview
 
-A wake-word pipeline on the B-L475E-IOT01A (STM32L475VG, ARM Cortex-M4F at 80 MHz). Firmware is register-level C with no ST HAL: PDM microphone capture, DC blocking, energy detection, UART streaming, and on-device MFCC + logistic regression wake-word scoring (<2 KB RAM; 92% held-out accuracy, ~80 µs inference at 16 MHz). A host Python toolchain logs labeled captures, trains the classifier, and exports model weights to a C header for the on-chip score.
+A wake-word pipeline on the B-L475E-IOT01A (STM32L475VG, ARM Cortex-M4F at 80 MHz). Firmware is register-level C with no ST HAL: PDM microphone capture, DC blocking, energy detection, UART streaming, and on-device wake-word scoring. A host Python toolchain logs labeled captures and trains an MFCC + logistic regression model (92% accuracy on 200 held-out samples); the Cortex-M4 runs inference in < 2 KB of RAM at ~80 µs per inference.
 
 ## Signal chain
 
@@ -81,7 +81,7 @@ On the host, `serial_monitor.py` decodes frames and saves each dump as a labeled
 - **Dataset:** 200 captures recorded through the board itself: 100 “hey_stm” and 100 “other” (non-wake speech and background). Speaker count was not tracked; ambient false-accepts per hour were not measured.
 - **Features:** an 82-dimensional vector per capture: 13 MFCCs plus their deltas and delta-deltas (mean and variance of each), along with RMS-energy and zero-crossing-rate statistics.
 - **Training (host):** logistic regression with 3× train-time augmentation (time shift, gain scaling, Gaussian noise); weights export to `wake_word_model.h`.
-- **On-device inference:** MFCC + logistic regression wake-word scoring on the Cortex-M4 (<2 KB RAM; 92% held-out accuracy, ~80 µs inference at 16 MHz).
+- **On-device inference:** trained MFCC + logistic regression wake-word model on the Cortex-M4 (< 2 KB RAM, ~80 µs per inference; 92% accuracy on 200 held-out samples).
 
 | Metric | Result |
 | --- | --- |
