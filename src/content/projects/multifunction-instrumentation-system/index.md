@@ -1,7 +1,7 @@
 ---
 title: Multifunction Instrumentation System
 channel: M.I.S. test bench
-summary: ECSE 2920 — on a five-person team I owned the voltmeter, ohmmeter, DC reference, sine-wave generator, and frequency measurer.
+summary: A Raspberry Pi-based digital multimeter and function generator featuring custom analog front-ends, a software-driven SAR ADC, and a 4-layer mixed-signal PCB.
 status: completed
 areas: [hardware, embedded]
 start: 2026-01
@@ -13,7 +13,7 @@ metric: 6× DC resolution · 2× voltmeter precision
 tags: [Python, Raspberry Pi, Analog design, ADC / DAC, SPI, I²C, KiCad]
 highlights:
   - Built a Raspberry Pi digital multimeter and function generator in Python with a ±12 V split-rail supply and active virtual ground
-  - Designed a SAR ADC from a digital potentiometer and comparator for a 0-5 V voltmeter, 500-10 kΩ ohmmeter, and ±5 V reference
+  - Designed a SAR ADC from a digital potentiometer and comparator for a ±5 V voltmeter, 500-10 kΩ ohmmeter, and ±5 V reference
   - Implemented function generators (0-10 Vpk, 0-10 kHz) and a 0-10 kHz frequency counter with op-amp conditioning
   - Improved DC resolution ~6x and voltmeter precision ~2x by adding digipot calibration LUTs
   - Designed a 4-layer mixed-signal Pi HAT PCB in KiCad with dedicated power and ground planes

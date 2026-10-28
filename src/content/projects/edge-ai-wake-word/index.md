@@ -55,7 +55,7 @@ gallery:
 
 ## Overview
 
-A wake-word pipeline on the B-L475E-IOT01A (STM32L475VG, ARM Cortex-M4F at 80 MHz). Firmware is register-level C with no ST HAL: PDM microphone capture, DC blocking, energy detection, UART streaming, and on-device wake-word scoring. A host Python toolchain logs labeled captures and trains an MFCC + logistic regression model (92% accuracy on 200 held-out samples); the Cortex-M4 runs inference in < 2 KB of RAM at ~80 µs per inference.
+A real-time voice-activation engine built in bare-metal C that captures audio and runs machine learning inference directly on an STM32 microcontroller. Firmware is register-level C with no ST HAL: PDM microphone capture, DC blocking, energy detection, UART streaming, and on-device wake-word scoring. A host Python toolchain logs labeled captures and trains an MFCC + logistic regression model (92% accuracy on 200 held-out samples); the Cortex-M4 runs inference in ~4.5 KB of RAM at ~80 µs per inference.
 
 ## Signal chain
 
@@ -82,14 +82,4 @@ On the host, `serial_monitor.py` decodes frames and saves each dump as a labeled
 - **Dataset:** 200 captures recorded through the board itself: 100 “hey_stm” and 100 “other” (non-wake speech and background). Speaker count was not tracked; ambient false-accepts per hour were not measured.
 - **Features:** an 82-dimensional vector per capture: 13 MFCCs plus their deltas and delta-deltas (mean and variance of each), along with RMS-energy and zero-crossing-rate statistics.
 - **Training (host):** logistic regression with 3× train-time augmentation (time shift, gain scaling, Gaussian noise); weights export to `wake_word_model.h`.
-- **On-device inference:** trained MFCC + logistic regression wake-word model on the Cortex-M4 (< 2 KB RAM, ~80 µs per inference; 92% accuracy on 200 held-out samples).
-
-| Metric | Result |
-| --- | --- |
-| Hold-out test accuracy | 92.0% (50-clip stratified split) |
-| 5-fold cross-validation | 93.5% ± 4.1% |
-| Wake-word recall | 100% (25 of 25) |
-| False accepts on negatives | 4 of 25 (16% FAR) |
-| Precision | ≈ 86% (25 / 29 predicted wake) |
-
-All four hold-out errors were false accepts. Accuracy alone overstates how safe the detector is for a wake word; recall is strong, precision and FAR are the numbers that matter for always-listening use, and they are not yet tuned against ambient audio hours.
+- **On-device inference:** trained "Hey STM" wake-word model on the Cortex-M4 (~4.5 KB of RAM at ~80 µs per inference; 92% accuracy on 200 held-out samples).

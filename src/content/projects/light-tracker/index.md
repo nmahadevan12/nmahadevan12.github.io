@@ -1,7 +1,7 @@
 ---
 title: 2-Axis Light Tracker
 channel: 2-axis light tracker
-summary: Solo ELEE 4230 project — battery-powered dual-axis light tracker in bare-metal C on an ATmega328P with MOSFET H-bridges and a fixed-point Kalman filter.
+summary: A battery-powered dual-axis light tracker in bare-metal C on an ATmega328P with MOSFET H-bridges and a fixed-point Kalman filter.
 status: completed
 areas: [embedded, hardware]
 start: 2026-06
@@ -12,9 +12,10 @@ featured: true
 metric: 3 → under 1 LSB noise
 tags: [C, ATmega328P, Kalman filter, H-bridge, UART, PCB design, Python]
 highlights:
-  - Built a battery-powered dual-axis light tracker in bare-metal C on an ATmega328P, driving the motors with MOSFET H-bridges
-  - Combined an LDR array with Hall-effect and potentiometer feedback to keep the tilt within safe limits
-  - Wrote a fixed-point Kalman filter that cut ADC noise from 3 LSBs to < 1 LSB without an FPU, and streamed the results over a register-level 115.2 kbps UART driver
+  - Built a battery-powered dual-axis light tracker in bare-metal C on an ATmega328P, with motor control through MOSFET H-bridges
+  - Combined an LDR array with Hall-effect and potentiometer feedback to keep tilt within safe limits and stop motor over-rotation
+  - Wrote a fixed-point Kalman filter that cut ADC noise from 3 LSBs to < 1 LSB without an FPU
+  - Streamed raw and filtered ADC data, plus I/O data, to a PC over a register-level 115.2 kbps UART driver
   - Designed a 4-layer KiCad PCB with separate power, ground, and signal layers, and widened the power traces to reduce voltage drop
 repo: https://github.com/nmahadevan12/Light-Tracker
 video: https://www.youtube.com/shorts/PQEl34fqnAk
@@ -52,7 +53,7 @@ gallery:
 
 ## Overview
 
-Solo ELEE 4230 project. A closed-loop tracker that keeps a panel pointed at the brightest light source on two axes, with **DC motors** (not servos) on both axes through MOSFET H-bridges. The firmware is bare-metal AVR C and handles everything on one microcontroller: sensing, filtering, motor control, safety limits, and telemetry.
+A closed-loop tracker that keeps a panel pointed at the brightest light source on two axes, with DC motors on both axes through MOSFET H-bridges. The firmware is **bare-metal AVR C** and handles everything on one microcontroller: sensing, filtering, motor control, safety limits, and telemetry.
 
 ## Results
 
