@@ -7,15 +7,8 @@ export const education = {
   ],
   start: '2024-08',
   end: '2028-05',
-  gpa: '3.93 / 4.0',
-  coursework: [
-    'Embedded Systems',
-    'Sensors & Transducers',
-    'Linear Systems',
-    'Electronics I & II',
-    'Logic Design',
-    'Discrete Math',
-  ],
+  gpa: '3.93',
+  coursework: [],
   honors: ['Eagle Scout', 'UGA Dean’s List'],
   memberships: [] as string[],
 };
@@ -44,25 +37,26 @@ export const experience: Job[] = [
     orgShort: 'UGA SSRL',
     start: '2026-09',
     points: [
-      'Developing CubeSat flight software in C++ and NASA F Prime, with Zephyr drivers in C on STM32, for a ~15-person team',
+      'Developing CubeSat flight software in C++ and NASA F Prime, with Zephyr drivers in C on STM32, for a ~15-person software team',
       'Reimplemented the legacy 7-state flight state machine with voltage debounce, request prioritization, and safe-shutdown sequencing',
-      'Refactored the legacy file-recycler into thread-safe C++ with path abstractions, safer symlink handling, and documented interfaces',
-      'Reviewing teammates’ flight software changes and building UART/RS-485 Zephyr drivers, validated in Renode',
+      'Refactored the legacy file-recycler into thread-safe C++ with path abstractions and safer symlink handling',
+      'Writing unit tests for the state machine and file recycler to catch bugs before system integration',
+      'Reviewing teammates\' flight software changes and building UART/RS-485 Zephyr drivers, validated in Renode',
     ],
     tags: ['C', 'C++', 'NASA F Prime', 'Zephyr RTOS', 'STM32', 'UART', 'RS-485'],
   },
   {
     id: 'vip',
     role: 'Embedded Systems Research Intern',
-    org: 'University of Georgia Vertically Integrated Projects for Research',
+    org: 'University of Georgia',
     channel: 'Embedded research',
     orgShort: 'UGA VIPR',
     start: '2026-08',
     points: [
-      'Writing C++ drivers (I²C, SPI) to read IMU, temperature, and humidity sensors on an ATmega328P canine health monitor',
+      'Writing C++ drivers (I2C, SPI) to read IMU, temperature, and humidity sensors on an ATmega328P canine health monitor',
       'Streaming structured multi-sensor packets to a host application in real time over HC-05 Bluetooth via hardware UART',
     ],
-    tags: ['C++', 'ATmega328P', 'I²C', 'SPI', 'UART', 'Bluetooth'],
+    tags: ['C++', 'ATmega328P', 'I2C', 'SPI', 'UART', 'Bluetooth'],
   },
   {
     id: 'ece-lab',
@@ -95,27 +89,34 @@ export const experience: Job[] = [
 export const skills = [
   {
     group: 'Languages',
-    items: ['C', 'C++', 'ARM Assembly', 'Python', 'MATLAB', 'Java'],
+    items: ['C', 'C++', 'Python', 'ARM Assembly', 'MATLAB', 'Java'],
   },
   {
-    group: 'Embedded systems',
+    group: 'Embedded Systems',
     items: [
       'ARM Cortex-M4 (STM32)',
-      'ARM Cortex-A53 (BCM2837)',
+      'ARM Cortex-A53 (BCM2837, Raspberry Pi)',
       'ATmega328P',
       'ESP32',
     ],
   },
   {
-    group: 'Firmware & protocols',
-    items: ['Zephyr RTOS', 'NASA F Prime', 'I²C', 'SPI', 'UART', 'PWM'],
+    group: 'Firmware & Protocols',
+    items: ['Zephyr RTOS', 'NASA F Prime', 'UART', 'SPI', 'I2C', 'PWM'],
   },
   {
-    group: 'Hardware & EDA',
-    items: ['Altium Designer', 'KiCad', '4-layer PCB design', 'SPICE', 'Autodesk Fusion'],
-  },
-  {
-    group: 'Tools & test equipment',
-    items: ['Renode', 'Git', 'Oscilloscopes', 'Logic analyzers', 'Multimeters', 'Soldering'],
+    group: 'Hardware & Tools',
+    items: [
+      'KiCad',
+      'Altium Designer',
+      'SPICE',
+      'Fusion 360',
+      'Oscilloscopes',
+      'Logic Analyzers',
+      'Multimeters',
+      'Soldering',
+      'Renode',
+      'Git'
+    ],
   },
 ];

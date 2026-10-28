@@ -1,7 +1,7 @@
 ---
 title: Edge AI Wake-Word Engine
 channel: Wake-word engine
-summary: Bare-metal STM32L4 PDM capture and energy detect, with an MFCC + logistic regression wake-word model trained and run on the Cortex-M4.
+summary: A real-time voice-activation engine built in bare-metal C that captures audio and runs machine learning inference directly on an STM32 microcontroller.
 status: completed
 areas: [embedded, signal]
 start: 2026-08
@@ -11,10 +11,11 @@ featured: true
 metric: 92% held-out · ~80 µs inference
 tags: [ARM Cortex-M4, Bare-metal C, DSP, UART, Python]
 highlights:
-  - Engineered register-level C firmware on an STM32L4 (Cortex-M4) for real-time PDM audio acquisition
-  - Implemented a DC-blocking filter and energy detector in C to isolate speech buffers and reject background noise
-  - Developed a 921.6 kbps UART streaming driver with SysTick timestamping to transfer audio buffers to a host PC
-  - "Trained a wake-word model (MFCC + logistic regression, 92% accuracy on 200 held-out samples) and ran it on the Cortex-M4 in < 2 KB of RAM at ~80 µs per inference"
+- Engineered register-level C firmware on an STM32L4 (Cortex-M4) for real-time PDM audio acquisition
+- Implemented a DC-blocking filter and energy detector in C to isolate speech buffers and reject background noise
+- Developed a 921.6 kbps UART streaming driver with SysTick timestamping to transfer audio buffers to a host PC
+- Built a Python tool to read the UART stream and plot the waveform, verifying the firmware’s audio and noise detection before running the model on the chip
+- Trained a "Hey STM" wake-word model (MFCC + logistic regression, 92% accuracy on 200 held-out samples) and ran it on the Cortex-M4 in ~4.5 KB of RAM at ~80 µs per inference
 repo: https://github.com/nmahadevan12/Edge-AI-STM32
 cover: ./board.png
 coverAlt: STMicroelectronics B-L475E-IOT01A Discovery kit for IoT node (STM32L475)
