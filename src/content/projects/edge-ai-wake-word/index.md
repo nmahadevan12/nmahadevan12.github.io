@@ -14,7 +14,7 @@ highlights:
 - Engineered register-level C firmware on an STM32L4 (Cortex-M4) for real-time PDM audio acquisition
 - Implemented a DC-blocking filter and energy detector in C to isolate speech buffers and reject background noise
 - Developed a 921.6 kbps UART streaming driver with SysTick timestamping to transfer audio buffers to a host PC
-- Built a Python tool to read the UART stream and plot the waveform, verifying the firmware’s audio and noise detection before running the model on the chip
+- Built a Python tool to read the UART stream and plot the waveform, verifying the firmware’s audio and noise detection before running the machine learning model on the chip
 - Trained a "Hey STM" wake-word model (MFCC + logistic regression, 92% accuracy on 200 held-out samples) and ran it on the Cortex-M4 in ~4.5 KB of RAM at ~80 µs per inference
 repo: https://github.com/nmahadevan12/Edge-AI-STM32
 cover: ./board.png

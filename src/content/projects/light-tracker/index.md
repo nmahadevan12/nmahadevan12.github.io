@@ -14,7 +14,7 @@ tags: [C, ATmega328P, Kalman filter, H-bridge, UART, PCB design, Python]
 highlights:
   - Built a battery-powered dual-axis light tracker in bare-metal C on an ATmega328P, with motor control through MOSFET H-bridges
   - Combined an LDR array with Hall-effect and potentiometer feedback to keep tilt within safe limits and stop motor over-rotation
-  - Wrote a fixed-point Kalman filter that cut ADC noise from 3 LSBs to < 1 LSB without an FPU
+  - Implemented a fixed-point Kalman filter that reduced ADC noise from 3 LSBs to < 1 LSB without a Floating-Point Unit
   - Streamed raw and filtered ADC data, plus I/O data, to a PC over a register-level 115.2 kbps UART driver
   - Designed a 4-layer KiCad PCB with separate power, ground, and signal layers, and widened the power traces to reduce voltage drop
 repo: https://github.com/nmahadevan12/Light-Tracker
