@@ -19,7 +19,6 @@ highlights:
 repo: https://github.com/nmahadevan12/Edge-AI-STM32
 cover: ./board.png
 coverAlt: STMicroelectronics B-L475E-IOT01A Discovery kit for IoT node (STM32L475)
-coverCaption: B-L475E-IOT01A — markers cover the wake-word path (mics, MCU, ST-LINK), not the unused radios.
 coverFit: contain
 coverHotspots:
   - id: mics

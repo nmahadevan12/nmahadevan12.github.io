@@ -20,7 +20,7 @@ highlights:
 repo: https://github.com/nmahadevan12/raspberry-pi-3b-bare-metal
 cover: ./rpi3b-cover.png
 coverAlt: Raspberry Pi 3 Model B single-board computer
-coverCaption: Raspberry Pi 3 Model B — the BCM2837 / Cortex-A53 board this firmware targets. Photo via Wikimedia Commons (CC BY-SA 4.0).
+coverCaption: Raspberry Pi 3 Model B — the BCM2837 / Cortex-A53
 coverFit: contain
 gallery:
   - src: ./memory-map.png
